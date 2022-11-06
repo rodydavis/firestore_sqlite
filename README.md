@@ -20,9 +20,9 @@ All fields are optional unless marked as required!
 
 Types:
 - string (text)
-- number (int,double,float,decimal)
-- bool
-- date
+- number (int,double,float,decimal,number)
+- bool (truthy or falsy)
+- date (stored as a timestamp)
 - array (type|object)
 - map (json)
 - enum (string)
@@ -107,6 +107,8 @@ When new classes are generated the new field name is used but existing classes i
     Note that if a field is required it needs a default value for any existing clients using the old version.
 
 It is probably good to consider everything optional unless when first setting it as required from the beginning.
+
+After a schema is updated and a client received the change it will update the schema in the local database and then update the UI.
 
 ### Import / Export
 
