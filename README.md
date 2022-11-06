@@ -108,7 +108,17 @@ When new classes are generated the new field name is used but existing classes i
 
 It is probably good to consider everything optional unless when first setting it as required from the beginning.
 
-### Client Side Validation
+### Import / Export
+
+All the schemas can be exported to a JSON file and imported back in.
+
+## SDK
+
+Using the schema it is possible to generate helper classes, endpoints and more.
+
+    Data is store in Firebase in a normalized format (no sub collections) since it will work better with queries and SDK generation.
+
+### Validation
 
 The schema is used to validate the data on the client side before saving to firestore.
 
@@ -182,12 +192,6 @@ When a document is added to the local SQLite database it will create a link to t
 ```
 
 If a `document` type is used the `collection` field is also needed to define the relationship. If it is not provided then the foreign key is not enforced.
-
-## SDK
-
-Using the schema it is possible to generate helper classes, endpoints and more.
-
-    Data is store in Firebase in a normalized format (no sub collections) since it will work better with queries and SDK generation.
 
 ### Class Generation
 
