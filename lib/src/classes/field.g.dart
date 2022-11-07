@@ -8,15 +8,13 @@ part of 'field.dart';
 
 _$_Field _$$_FieldFromJson(Map<String, dynamic> json) => _$_Field(
       name: json['name'] as String,
-      type: json['type'] as String,
+      type: FieldType.fromJson(json['type'] as Map<String, dynamic>),
       description: json['description'] as String?,
       required: json['required'] as bool?,
+      defaultValue: json['defaultValue'],
       previous: (json['previous'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
-      collection: json['collection'] as String?,
-      values:
-          (json['values'] as List<dynamic>?)?.map((e) => e as String).toList(),
     );
 
 Map<String, dynamic> _$$_FieldToJson(_$_Field instance) => <String, dynamic>{
@@ -24,7 +22,6 @@ Map<String, dynamic> _$$_FieldToJson(_$_Field instance) => <String, dynamic>{
       'type': instance.type,
       'description': instance.description,
       'required': instance.required,
+      'defaultValue': instance.defaultValue,
       'previous': instance.previous,
-      'collection': instance.collection,
-      'values': instance.values,
     };

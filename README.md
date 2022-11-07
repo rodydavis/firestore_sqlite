@@ -27,7 +27,7 @@ Types:
 - date (stored as a timestamp)
 - array (type|object)
 - map (json)
-- enum (string)
+- option (enum field)
 - file (object reference to blob)
 - document (foreign key to another collection)
 
@@ -35,7 +35,7 @@ For file types thumbnails can be auto generated using a Firebase function and al
 
 ### Schema Changes
 
-Given an object with two field:
+Given an object with two fields:
 
 ```json
 {

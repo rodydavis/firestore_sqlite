@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'base.dart';
+import 'collection.dart';
+import 'doc.dart';
+import 'type.dart';
 
 part 'field.freezed.dart';
 part 'field.g.dart';
@@ -9,15 +11,14 @@ part 'field.g.dart';
 class Field with _$Field {
   const factory Field({
     required String name,
-    required String type,
-    required String? description,
-    required bool? required,
-    required List<String>? previous,
-    required String? collection,
-    required List<String>? values,
+    required FieldType type,
+    String? description,
+    bool? required,
+    Object? defaultValue,
+    List<String>? previous,
   }) = _Field;
 
-  factory Field.fromJson(Map<String, Object?> json) => _$FieldFromJson(json);
+  factory Field.fromJson(Json json) => _$FieldFromJson(json);
 }
 
 extension FieldUtils on Field {
@@ -34,43 +35,61 @@ extension FieldUtils on Field {
     return null;
   }
 
-  String? getString(Doc doc, [String? fallback]) {
+  String? getString(Doc doc) {
     final value = getValue(doc);
     if (value is String) return value;
-    return fallback;
+    if (defaultValue is String) {
+      return defaultValue as String;
+    }
+    return null;
   }
 
-  int? getInt(Doc doc, [int? fallback]) {
+  int? getInt(Doc doc) {
     final value = getValue(doc);
     if (value is int) return value;
-    return fallback;
+    if (defaultValue is int) {
+      return defaultValue as int;
+    }
+    return null;
   }
 
-  double? getDouble(Doc doc, [double? fallback]) {
+  double? getDouble(Doc doc) {
     final value = getValue(doc);
     if (value is double) return value;
-    return fallback;
+    if (defaultValue is double) {
+      return defaultValue as double;
+    }
+    return null;
   }
 
-  num? getNum(Doc doc, [num? fallback]) {
+  num? getNum(Doc doc) {
     final value = getValue(doc);
     if (value is num) return value;
-    return fallback;
+    if (defaultValue is num) {
+      return defaultValue as num;
+    }
+    return null;
   }
 
-  bool? getBool(Doc doc, [bool? fallback]) {
+  bool? getBool(Doc doc) {
     final value = getValue(doc);
     if (value is bool) return value;
-    return fallback;
+    if (defaultValue is bool) {
+      return defaultValue as bool;
+    }
+    return null;
   }
 
-  DateTime? getDate(Doc doc, [DateTime? fallback]) {
+  DateTime? getDate(Doc doc) {
     final value = getValue(doc);
     if (value is DateTime) return value;
     if (value != null) {
       final date = DateTime.tryParse(value.toString());
       if (date != null) return date;
     }
-    return fallback;
+    if (defaultValue is DateTime) {
+      return defaultValue as DateTime;
+    }
+    return null;
   }
 }

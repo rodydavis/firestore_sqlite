@@ -21,12 +21,11 @@ Field _$FieldFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Field {
   String get name => throw _privateConstructorUsedError;
-  String get type => throw _privateConstructorUsedError;
+  FieldType get type => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   bool? get required => throw _privateConstructorUsedError;
+  Object? get defaultValue => throw _privateConstructorUsedError;
   List<String>? get previous => throw _privateConstructorUsedError;
-  String? get collection => throw _privateConstructorUsedError;
-  List<String>? get values => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -40,12 +39,13 @@ abstract class $FieldCopyWith<$Res> {
   @useResult
   $Res call(
       {String name,
-      String type,
+      FieldType type,
       String? description,
       bool? required,
-      List<String>? previous,
-      String? collection,
-      List<String>? values});
+      Object? defaultValue,
+      List<String>? previous});
+
+  $FieldTypeCopyWith<$Res> get type;
 }
 
 /// @nodoc
@@ -65,9 +65,8 @@ class _$FieldCopyWithImpl<$Res, $Val extends Field>
     Object? type = null,
     Object? description = freezed,
     Object? required = freezed,
+    Object? defaultValue = freezed,
     Object? previous = freezed,
-    Object? collection = freezed,
-    Object? values = freezed,
   }) {
     return _then(_value.copyWith(
       name: null == name
@@ -77,7 +76,7 @@ class _$FieldCopyWithImpl<$Res, $Val extends Field>
       type: null == type
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
-              as String,
+              as FieldType,
       description: freezed == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
@@ -86,19 +85,21 @@ class _$FieldCopyWithImpl<$Res, $Val extends Field>
           ? _value.required
           : required // ignore: cast_nullable_to_non_nullable
               as bool?,
+      defaultValue:
+          freezed == defaultValue ? _value.defaultValue : defaultValue,
       previous: freezed == previous
           ? _value.previous
           : previous // ignore: cast_nullable_to_non_nullable
               as List<String>?,
-      collection: freezed == collection
-          ? _value.collection
-          : collection // ignore: cast_nullable_to_non_nullable
-              as String?,
-      values: freezed == values
-          ? _value.values
-          : values // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $FieldTypeCopyWith<$Res> get type {
+    return $FieldTypeCopyWith<$Res>(_value.type, (value) {
+      return _then(_value.copyWith(type: value) as $Val);
+    });
   }
 }
 
@@ -110,12 +111,14 @@ abstract class _$$_FieldCopyWith<$Res> implements $FieldCopyWith<$Res> {
   @useResult
   $Res call(
       {String name,
-      String type,
+      FieldType type,
       String? description,
       bool? required,
-      List<String>? previous,
-      String? collection,
-      List<String>? values});
+      Object? defaultValue,
+      List<String>? previous});
+
+  @override
+  $FieldTypeCopyWith<$Res> get type;
 }
 
 /// @nodoc
@@ -131,9 +134,8 @@ class __$$_FieldCopyWithImpl<$Res> extends _$FieldCopyWithImpl<$Res, _$_Field>
     Object? type = null,
     Object? description = freezed,
     Object? required = freezed,
+    Object? defaultValue = freezed,
     Object? previous = freezed,
-    Object? collection = freezed,
-    Object? values = freezed,
   }) {
     return _then(_$_Field(
       name: null == name
@@ -143,7 +145,7 @@ class __$$_FieldCopyWithImpl<$Res> extends _$FieldCopyWithImpl<$Res, _$_Field>
       type: null == type
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
-              as String,
+              as FieldType,
       description: freezed == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
@@ -152,17 +154,11 @@ class __$$_FieldCopyWithImpl<$Res> extends _$FieldCopyWithImpl<$Res, _$_Field>
           ? _value.required
           : required // ignore: cast_nullable_to_non_nullable
               as bool?,
+      defaultValue:
+          freezed == defaultValue ? _value.defaultValue : defaultValue,
       previous: freezed == previous
           ? _value._previous
           : previous // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
-      collection: freezed == collection
-          ? _value.collection
-          : collection // ignore: cast_nullable_to_non_nullable
-              as String?,
-      values: freezed == values
-          ? _value._values
-          : values // ignore: cast_nullable_to_non_nullable
               as List<String>?,
     ));
   }
@@ -174,13 +170,11 @@ class _$_Field implements _Field {
   const _$_Field(
       {required this.name,
       required this.type,
-      required this.description,
-      required this.required,
-      required final List<String>? previous,
-      required this.collection,
-      required final List<String>? values})
-      : _previous = previous,
-        _values = values;
+      this.description,
+      this.required,
+      this.defaultValue,
+      final List<String>? previous})
+      : _previous = previous;
 
   factory _$_Field.fromJson(Map<String, dynamic> json) =>
       _$$_FieldFromJson(json);
@@ -188,11 +182,13 @@ class _$_Field implements _Field {
   @override
   final String name;
   @override
-  final String type;
+  final FieldType type;
   @override
   final String? description;
   @override
   final bool? required;
+  @override
+  final Object? defaultValue;
   final List<String>? _previous;
   @override
   List<String>? get previous {
@@ -203,19 +199,8 @@ class _$_Field implements _Field {
   }
 
   @override
-  final String? collection;
-  final List<String>? _values;
-  @override
-  List<String>? get values {
-    final value = _values;
-    if (value == null) return null;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
-
-  @override
   String toString() {
-    return 'Field(name: $name, type: $type, description: $description, required: $required, previous: $previous, collection: $collection, values: $values)';
+    return 'Field(name: $name, type: $type, description: $description, required: $required, defaultValue: $defaultValue, previous: $previous)';
   }
 
   @override
@@ -229,10 +214,9 @@ class _$_Field implements _Field {
                 other.description == description) &&
             (identical(other.required, required) ||
                 other.required == required) &&
-            const DeepCollectionEquality().equals(other._previous, _previous) &&
-            (identical(other.collection, collection) ||
-                other.collection == collection) &&
-            const DeepCollectionEquality().equals(other._values, _values));
+            const DeepCollectionEquality()
+                .equals(other.defaultValue, defaultValue) &&
+            const DeepCollectionEquality().equals(other._previous, _previous));
   }
 
   @JsonKey(ignore: true)
@@ -243,9 +227,8 @@ class _$_Field implements _Field {
       type,
       description,
       required,
-      const DeepCollectionEquality().hash(_previous),
-      collection,
-      const DeepCollectionEquality().hash(_values));
+      const DeepCollectionEquality().hash(defaultValue),
+      const DeepCollectionEquality().hash(_previous));
 
   @JsonKey(ignore: true)
   @override
@@ -264,29 +247,26 @@ class _$_Field implements _Field {
 abstract class _Field implements Field {
   const factory _Field(
       {required final String name,
-      required final String type,
-      required final String? description,
-      required final bool? required,
-      required final List<String>? previous,
-      required final String? collection,
-      required final List<String>? values}) = _$_Field;
+      required final FieldType type,
+      final String? description,
+      final bool? required,
+      final Object? defaultValue,
+      final List<String>? previous}) = _$_Field;
 
   factory _Field.fromJson(Map<String, dynamic> json) = _$_Field.fromJson;
 
   @override
   String get name;
   @override
-  String get type;
+  FieldType get type;
   @override
   String? get description;
   @override
   bool? get required;
   @override
+  Object? get defaultValue;
+  @override
   List<String>? get previous;
-  @override
-  String? get collection;
-  @override
-  List<String>? get values;
   @override
   @JsonKey(ignore: true)
   _$$_FieldCopyWith<_$_Field> get copyWith =>
