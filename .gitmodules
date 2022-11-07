@@ -1,0 +1,3 @@
+[submodule "third_party/drift"]
+	path = third_party/drift
+	url = https://github.com/rodydavis/moor

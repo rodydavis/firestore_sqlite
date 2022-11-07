@@ -2,6 +2,8 @@
 
 Taking [Cloud Firestore ODM](https://pub.dev/packages/cloud_firestore_odm) to the next level.
 
+The following is a proposal I will be aiming to build.
+
 ## Admin UI
 
 The Admin UI is a web interface for managing your database in firestore and is deployed as a separate firebase hosting site in the same project.

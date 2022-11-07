@@ -1,0 +1,39 @@
+name: firestore_sqlite
+description: A new Flutter package project.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ">=2.19.0-364.0.dev <3.0.0"
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  drift: # ^2.1.0
+    path: third_party/drift/drift
+  sqlite3_flutter_libs: ^0.5.5
+  http: ^0.13.5
+  path_provider: ^2.0.0
+  path: ^1.8.2
+  sqlite3: ^1.7.0
+  icloud_storage: ^2.1.0
+  cloud_firestore: ^4.0.4
+  recase: ^4.1.0
+  freezed_annotation: ^2.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  build_runner: ^2.2.0
+  json_serializable: ^6.2.0
+  build_version: ^2.1.1
+  freezed: ^2.1.0+1
+  drift_dev: # ^2.1.0
+    path: third_party/drift/drift_dev
+
+flutter:
+
+scripts:
+  build: flutter pub run build_runner build --delete-conflicting-outputs

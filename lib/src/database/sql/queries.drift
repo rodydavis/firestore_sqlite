@@ -1,0 +1,6 @@
+import 'schema.drift';
+
+getAllNodes: 
+    SELECT * FROM nodes;
+getAllEdges: 
+    SELECT * FROM edges;

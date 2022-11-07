@@ -1,0 +1,4 @@
+import 'schema.drift';
+
+insertEdge(:source as TEXT, :target as TEXT, :body as TEXT): 
+    INSERT INTO edges VALUES(:source, :target, json(:body));

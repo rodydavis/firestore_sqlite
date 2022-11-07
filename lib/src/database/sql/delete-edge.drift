@@ -1,0 +1,5 @@
+import 'schema.drift';
+
+deleteEdge:
+    DELETE FROM edges 
+    WHERE source = ? OR target = ?;

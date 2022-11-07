@@ -1,0 +1,5 @@
+import 'schema.drift';
+
+searchEdgesInbound: 
+    SELECT * FROM edges 
+    WHERE source = ?;
