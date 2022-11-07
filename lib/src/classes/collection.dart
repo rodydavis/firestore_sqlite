@@ -30,18 +30,18 @@ extension CollectionUtils on Collection {
   DocumentReference<Json> get schema =>
       db.collection('schema').doc(name.snakeCase);
 
-  Future<List<CollectionBase>> parseDocs(
+  Future<List<Doc>> parseDocs(
     List<QueryDocumentSnapshot<Object?>> docs,
   ) async {
-    final results = <CollectionBase>[];
+    final results = <Doc>[];
     for (final doc in docs) {
-      final item = await CollectionBase.fromSnapshot(this, doc);
+      final item = await Doc.fromSnapshot(this, doc);
       results.add(item);
     }
     return results;
   }
 
-  Future<List<CollectionBase>> getDocuments([
+  Future<List<Doc>> getDocuments([
     GetOptions? options,
   ]) {
     return reference
@@ -50,7 +50,7 @@ extension CollectionUtils on Collection {
         .then((docs) => parseDocs(docs));
   }
 
-  Stream<List<CollectionBase>> watchDocuments({
+  Stream<List<Doc>> watchDocuments({
     bool includeMetadataChanges = false,
   }) {
     return reference
@@ -59,13 +59,13 @@ extension CollectionUtils on Collection {
         .asyncMap((docs) => parseDocs(docs));
   }
 
-  Future<CollectionBase> getDocument(
+  Future<Doc> getDocument(
     String id, [
     GetOptions? options,
   ]) async {
     final reference = this.reference.doc(id);
     final snapshot = await reference.get(options);
-    return CollectionBase.fromSnapshot(this, snapshot);
+    return Doc.fromSnapshot(this, snapshot);
   }
 
   Future<void> save() async {
@@ -73,9 +73,9 @@ extension CollectionUtils on Collection {
     await schema.set(data);
   }
 
-  Future<CollectionBase> add(CollectionBase base) async {
+  Future<Doc> add(Doc base) async {
     final doc = await reference.add(base.toJson());
     final snapshot = await doc.get();
-    return CollectionBase.fromSnapshot(this, snapshot);
+    return Doc.fromSnapshot(this, snapshot);
   }
 }

@@ -7,17 +7,17 @@ import 'package:flutter/foundation.dart';
 import 'collection.dart';
 
 /// Base for all items in a collection
-class CollectionBase extends ChangeNotifier {
-  CollectionBase({
+class Doc extends ChangeNotifier {
+  Doc({
     required this.collection,
     required this.id,
   }) : reference = collection.reference.doc(id);
 
-  static Future<CollectionBase> fromSnapshot(
+  static Future<Doc> fromSnapshot(
     Collection collection,
     DocumentSnapshot<Object?> snapshot,
   ) async {
-    final base = CollectionBase(
+    final base = Doc(
       id: snapshot.id,
       collection: collection,
     );
@@ -25,9 +25,11 @@ class CollectionBase extends ChangeNotifier {
     return base;
   }
 
+  /// Collection the document belongs to
   final Collection collection;
+
+  /// Document id
   final String id;
-  final db = FirebaseFirestore.instance;
 
   /// Firestore collection reference
   final DocumentReference reference;
@@ -46,9 +48,9 @@ class CollectionBase extends ChangeNotifier {
   /// Convert to JSON
   Map<String, Object?> toJson() => {...metadata(), ..._data};
 
-  bool get isDeleted => _value('deleted') == true;
-  DateTime get created => _date('created');
-  DateTime get updated => _date('updated');
+  bool get isDeleted => getBool('deleted') == true;
+  DateTime get created => getDate('created', DateTime.now())!;
+  DateTime get updated => getDate('updated', DateTime.now())!;
 
   Future<void> save() => reference.set(toJson());
 
@@ -97,18 +99,48 @@ class CollectionBase extends ChangeNotifier {
 
   Future<void> delete() => update({'deleted': true});
 
-  Object? _value(String key) {
+  Object? getValue(String key, [Object? fallback]) {
     if (_data[key] != null) return _data[key];
-    return null;
+    return fallback;
   }
 
-  DateTime _date(String key) {
-    final value = _value(key);
+  String? getString(String key, [String? fallback]) {
+    final value = getValue(key);
+    if (value is String) return value;
+    return fallback;
+  }
+
+  int? getInt(String key, [int? fallback]) {
+    final value = getValue(key);
+    if (value is int) return value;
+    return fallback;
+  }
+
+  double? getDouble(String key, [double? fallback]) {
+    final value = getValue(key);
+    if (value is double) return value;
+    return fallback;
+  }
+
+  num? getNum(String key, [num? fallback]) {
+    final value = getValue(key);
+    if (value is num) return value;
+    return fallback;
+  }
+
+  bool? getBool(String key, [bool? fallback]) {
+    final value = getValue(key);
+    if (value is bool) return value;
+    return fallback;
+  }
+
+  DateTime? getDate(String key, [DateTime? fallback]) {
+    final value = getValue(key);
     if (value is DateTime) return value;
     if (value != null) {
       final date = DateTime.tryParse(value.toString());
       if (date != null) return date;
     }
-    return DateTime.now();
+    return fallback;
   }
 }
