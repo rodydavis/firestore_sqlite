@@ -37,26 +37,24 @@ class Doc extends ChangeNotifier {
   Map<String, Object?> _data = {};
   StreamSubscription<DocumentSnapshot<Object?>>? _subscription;
 
-  Map<String, Object?> metadata() {
-    return {
-      "id": reference.id,
-      "created": DateTime.now().toIso8601String(),
-      "updated": DateTime.now().toIso8601String(),
-    };
-  }
-
-  /// Convert to JSON
-  Map<String, Object?> toJson() => {...metadata(), ..._data};
+  Map<String, Object?> metadata() => {
+        "id": reference.id,
+        "created": DateTime.now().toIso8601String(),
+        "updated": DateTime.now().toIso8601String(),
+      };
 
   bool get isDeleted => getBool('deleted') == true;
   DateTime get created => getDate('created', DateTime.now())!;
   DateTime get updated => getDate('updated', DateTime.now())!;
 
+  Map<String, Object?> toJson() => {...metadata(), ..._data};
+
   Future<void> save() => reference.set(toJson());
 
   Future<void> update(Map<String, dynamic> data, [SetOptions? options]) async {
     final newData = {...metadata()};
-    if (options?.merge == true) {
+    final merge = options?.merge ?? false;
+    if (merge) {
       newData.addAll(_data);
       newData.addAll(data);
     } else {
@@ -98,6 +96,8 @@ class Doc extends ChangeNotifier {
   }
 
   Future<void> delete() => update({'deleted': true});
+
+  Future<void> setValue(String key, Object? value) => update({key: value});
 
   Object? getValue(String key, [Object? fallback]) {
     if (_data[key] != null) return _data[key];

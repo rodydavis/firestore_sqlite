@@ -26,7 +26,9 @@ class Collection with _$Collection {
 
 extension CollectionUtils on Collection {
   static final db = FirebaseFirestore.instance;
+
   CollectionReference<Json> get reference => db.collection(name);
+
   DocumentReference<Json> get schema =>
       db.collection('schema').doc(name.snakeCase);
 
