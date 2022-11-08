@@ -112,8 +112,8 @@ class FirestoreClient extends ChangeNotifier {
   Future<List<Doc>> getDocs(Collection collection) async {
     await collection.checkForUpdate();
     // TODO: Load from firestore
-    final docs = await database.getDocuments(collection.name);
-    return docs
+    final nodes = await database.getDocuments(collection.name);
+    return nodes
         .map((e) => Doc.fromJson(collection, jsonDecode(e.body!)))
         .toList();
   }
