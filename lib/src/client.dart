@@ -72,6 +72,7 @@ class FirestoreClient extends ChangeNotifier {
   }
 
   Future<Doc?> getDoc(Collection collection, String id) async {
+    await collection.checkForUpdate();
     final doc = Doc(collection: collection, id: id);
     final snapshot = await doc.reload();
     if (snapshot.exists) {
@@ -88,6 +89,7 @@ class FirestoreClient extends ChangeNotifier {
   }
 
   Stream<Doc?> watchDoc(Collection collection, String id) async* {
+    await collection.checkForUpdate();
     final doc = Doc(collection: collection, id: id);
     final stream = doc.reference.snapshots();
     await for (final event in stream) {
