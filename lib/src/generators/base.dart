@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:mustache_template/mustache_template.dart';
 import 'package:mustache_recase/mustache_recase.dart' as mustache_recase;
 

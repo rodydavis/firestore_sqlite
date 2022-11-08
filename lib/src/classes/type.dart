@@ -22,3 +22,66 @@ class FieldType with _$FieldType {
 
   factory FieldType.fromJson(Json json) => _$FieldTypeFromJson(json);
 }
+
+extension FieldTypeUtils on FieldType {
+  String get typeInfo => when(
+        string: (_) => 'string',
+        int: () => 'int',
+        num: () => 'num',
+        double: () => 'double',
+        bool: () => 'bool',
+        map: () => 'map',
+        array: () => 'array',
+        blob: (_) => 'blob',
+        option: (_) => 'option',
+        date: () => 'date',
+        document: (_) => 'document',
+        dynamic: () => 'dynamic',
+      );
+}
+
+final List<String> fieldTypes = [
+  'string',
+  'int',
+  'num',
+  'double',
+  'bool',
+  'map',
+  'array',
+  'blob',
+  'option',
+  'date',
+  'document',
+  'dynamic',
+];
+
+FieldType parseFieldType(String type) {
+  switch (type) {
+    case 'string':
+      return const FieldType.string();
+    case 'int':
+      return const FieldType.int();
+    case 'num':
+      return const FieldType.num();
+    case 'double':
+      return const FieldType.double();
+    case 'bool':
+      return const FieldType.bool();
+    case 'map':
+      return const FieldType.map();
+    case 'array':
+      return const FieldType.array();
+    case 'blob':
+      return const FieldType.blob('');
+    case 'option':
+      return const FieldType.option([]);
+    case 'date':
+      return const FieldType.date();
+    case 'document':
+      return const FieldType.document('');
+    case 'dynamic':
+      return const FieldType.dynamic();
+    default:
+      throw Exception('Unknown field type: $type');
+  }
+}

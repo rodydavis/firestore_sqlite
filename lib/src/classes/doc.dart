@@ -2,16 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 
+import 'extensions.dart';
 import 'collection.dart';
-import 'field.dart';
 
 typedef Snapshot = DocumentSnapshot<Object?>;
 
 /// Base for all items in a collection
-class Doc extends ChangeNotifier {
+class Doc {
   Doc({required this.id, required this.collection});
+
+  notifyListeners() {}
 
   static Future<Doc> fromSnapshot(
     Collection collection,

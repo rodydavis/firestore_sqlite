@@ -1,20 +1,23 @@
-import 'package:firestore_sqlite/firestore_sqlite.dart';
 import 'package:mustache_template/mustache_template.dart';
 
+import '../classes/collection.dart';
+import '../classes/field.dart';
 import 'base.dart';
+import 'json.dart';
 import 'utils/format.dart';
 
 const _template = r'''import 'package:firestore_sqlite/firestore_sqlite.dart';
 
+/// {{description}}
 final {{#camel_case}}{{name}}{{/camel_case}}Collection = Collection.fromJson(const {
   "name": "{{name}}",
   "created": "{{created}}",
   "updated": "{{updated}}",
   "description": "{{description}}",
   "fields": [
-    {{#fields}}
+    {{#all_fields}}
     {{#json_field}}{{name}}{{/json_field}},
-    {{/fields}}
+    {{/all_fields}}
   ],
 });
 
@@ -34,8 +37,8 @@ class {{#pascal_case}}{{name}}{{/pascal_case}} extends Doc {
 
   {{#fields}}
   /// {{description}}
-  {{#dart_type}}{{type.runtimeType}}{{/dart_type}}? get {{name}} => this['{{name}}'] as {{#dart_type}}{{type.runtimeType}}{{/dart_type}}?;
-  set {{name}}({{#dart_type}}{{type.runtimeType}}{{/dart_type}}? value) => this['{{name}}'] = value;
+  {{#dart_type}}{{type.runtimeType}}{{/dart_type}}? get {{#camel_case}}{{name}}{{/camel_case}} => this['{{name}}'] as {{#dart_type}}{{type.runtimeType}}{{/dart_type}}?;
+  set {{#camel_case}}{{name}}{{/camel_case}}({{#dart_type}}{{type.runtimeType}}{{/dart_type}}? value) => this['{{name}}'] = value;
   {{/fields}}
 }
 ''';
@@ -47,7 +50,14 @@ class CollectionGenerator extends GeneratorBase {
 
   @override
   Map<String, Object?> get args {
-    final variables = copyJson(collection) as Map<String, Object?>;
+    final allFields = collection.fields.toList();
+    final fields = collection.fields
+        .where((f) =>
+            !CollectionX.defaultFields.map((e) => e.name).contains(f.name))
+        .toList();
+    final col = collection.copyWith(fields: fields);
+    final variables = copyJson(col) as Map<String, Object?>;
+    variables['all_fields'] = copyJson(allFields);
     variables["json_field"] = (LambdaContext ctx) {
       final key = ctx.renderString();
       final fields = collection.allFields;
@@ -72,6 +82,8 @@ String convertType(String value) {
     case 'date':
       return 'DateTime';
     case 'string':
+    case 'document':
+    case 'blob':
       return 'String';
     case 'int':
       return 'int';

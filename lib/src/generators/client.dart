@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:firestore_sqlite/firestore_sqlite.dart';
-
+import '../classes/collection.dart';
 import 'base.dart';
+import 'collection.dart';
 import 'utils/format.dart';
 
 const _template = r'''import 'package:firestore_sqlite/firestore_sqlite.dart';
@@ -13,6 +13,7 @@ import "collections/{{name}}.dart";
 
 class Client extends FirestoreClient {
    {{#collections}}
+   // {{name}} - {{description}}
    Collection get {{#camel_case}}{{name}}{{/camel_case}} => {{#camel_case}}{{name}}{{/camel_case}}Collection;
    Future<List<Doc>> get{{#pascal_case}}{{name}}{{/pascal_case}}s() => getDocs({{#camel_case}}{{name}}{{/camel_case}});
    Stream<List<Doc>> watch{{#pascal_case}}{{name}}{{/pascal_case}}s() => watchDocs({{#camel_case}}{{name}}{{/camel_case}});

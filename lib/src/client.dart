@@ -2,9 +2,8 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firestore_sqlite/firestore_sqlite.dart';
-import 'package:flutter/foundation.dart';
 
-class FirestoreClient extends ChangeNotifier {
+class FirestoreClient {
   final database = Database();
   final firestore = FirebaseFirestore.instance;
   late final schemas = firestore.collection('schema');
