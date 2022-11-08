@@ -74,8 +74,9 @@ class FirestoreClient extends ChangeNotifier {
   Future<Doc?> getDoc(Collection collection, String id) async {
     await collection.checkForUpdate();
     final doc = Doc(collection: collection, id: id);
-    final snapshot = await doc.reload();
+    final snapshot = await doc.reference.get();
     if (snapshot.exists) {
+      await doc.loadSnapshot(snapshot);
       final local = await database.getDocument(collection.name, id);
       if (local == null) {
         await _add(doc);
@@ -94,8 +95,14 @@ class FirestoreClient extends ChangeNotifier {
     final stream = doc.reference.snapshots();
     await for (final event in stream) {
       if (event.exists) {
-        final data = {...event.data() ?? {}, 'id': event.id};
-        yield Doc.fromJson(collection, data);
+        await doc.loadSnapshot(event);
+        final local = await database.getDocument(collection.name, id);
+        if (local == null) {
+          await _add(doc);
+        } else {
+          await _update(doc);
+        }
+        yield doc;
       } else {
         yield null;
       }
@@ -104,6 +111,7 @@ class FirestoreClient extends ChangeNotifier {
 
   Future<List<Doc>> getDocs(Collection collection) async {
     await collection.checkForUpdate();
+    // TODO: Load from firestore
     final docs = await database.getDocuments(collection.name);
     return docs
         .map((e) => Doc.fromJson(collection, jsonDecode(e.body!)))
@@ -112,6 +120,7 @@ class FirestoreClient extends ChangeNotifier {
 
   Stream<List<Doc>> watchDocs(Collection collection) async* {
     await collection.checkForUpdate();
+    // TODO: Load from firestore
     final stream = database.watchDocuments(collection.name);
     await for (final event in stream) {
       final results = event
