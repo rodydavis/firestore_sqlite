@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:firestore_sqlite/firestore_sqlite.dart';
@@ -71,5 +73,29 @@ void main() {
     final result = generator.render();
 
     expect(result.trim(), _classTest.trim());
+  });
+
+  test('client generator', () {
+    final collection = Collection(
+      name: 'test',
+      created: DateTime(1970),
+      updated: DateTime(1970),
+      description: 'Test class generation',
+      fields: const [
+        Field(
+          name: 'name',
+          type: StringField(),
+          description: 'Display name',
+        ),
+      ],
+    );
+    final client = ClientGenerator(
+      collections: [collection],
+      output: Directory('./generated'),
+    );
+
+    client.render();
+
+    expect(client.collections.length, 1);
   });
 }

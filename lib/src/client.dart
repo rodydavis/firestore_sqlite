@@ -6,17 +6,8 @@ import 'package:flutter/foundation.dart';
 
 class FirestoreClient extends ChangeNotifier {
   final database = Database();
-  final collections = <Collection>[];
   final firestore = FirebaseFirestore.instance;
   late final schemas = firestore.collection('schema');
-
-  Future<void> checkForUpdates() async {
-    for (var i = 0; i < collections.length; i++) {
-      final collection = collections[i];
-      collections[i] = await collection.checkForUpdate();
-    }
-    notifyListeners();
-  }
 
   Future<void> _add(Doc doc) async {
     final source = doc.reference.id;
@@ -110,6 +101,7 @@ class FirestoreClient extends ChangeNotifier {
   }
 
   Future<List<Doc>> getDocs(Collection collection) async {
+    await collection.checkForUpdate();
     final docs = await database.getDocuments(collection.name);
     return docs
         .map((e) => Doc.fromJson(collection, jsonDecode(e.body!)))
@@ -117,8 +109,8 @@ class FirestoreClient extends ChangeNotifier {
   }
 
   Stream<List<Doc>> watchDocs(Collection collection) async* {
+    await collection.checkForUpdate();
     final stream = database.watchDocuments(collection.name);
-
     await for (final event in stream) {
       final results = event
           .map((e) => Doc.fromJson(collection, jsonDecode(e.body!)))

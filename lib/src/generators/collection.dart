@@ -1,29 +1,27 @@
-import 'dart:convert';
-
-import 'package:dart_style/dart_style.dart';
 import 'package:firestore_sqlite/firestore_sqlite.dart';
 import 'package:mustache_template/mustache_template.dart';
 
 import 'base.dart';
+import 'utils/format.dart';
 
 const _template = r'''import 'package:firestore_sqlite/firestore_sqlite.dart';
+
+final {{#camel_case}}{{name}}{{/camel_case}}Collection = Collection.fromJson(const {
+  "name": "{{name}}",
+  "created": "{{created}}",
+  "updated": "{{updated}}",
+  "description": "{{description}}",
+  "fields": [
+    {{#fields}}
+    {{#json_field}}{{name}}{{/json_field}},
+    {{/fields}}
+  ],
+});
 
 /// {{description}}
 class {{#pascal_case}}{{name}}{{/pascal_case}} extends Doc {
   {{#pascal_case}}{{name}}{{/pascal_case}}({required super.id})
-    : super(
-        collection: Collection.fromJson(const {
-          "name": "{{name}}",
-          "created": "{{created}}",
-          "updated": "{{updated}}",
-          "description": "{{description}}",
-          "fields": [
-            {{#fields}}
-            {{#json_field}}{{name}}{{/json_field}},
-            {{/fields}}
-          ],
-        }),
-      );
+    : super(collection: {{#camel_case}}{{name}}{{/camel_case}}Collection);
 
   @override
   DateTime get created => this['created'] as DateTime;
@@ -65,8 +63,7 @@ class CollectionGenerator extends GeneratorBase {
   @override
   String render() {
     final result = super.render();
-    final formatter = DartFormatter();
-    return formatter.format(result);
+    return formatDart(result);
   }
 }
 
