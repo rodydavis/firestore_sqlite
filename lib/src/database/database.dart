@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:drift/drift.dart';
+import 'package:drift/extensions/json1.dart';
 import 'package:flutter/foundation.dart';
 
 import 'connection/connection.dart' as impl;
@@ -30,8 +31,8 @@ part 'database.g.dart';
   'sql/traverse.drift',
   'sql/update-node.drift',
 })
-class FirestoreSqlite extends _$FirestoreSqlite {
-  FirestoreSqlite({
+class Database extends _$Database {
+  Database({
     String dbName = 'graph_db.db',
     DatabaseConnection? connection,
     bool useWebWorker = false,
@@ -112,4 +113,20 @@ class FirestoreSqlite extends _$FirestoreSqlite {
       }
     });
   }
+
+  Future<List<Node>> getDocuments(String collection) =>
+      (select(nodes)..where((t) => t.body.jsonExtract(collection))).get();
+
+  Stream<List<Node>> watchDocuments(String collection) =>
+      (select(nodes)..where((t) => t.body.jsonExtract(collection))).watch();
+
+  Future<Node?> getDocument(String collection, String id) => (select(nodes)
+        ..where((t) => t.body.jsonExtract(collection))
+        ..where((t) => t.id.equals(id)))
+      .getSingleOrNull();
+
+  Stream<Node?> watchDocument(String collection, String id) => (select(nodes)
+        ..where((t) => t.body.jsonExtract(collection))
+        ..where((t) => t.id.equals(id)))
+      .watchSingleOrNull();
 }

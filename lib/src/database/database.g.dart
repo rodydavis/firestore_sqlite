@@ -537,9 +537,9 @@ class Edges extends Table with TableInfo<Edges, Edge> {
   bool get dontWriteConstraints => true;
 }
 
-abstract class _$FirestoreSqlite extends GeneratedDatabase {
-  _$FirestoreSqlite(QueryExecutor e) : super(e);
-  _$FirestoreSqlite.connect(DatabaseConnection c) : super.connect(c);
+abstract class _$Database extends GeneratedDatabase {
+  _$Database(QueryExecutor e) : super(e);
+  _$Database.connect(DatabaseConnection c) : super.connect(c);
   late final Nodes nodes = Nodes(this);
   late final NodeEntries nodeEntries = NodeEntries(this);
   late final Trigger nodesInsert = Trigger(

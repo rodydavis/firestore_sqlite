@@ -25,6 +25,18 @@ class Doc extends ChangeNotifier {
     return base;
   }
 
+  factory Doc.fromJson(
+    Collection collection,
+    Json data,
+  ) {
+    final base = Doc(
+      id: data['id'],
+      collection: collection,
+    );
+    base.setJson(data);
+    return base;
+  }
+
   StreamSubscription<Snapshot>? _subscription;
   Json _data = {};
   WriteBatch? _batch;
@@ -96,6 +108,8 @@ class Doc extends ChangeNotifier {
       final value = field.getValue(this);
       meta[field.name] = value;
     }
+    meta['collection'] = collection.name;
+    meta['id'] = reference.id;
     return meta;
   }
 
@@ -141,9 +155,10 @@ class Doc extends ChangeNotifier {
     _subscription?.cancel();
   }
 
-  Future<void> reload([GetOptions? options]) async {
+  Future<DocumentSnapshot<Json>> reload([GetOptions? options]) async {
     final snapshot = await reference.get(options);
     await loadSnapshot(snapshot);
+    return snapshot;
   }
 
   // TODO: Setup deletion trigger on cron with deleted == true and updated > TTL
