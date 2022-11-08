@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'collections.dart';
+import 'collection/list.dart';
 
 class AdminConsole extends StatefulWidget {
   const AdminConsole({super.key});

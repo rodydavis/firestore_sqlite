@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firestore_sqlite/firestore_sqlite.dart';
 import 'package:flutter/material.dart';
 
+import 'edit.dart';
+
 class CollectionsEditor extends StatelessWidget {
   const CollectionsEditor({
     super.key,
@@ -51,15 +53,33 @@ class CollectionsEditor extends StatelessWidget {
                 subtitle: collection.description != null
                     ? Text(collection.description!)
                     : null,
+                onTap: () => modifyCollection(context, collection),
               );
             },
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => modifyCollection(context),
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  Future<void> modifyCollection(
+    BuildContext context, [
+    Collection? collection,
+  ]) async {
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final value = await navigator.push(MaterialPageRoute(
+      builder: (context) => const EditCollection(),
+      fullscreenDialog: true,
+    ));
+    if (value != null && value is Collection) {
+      messenger.showSnackBar(const SnackBar(
+        content: Text('Collection saved!'),
+      ));
+    }
   }
 }
