@@ -61,6 +61,12 @@ extension CollectionUtils on Collection {
 
   DocumentReference<Json> get schema => db.collection('schema').doc(name);
 
+  Future<Collection> checkForUpdate() async {
+    final snapshot = await schema.get();
+    final data = {...snapshot.data() ?? {}, 'id': snapshot.id};
+    return Collection.fromJson(data);
+  }
+
   Future<List<Doc>> parseDocs(Snapshots docs) async {
     final results = <Doc>[];
     for (final doc in docs) {

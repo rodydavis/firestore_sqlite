@@ -6,28 +6,21 @@ import 'package:flutter/foundation.dart';
 
 class FirestoreClient extends ChangeNotifier {
   final database = Database();
-  final collections = ValueNotifier<List<Collection>>([]);
+  final collections = <Collection>[];
   final firestore = FirebaseFirestore.instance;
   late final schemas = firestore.collection('schema');
 
-  Future<void> checkForUpdates({
-    Future<String> Function()? loadFromAssets,
-  }) async {
-    final snapshot = await schemas.get();
-    final results = <Collection>[];
-    for (final doc in snapshot.docs) {
-      final data = {...doc.data(), "id": doc.id};
-      results.add(Collection.fromJson(data));
+  Future<void> checkForUpdates() async {
+    for (var i = 0; i < collections.length; i++) {
+      final collection = collections[i];
+      collections[i] = await collection.checkForUpdate();
     }
-    if (results.isEmpty && loadFromAssets != null) {
-      final assetString = await loadFromAssets();
-      final jsonItems = jsonDecode(assetString) as List<dynamic>;
-      for (final data in jsonItems) {
-        results.add(Collection.fromJson(data));
-      }
-    }
-    collections.value = results;
+    notifyListeners();
   }
+
+  // void subscribe() {
+  //   schemas.snapshots()
+  // }
 
   Future<void> _add(Doc doc) async {
     final source = doc.reference.id;
