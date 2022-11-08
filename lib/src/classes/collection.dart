@@ -24,8 +24,6 @@ class Collection with _$Collection {
   factory Collection.fromJson(Json json) => _$CollectionFromJson(json);
 }
 
-
-
 extension CollectionUtils on Collection {
   static final db = FirebaseFirestore.instance;
 

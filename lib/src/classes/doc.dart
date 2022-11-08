@@ -25,20 +25,24 @@ class Doc extends ChangeNotifier {
     return base;
   }
 
+  StreamSubscription<Snapshot>? _subscription;
+  Json _data = {};
   WriteBatch? _batch;
   bool get hasPendingChanges => _batch != null;
 
   /// Collection the document belongs to
-  final Collection collection;
+  Collection collection;
+
+  void setSchema(Json value) {
+    collection = Collection.fromJson(value);
+    notifyListeners();
+  }
 
   /// Document id
   final String id;
 
   /// Firestore collection reference
   late final reference = collection.reference.doc(id);
-
-  Json _data = {};
-  StreamSubscription<Snapshot>? _subscription;
 
   Object? operator [](String key) {
     for (final field in collection.allFields) {

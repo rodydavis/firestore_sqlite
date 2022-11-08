@@ -50,9 +50,6 @@ class CollectionGenerator extends GeneratorBase {
   @override
   Map<String, Object?> get args {
     final variables = copyJson(collection) as Map<String, Object?>;
-    variables["dart_type"] = (LambdaContext ctx) {
-      return convertType(ctx.renderString());
-    };
     variables["json_field"] = (LambdaContext ctx) {
       final key = ctx.renderString();
       final fields = collection.allFields;
