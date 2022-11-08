@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:recase/recase.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'doc.dart';
@@ -24,6 +23,8 @@ class Collection with _$Collection {
 
   factory Collection.fromJson(Json json) => _$CollectionFromJson(json);
 }
+
+
 
 extension CollectionUtils on Collection {
   static final db = FirebaseFirestore.instance;
@@ -60,8 +61,7 @@ extension CollectionUtils on Collection {
 
   CollectionReference<Json> get reference => db.collection(name);
 
-  DocumentReference<Json> get schema =>
-      db.collection('schema').doc(name.snakeCase);
+  DocumentReference<Json> get schema => db.collection('schema').doc(name);
 
   Future<List<Doc>> parseDocs(Snapshots docs) async {
     final results = <Doc>[];

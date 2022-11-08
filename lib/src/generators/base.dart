@@ -1,12 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:mustache_template/mustache_template.dart';
+import 'package:mustache_recase/mustache_recase.dart' as mustache_recase;
 
 abstract class GeneratorBase {
   String get template;
 
-  String render([Map<String, Object?> args = const {}]) {
+  Map<String, Object?> get args;
+
+  String render() {
     final template = Template(this.template, htmlEscapeValues: false);
-    final result = template.renderString(args);
+    final variables = {...args};
+    variables.addAll(mustache_recase.cases);
+    final result = template.renderString(variables);
     debugPrint('GeneratorBase render: $result');
     return result;
   }

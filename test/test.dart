@@ -1,11 +1,4 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:firestore_sqlite/firestore_sqlite.dart';
-
-const _classTest = r'''import 'package:firestore_sqlite/firestore_sqlite.dart';
 
 /// Test class generation
 class Test extends Doc {
@@ -40,39 +33,4 @@ class Test extends Doc {
 
   /// Display name
   String? get name => this['name'] as String?;
-}
-
-''';
-
-void main() {
-  test('json generator', () {
-    final args = {'key': 'value'};
-
-    final generator = JsonGenerator(args: args);
-    final result = generator.render();
-
-    expect(result, '{"key":"value"}');
-  });
-
-  test('collection generator', () {
-    final collection = Collection(
-      name: 'test',
-      created: DateTime(1970),
-      updated: DateTime(1970),
-      description: 'Test class generation',
-      fields: const [
-        Field(
-          name: 'name',
-          type: StringField(),
-          description: 'Display name',
-        ),
-      ],
-    );
-
-    final generator = CollectionGenerator(collection);
-    final result = generator.render();
-    File('./test/test.dart').writeAsStringSync(result);
-
-    expect(result.trim(), _classTest.trim());
-  });
 }

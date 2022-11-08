@@ -22,6 +22,8 @@ class Field with _$Field {
 }
 
 extension FieldUtils on Field {
+  List<String> get keys => [name, ...previous ?? []];
+  
   Object? getValue(Doc doc) {
     final data = doc.toJson();
     if (data.containsKey(name)) {
