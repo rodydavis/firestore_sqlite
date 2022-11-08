@@ -54,19 +54,8 @@ class FirestoreClient extends ChangeNotifier {
     }
   }
 
-  Future<void> addDoc(Doc doc) async {
-    await doc.collection.add(doc);
-    return _add(doc);
-  }
-
-  Future<void> updateDoc(Doc doc) async {
-    await doc.collection.set(doc);
-    return _update(doc);
-  }
-
-  Future<void> deleteDoc(Doc doc) async {
+  Future<void> _delete(Doc doc) async {
     final source = doc.id;
-    await doc.delete();
     // Delete nodes
     await database.deleteNode(source);
     // Delete edges
@@ -78,6 +67,21 @@ class FirestoreClient extends ChangeNotifier {
         await database.deleteEdge(source, target);
       }
     }
+  }
+
+  Future<void> addDoc(Doc doc) async {
+    await doc.collection.add(doc);
+    return _add(doc);
+  }
+
+  Future<void> updateDoc(Doc doc) async {
+    await doc.collection.set(doc);
+    return _update(doc);
+  }
+
+  Future<void> deleteDoc(Doc doc) async {
+    await doc.delete();
+    return _delete(doc);
   }
 
   Future<Doc?> getDoc(Collection collection, String id) async {
