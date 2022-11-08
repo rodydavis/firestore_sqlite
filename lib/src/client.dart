@@ -18,10 +18,6 @@ class FirestoreClient extends ChangeNotifier {
     notifyListeners();
   }
 
-  // void subscribe() {
-  //   schemas.snapshots()
-  // }
-
   Future<void> _add(Doc doc) async {
     final source = doc.reference.id;
     final jsonString = jsonEncode(doc.toJson());
