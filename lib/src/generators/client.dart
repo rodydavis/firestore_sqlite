@@ -14,6 +14,10 @@ import "collections/{{name}}.dart";
 class Client extends FirestoreClient {
    {{#collections}}
    Collection get {{#camel_case}}{{name}}{{/camel_case}} => {{#camel_case}}{{name}}{{/camel_case}}Collection;
+   Future<List<Doc>> get{{#pascal_case}}{{name}}{{/pascal_case}}s() => getDocs({{#camel_case}}{{name}}{{/camel_case}});
+   Stream<List<Doc>> watch{{#pascal_case}}{{name}}{{/pascal_case}}s() => watchDocs({{#camel_case}}{{name}}{{/camel_case}});
+   Future<Doc?> get{{#pascal_case}}{{name}}{{/pascal_case}}(String id) => getDoc({{#camel_case}}{{name}}{{/camel_case}}, id);
+   Stream<Doc?> watch{{#pascal_case}}{{name}}{{/pascal_case}}(String id) => watchDoc({{#camel_case}}{{name}}{{/camel_case}}, id);
    {{/collections}}
 }
 
