@@ -16,7 +16,7 @@ The schema is a JSON object that describes the fields in the collection.
 
 The schema is used to generate the UI for the collection and to validate the data on save.
 
-    This schema could also be saved to Firebase remote config for dynamic schema changes.
+> This schema could also be saved to Firebase remote config for dynamic schema changes.
 
 All fields are optional unless marked as required!
 
@@ -74,7 +74,7 @@ There are some auto generated fields created to help with the UI and class gener
 - **@created** (date) - The date the document was created
 - **@updated** (date) - The date the document was last updated
 
-    These fields are not required in the schema but will be added to the document.
+> These fields are not required in the schema but will be added to the document.
 
 After rename `name` field to `display_name` and applying schema change:
 
@@ -106,7 +106,7 @@ The `default` field is used to provide a fallback value when creating a document
 
 When new classes are generated the new field name is used but existing classes in production will still use the old field name and check the field in previous.
 
-    Note that if a field is required it needs a default value for any existing clients using the old version.
+> Note that if a field is required it needs a default value for any existing clients using the old version.
 
 It is probably good to consider everything optional unless when first setting it as required from the beginning.
 
@@ -120,7 +120,7 @@ All the schemas can be exported to a JSON file and imported back in.
 
 Using the schema it is possible to generate helper classes, endpoints and more.
 
-    Data is store in Firebase in a normalized format (no sub collections) since it will work better with queries and SDK generation.
+> Data is stored in Firebase in a normalized format (no sub collections) since it will work better with queries and SDK generation.
 
 ### Validation
 
