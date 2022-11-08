@@ -11,10 +11,8 @@ typedef Snapshot = DocumentSnapshot<Object?>;
 
 /// Base for all items in a collection
 class Doc extends ChangeNotifier {
-  Doc({
-    required this.collection,
-    required this.id,
-  }) : reference = collection.reference.doc(id);
+  Doc({required this.id, required this.collection})
+      : reference = collection.reference.doc(id);
 
   static Future<Doc> fromSnapshot(
     Collection collection,

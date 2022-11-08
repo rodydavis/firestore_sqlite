@@ -7,6 +7,9 @@ import 'connection/connection.dart' as impl;
 
 part 'database.g.dart';
 
+// TODO: Document CRUD queries
+// TODO: Relation triggers
+// TODO: Full text search
 @DriftDatabase(include: {
   'sql/schema.drift',
   'sql/queries.drift',
