@@ -37,7 +37,7 @@ class {{#pascal_case}}{{name}}{{/pascal_case}} extends Doc {
   {{#fields}}
   /// {{description}}
   {{#dart_type}}{{type.runtimeType}}{{/dart_type}}? get {{name}} => this['{{name}}'] as {{#dart_type}}{{type.runtimeType}}{{/dart_type}}?;
-  set created({{#dart_type}}{{type.runtimeType}}{{/dart_type}}? value) => this['{{name}}'] = value;
+  set {{name}}({{#dart_type}}{{type.runtimeType}}{{/dart_type}}? value) => this['{{name}}'] = value;
   {{/fields}}
 }
 ''';

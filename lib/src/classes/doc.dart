@@ -67,10 +67,16 @@ class Doc extends ChangeNotifier {
 
   bool? get deleted => this['deleted'] as bool?;
 
-  void applySchemaChanges() {
+  Future<void> applySchemaChanges() async {
     for (final field in collection.allFields) {
       if (field.previous != null) {
-        // TODO: Update data to match
+        final keys = _data.keys.toList();
+        final idx = field.previous!.indexWhere((e) => keys.contains(e));
+        if (idx != -1) {
+          final key = keys[idx];
+          final value = _data.remove(key);
+          await setValue(field.name, value);
+        }
       }
     }
   }

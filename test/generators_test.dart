@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:firestore_sqlite/firestore_sqlite.dart';
@@ -40,6 +37,7 @@ class Test extends Doc {
 
   /// Display name
   String? get name => this['name'] as String?;
+  set name(String? value) => this['name'] = value;
 }
 
 ''';
@@ -71,7 +69,6 @@ void main() {
 
     final generator = CollectionGenerator(collection);
     final result = generator.render();
-    File('./test/test.dart').writeAsStringSync(result);
 
     expect(result.trim(), _classTest.trim());
   });
