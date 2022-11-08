@@ -66,10 +66,9 @@ class _EditCollectionState extends State<EditCollection> {
                     data['name'] = value?.trim();
                   },
                   validator: (value) {
+                    // Only allow lowercase letters and underscores
                     final regex = RegExp(r'^[a-z_]+$');
-                    if (regex.hasMatch(value)) {
-                      return null;
-                    }
+                    if (regex.hasMatch(value)) return null;
                     return 'Only lowercase letters and underscores allowed';
                   },
                 ),
