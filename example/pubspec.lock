@@ -66,7 +66,7 @@ packages:
     source: hosted
     version: "1.1.1"
   cloud_firestore:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: cloud_firestore
       sha256: "681cd2aa4f05a76eef4cfd959f0c337e95697bd92e6e3e80bc9130957db63a10"
@@ -161,7 +161,7 @@ packages:
     source: hosted
     version: "6.1.4"
   firebase_core:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: firebase_core
       sha256: e7efae5248305dc7dbe4eb968508f3ac7bf48eec0fa294fd7c1eaec534437ffe

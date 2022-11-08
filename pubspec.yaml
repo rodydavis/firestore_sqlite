@@ -41,3 +41,4 @@ flutter:
 
 scripts:
   build: flutter pub run build_runner build --delete-conflicting-outputs
+  dev: firebase emulators:start
