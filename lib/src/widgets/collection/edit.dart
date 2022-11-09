@@ -142,6 +142,10 @@ class _EditCollectionState extends State<EditCollection> {
                                       subtitle: const Text('Default field'),
                                     );
                                   }
+                                  final prev =
+                                      (raw[i]['previous'] as List? ?? [])
+                                          .map((e) => e.toString())
+                                          .toList();
                                   return Column(
                                     children: [
                                       textField(
@@ -170,28 +174,26 @@ class _EditCollectionState extends State<EditCollection> {
                                           return 'Only lowercase letters and underscores/hyphens allowed';
                                         },
                                         onChanged: (value) {
-                                          if (widget.collection != null &&
-                                              field.name != value) {
-                                            // Add keys to previous if not new collection
-                                            final prev = field.previous ?? [];
+                                          if (prev.isEmpty &&
+                                              widget.collection == null) {
+                                            raw[i]['name'] = value?.trim();
+                                          } else {
                                             final oldField =
                                                 widget.collection!.fields[i];
-                                            if (oldField.name != value) {
-                                              prev.add(oldField.name);
-                                            }
-                                            raw[i]['name'] = value?.trim();
-                                            raw[i]['previous'] =
-                                                prev.toSet().toList();
-                                          } else {
+                                            raw[i]['previous'] = {
+                                              ...prev,
+                                              oldField.name
+                                            }.toSet().toList();
                                             raw[i]['name'] = value?.trim();
                                           }
                                         },
                                       ),
-                                      ListTile(
-                                        title: const Text('Previous Names'),
-                                        subtitle: Text(
-                                            field.previous?.join(', ') ?? ''),
-                                      ),
+                                      if (prev.isNotEmpty)
+                                        ListTile(
+                                          title: const Text('Previous Names'),
+                                          subtitle: Text(
+                                              field.previous?.join(', ') ?? ''),
+                                        ),
                                       dropdownField(
                                         label: 'Type',
                                         value: field.type.typeInfo,
@@ -289,6 +291,7 @@ class _EditCollectionState extends State<EditCollection> {
                                     ],
                                   );
                                 } catch (e) {
+                                  debugPrint(e.toString());
                                   return Container();
                                 }
                               },

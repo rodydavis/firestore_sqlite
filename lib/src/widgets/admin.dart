@@ -23,7 +23,6 @@ class _AdminConsoleState extends State<AdminConsole> {
   @override
   Widget build(BuildContext context) {
     // TODO: Validate no collections have same name
-    // TODO: Validate keys are unique across fields
     return Row(
       children: [
         SizedBox(

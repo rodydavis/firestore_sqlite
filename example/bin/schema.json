@@ -1,99 +1,17 @@
 [
     {
-      "name": "albums",
-      "created": "2022-11-08T14:24:33.899",
-      "updated": "2022-11-08T14:24:33.902",
-      "description": "Artwork by an artist",
+      "name": "artist",
+      "created": "2022-11-08T18:41:42.555",
+      "updated": "2022-11-08T18:41:42.559",
+      "description": "",
       "fields": [
         {
-          "name": "artist_id",
-          "type": {
-            "collection": "artists",
-            "runtimeType": "document"
-          },
-          "description": "",
-          "required": null,
-          "defaultValue": null,
-          "previous": null
-        },
-        {
-          "name": "title",
+          "name": "name",
           "type": {
             "maxLength": null,
             "runtimeType": "string"
           },
           "description": "",
-          "required": true,
-          "defaultValue": null,
-          "previous": null
-        },
-        {
-          "name": "artwork",
-          "type": {
-            "maxLength": null,
-            "runtimeType": "string"
-          },
-          "description": "Image url for artwork",
-          "required": null,
-          "defaultValue": null,
-          "previous": null
-        },
-        {
-          "name": "id",
-          "type": {
-            "maxLength": null,
-            "runtimeType": "string"
-          },
-          "description": null,
-          "required": true,
-          "defaultValue": null,
-          "previous": null
-        },
-        {
-          "name": "updated",
-          "type": {
-            "runtimeType": "date"
-          },
-          "description": null,
-          "required": true,
-          "defaultValue": null,
-          "previous": null
-        },
-        {
-          "name": "updated",
-          "type": {
-            "runtimeType": "date"
-          },
-          "description": null,
-          "required": true,
-          "defaultValue": null,
-          "previous": null
-        },
-        {
-          "name": "deleted",
-          "type": {
-            "runtimeType": "bool"
-          },
-          "description": null,
-          "required": null,
-          "defaultValue": null,
-          "previous": null
-        }
-      ]
-    },
-    {
-      "name": "artists",
-      "created": "2022-11-08T13:49:14.404",
-      "updated": "2022-11-08T14:06:06.508",
-      "description": "People that like to make music",
-      "fields": [
-        {
-          "name": "display_name",
-          "type": {
-            "maxLength": null,
-            "runtimeType": "string"
-          },
-          "description": "Name on the internet",
           "required": true,
           "defaultValue": null,
           "previous": null

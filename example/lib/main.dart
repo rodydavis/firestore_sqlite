@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firestore_sqlite/firestore_sqlite.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'firebase.dart';
+import 'generated/client.dart';
+
+final client = Client();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,63 +27,66 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (_) => const MyHomePage(title: 'Flutter Demo Home Page'),
+        '/': (_) => const Example(),
         if (kDebugMode) '/admin': (_) => const AdminConsole(),
       },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+class Example extends StatefulWidget {
+  const Example({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<Example> createState() => _ExampleState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _ExampleState extends State<Example> {
+  final collection = client.artist;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  @override
+  void initState() {
+    super.initState();
+    collection.checkForUpdates();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: const Text('Firestore SQLite'),
         actions: [
           if (kDebugMode)
             IconButton(
-              onPressed: () => Navigator.of(context).pushNamed('/admin'),
-              icon: const Icon(Icons.code),
               tooltip: 'Admin Console',
+              icon: const Icon(Icons.admin_panel_settings),
+              onPressed: () => Navigator.of(context).pushNamed('/admin'),
             ),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      body: StreamBuilder(
+        stream: collection.watch(),
+        builder: (context, snapshot) {
+          if (snapshot.data == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final items = snapshot.data ?? [];
+          if (items.isEmpty) {
+            return const Center(child: Text('No items found'));
+          }
+          return ListView.builder(
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              final item = items[index];
+              final artist = Artist(id: item.id);
+              artist.setJson(item.data());
+              return ListTile(
+                title: Text(artist.name ?? 'N/A'),
+                subtitle: Text(item.id),
+              );
+            },
+          );
+        },
       ),
     );
   }

@@ -11,10 +11,14 @@ const _template = r'''import 'package:firestore_sqlite/firestore_sqlite.dart';
 import "collections/{{name}}.dart";
 {{/collections}}
 
+{{#collections}}
+export "collections/{{name}}.dart";
+{{/collections}}
+
 class Client extends FirestoreClient {
    {{#collections}}
    /// {{description}}
-   final {{#camel_case}}{{name}}{{/camel_case}} = FirestoreClientCollection({{#camel_case}}{{name}}{{/camel_case}}Collection);
+   late final {{#camel_case}}{{name}}{{/camel_case}} = FirestoreClientCollection(this, {{#camel_case}}{{name}}{{/camel_case}}Collection);
    {{/collections}}
 }
 
