@@ -16,8 +16,7 @@ extension CollectionUtils on Collection {
 
   Future<Collection> checkForUpdate() async {
     final snapshot = await schema.get();
-    final data = {...snapshot.data() ?? {}, 'id': snapshot.id};
-    return Collection.fromJson(data);
+    return Collection.fromJson(snapshot.toJson());
   }
 
   Future<List<Doc>> parseDocs(Snapshots docs) async {
@@ -67,7 +66,7 @@ extension CollectionUtils on Collection {
 
 extension FieldUtils on Field {
   Object? getValue(Doc doc) {
-    final data = doc.toJson();
+    final data = doc.data();
     if (data.containsKey(name)) {
       return data[name];
     }
@@ -136,4 +135,8 @@ extension FieldUtils on Field {
     }
     return null;
   }
+}
+
+extension SnapshotUtils on DocumentSnapshot<Json?> {
+  Json toJson() => {...data() ?? {}, 'id': id};
 }

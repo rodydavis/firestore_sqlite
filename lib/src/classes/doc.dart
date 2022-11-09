@@ -12,18 +12,9 @@ typedef Snapshot = DocumentSnapshot<Object?>;
 class Doc {
   Doc({required this.id, required this.collection});
 
-  notifyListeners() {}
-
-  static Future<Doc> fromSnapshot(
-    Collection collection,
-    DocumentSnapshot<Object?> snapshot,
-  ) async {
-    final base = Doc(
-      id: snapshot.id,
-      collection: collection,
-    );
-    await base.loadSnapshot(snapshot);
-    return base;
+  factory Doc.modify(Collection collection, String? id) {
+    final docId = id ?? collection.reference.id;
+    return Doc(id: docId, collection: collection);
   }
 
   factory Doc.fromJson(
@@ -37,6 +28,26 @@ class Doc {
     base.setJson(data);
     return base;
   }
+
+  factory Doc.fromDocumentSnapshot(
+    Collection collection,
+    DocumentSnapshot<Json?> snapshot,
+  ) =>
+      Doc.fromJson(collection, {...snapshot.data() ?? {}, 'id': snapshot.id});
+
+  static Future<Doc> fromSnapshot(
+    Collection collection,
+    DocumentSnapshot<Object?> snapshot,
+  ) async {
+    final base = Doc(
+      id: snapshot.id,
+      collection: collection,
+    );
+    await base.loadSnapshot(snapshot);
+    return base;
+  }
+
+  notifyListeners() {}
 
   StreamSubscription<Snapshot>? _subscription;
   Json _data = {};
@@ -114,9 +125,14 @@ class Doc {
     return meta;
   }
 
+  Json data() => _data;
+  Object? get(String key) => data()[key];
+  void set(String key, Object? value) => _data[key] = value;
+
   Future<void> save() async {
     if (_batch != null) {
       await _batch!.commit();
+      endBatch();
     } else {
       await reference.set(toJson());
     }
@@ -165,8 +181,12 @@ class Doc {
   // TODO: Setup deletion trigger on cron with deleted == true and updated > TTL
   Future<void> delete() => update({'deleted': true});
 
-  void batch() {
+  void startBatch() {
     _batch = FirebaseFirestore.instance.batch();
+  }
+
+  void endBatch() {
+    _batch = null;
   }
 
   Future<void> setValue(String key, Object? value) => update({key: value});

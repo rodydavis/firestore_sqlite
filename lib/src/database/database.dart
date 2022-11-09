@@ -114,6 +114,31 @@ class Database extends _$Database {
     });
   }
 
+  Future<void> insertAllNodes(List<Map<String, dynamic>> nodes) {
+    return transaction(() async {
+      for (final node in nodes) {
+        final id = node['id'] as String?;
+        if (id != null) {
+          final body = jsonEncode(node);
+          await insertNode(body);
+        }
+      }
+    });
+  }
+
+  Future<void> insertAllEdges(List<Map<String, dynamic>> edges) {
+    return transaction(() async {
+      for (final edge in edges) {
+        final source = edge['from'] ?? edge['source'] as String?;
+        final target = edge['to'] ?? edge['target'] as String?;
+        if (source != null && target != null) {
+          final body = jsonEncode(edge);
+          await insertEdge(source, target, body);
+        }
+      }
+    });
+  }
+
   Future<List<Node>> getDocuments(String collection) =>
       (select(nodes)..where((t) => t.body.jsonExtract(collection))).get();
 
@@ -129,4 +154,14 @@ class Database extends _$Database {
         ..where((t) => t.body.jsonExtract(collection))
         ..where((t) => t.id.equals(id)))
       .watchSingleOrNull();
+
+  Future<List<Node>> searchDocuments(String query,
+          {bool Function(Map<String, Object?>)? filter}) =>
+      searchNode(query).get().then((value) => value.map((e) => e.r).where((d) {
+            if (filter != null) {
+              return filter(d.toJson());
+            } else {
+              return true;
+            }
+          }).toList());
 }

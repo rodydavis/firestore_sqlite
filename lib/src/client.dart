@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firestore_sqlite/firestore_sqlite.dart';
+import 'package:flutter/foundation.dart';
 
 class FirestoreClient {
   final database = Database();
@@ -69,11 +70,26 @@ class FirestoreClient {
     await doc.delete();
     return _delete(doc);
   }
+}
 
-  Future<Doc?> getDoc(Collection collection, String id) async {
+class FirestoreClientCollection extends FirestoreClient {
+  FirestoreClientCollection(this.collection);
+  final Collection collection;
+
+  static bool _needsUpdate(GetOptions? options) {
+    if (options == null) return false;
+    final source = options.source;
+    return source == Source.server || source == Source.serverAndCache;
+  }
+
+  Future<Doc?> _getDoc(
+    Collection collection,
+    String id,
+    GetOptions? options,
+  ) async {
     await collection.checkForUpdate();
     final doc = Doc(collection: collection, id: id);
-    final snapshot = await doc.reference.get();
+    final snapshot = await doc.reference.get(options);
     if (snapshot.exists) {
       await doc.loadSnapshot(snapshot);
       final local = await database.getDocument(collection.name, id);
@@ -88,44 +104,132 @@ class FirestoreClient {
     }
   }
 
-  Stream<Doc?> watchDoc(Collection collection, String id) async* {
-    await collection.checkForUpdate();
-    final doc = Doc(collection: collection, id: id);
-    final stream = doc.reference.snapshots();
-    await for (final event in stream) {
-      if (event.exists) {
-        await doc.loadSnapshot(event);
-        final local = await database.getDocument(collection.name, id);
+  Stream<Doc?> _watchDoc(
+    Collection collection,
+    String id,
+    GetOptions? options,
+  ) async* {
+    final local = await database.getDocument(collection.name, id);
+    yield local != null ? Doc.fromJson(collection, local.toJson()) : null;
+    if (_needsUpdate(options)) {
+      await collection.checkForUpdate();
+      final doc = Doc(collection: collection, id: id);
+      final stream = doc.reference.snapshots();
+      await for (final snapshot in stream) {
+        if (snapshot.exists) {
+          yield Doc.fromDocumentSnapshot(collection, snapshot);
+        } else {
+          yield null;
+        }
+      }
+    } else {
+      yield* database
+          .watchDocument(collection.name, id)
+          .map((e) => e != null ? Doc.fromJson(collection, e.toJson()) : null);
+    }
+  }
+
+  Future<List<Doc>> _getDocs(
+    Collection collection,
+    bool deleted,
+    GetOptions? options,
+  ) async {
+    if (_needsUpdate(options)) {
+      await collection.checkForUpdate();
+      final snapshot = await collection.reference.get(options);
+      final docs = snapshot.docs
+          .map((e) => Doc.fromDocumentSnapshot(collection, e))
+          .toList();
+      for (final doc in docs) {
+        final local = await database.getDocument(collection.name, doc.id);
         if (local == null) {
           await _add(doc);
         } else {
           await _update(doc);
         }
-        yield doc;
-      } else {
-        yield null;
+      }
+      return docs;
+    } else {
+      final nodes = await database.getDocuments(collection.name);
+      return nodes
+          .map((e) => Doc.fromJson(collection, e.toJson()))
+          .where((e) => deleted ? e.deleted == true : true)
+          .toList();
+    }
+  }
+
+  Stream<List<Doc>> _watchDocs(
+    Collection collection,
+    bool deleted,
+    GetOptions? options,
+  ) async* {
+    yield* database.watchDocuments(collection.name).map((e) => e
+        .map((e) => Doc.fromJson(collection, e.toJson()))
+        .where((e) => deleted ? e.deleted == true : true)
+        .toList());
+
+    if (_needsUpdate(options)) {
+      await collection.checkForUpdate();
+      final stream = collection.reference.snapshots();
+      await for (final snapshot in stream) {
+        final docs = snapshot.docs
+            .map((e) => Doc.fromDocumentSnapshot(collection, e))
+            .toList();
+        yield docs;
+
+        for (final doc in docs) {
+          final local = await database.getDocument(collection.name, doc.id);
+          if (local == null) {
+            await _add(doc);
+          } else {
+            await _update(doc);
+          }
+        }
       }
     }
   }
 
-  Future<List<Doc>> getDocs(Collection collection) async {
-    await collection.checkForUpdate();
-    // TODO: Load from firestore
-    final nodes = await database.getDocuments(collection.name);
-    return nodes
-        .map((e) => Doc.fromJson(collection, jsonDecode(e.body!)))
-        .toList();
-  }
+  Future<List<Doc>> get({
+    bool deleted = false,
+    GetOptions? options,
+  }) =>
+      _getDocs(collection, deleted, options);
 
-  Stream<List<Doc>> watchDocs(Collection collection) async* {
+  Stream<List<Doc>> watch({
+    bool deleted = false,
+    GetOptions? options,
+  }) =>
+      _watchDocs(collection, deleted, options);
+
+  Future<Doc?> getSingle(
+    String id, {
+    GetOptions? options,
+  }) =>
+      _getDoc(collection, id, options);
+
+  Stream<Doc?> watchSingle(
+    String id, {
+    GetOptions? options,
+  }) =>
+      _watchDoc(collection, id, options);
+
+  Future<void> checkForUpdates() async {
     await collection.checkForUpdate();
-    // TODO: Load from firestore
-    final stream = database.watchDocuments(collection.name);
-    await for (final event in stream) {
-      final results = event
-          .map((e) => Doc.fromJson(collection, jsonDecode(e.body!)))
-          .toList();
-      yield results;
-    }
+    final local = await database.getDocuments(collection.name);
+    final newestItems = local
+        .map((e) => Doc.fromJson(collection, e.toJson()))
+        .map((e) => e.updated)
+        .toList();
+    final newest = newestItems.isEmpty
+        ? DateTime(0)
+        : newestItems.reduce((a, b) => a.isAfter(b) ? a : b);
+    final latest = await collection.reference
+        .where('updated', isGreaterThan: newest.toIso8601String())
+        .get()
+        .then((snap) => snap.docs)
+        .then((docs) =>
+            docs.map((e) => Doc.fromDocumentSnapshot(collection, e)).toList());
+    debugPrint('${collection.name} latest: $latest');
+    await database.insertAllNodes(latest.map((e) => e.toJson()).toList());
   }
 }

@@ -179,3 +179,35 @@ Widget boolField({
     ),
   );
 }
+
+Widget dateField({
+  required String label,
+  required DateTime? value,
+  required ValueChanged<DateTime?> onChanged,
+  String? Function(DateTime value)? validator,
+  bool required = false,
+}) {
+  return ListTile(
+    title: TextFormField(
+      onSaved: (val) => onChanged(val == null ? null : DateTime.parse(val)),
+      validator: (val) {
+        if (required) {
+          if (val == null || val == '') {
+            return '$label required';
+          }
+        }
+        if (val != null && val.isNotEmpty && DateTime.tryParse(val) == null) {
+          return '$label must be a valid date';
+        }
+        if (val != null && validator != null) {
+          return validator(DateTime.parse(val));
+        }
+        return null;
+      },
+      initialValue: value?.toIso8601String(),
+      decoration: InputDecoration(
+        label: Text(label),
+      ),
+    ),
+  );
+}

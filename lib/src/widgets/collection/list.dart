@@ -5,6 +5,7 @@ import 'package:firestore_sqlite/firestore_sqlite.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'details.dart';
 import 'edit.dart';
 
 class CollectionsEditor extends StatelessWidget {
@@ -76,12 +77,13 @@ class CollectionsEditor extends StatelessWidget {
                               collection.description!.isNotEmpty
                           ? Text(collection.description!)
                           : null,
-                      leading: const Icon(Icons.edit),
-                      onTap: () => modifyCollection(
-                        context,
-                        collection: collection,
-                        collections: collections,
-                      ),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => CollectionDetails(
+                          collection: collection,
+                          collections: collections,
+                        ),
+                      )),
                     );
                   },
                 );

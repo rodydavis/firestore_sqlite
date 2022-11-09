@@ -58,4 +58,94 @@ extension CollectionX on Collection {
     if (!keys.contains('deleted')) result.add(deletedField);
     return result;
   }
+
+  List<Field> get restFields {
+    return allFields.where((e) => !defaultFields.contains(e)).toList();
+  }
+
+  ValidationResult validate(Json data) {
+    final result = ValidationResult();
+    for (final field in allFields) {
+      final value = data[field.name];
+      final required = field.required ?? false;
+      if (required && value == null) {
+        result.addError(field.name, 'required');
+      } else {
+        field.type.when(
+          string: (maxLength) {
+            if (value is! String) {
+              result.addError(field.name, 'invalid type');
+            } else if (maxLength != null && value.length > maxLength) {
+              result.addError(field.name, 'too long');
+            }
+          },
+          int: () {
+            if (value is! int) {
+              result.addError(field.name, 'invalid type');
+            }
+          },
+          num: () {
+            if (value is! num) {
+              result.addError(field.name, 'invalid type');
+            }
+          },
+          double: () {
+            if (value is! double) {
+              result.addError(field.name, 'invalid type');
+            }
+          },
+          bool: () {
+            if (value is! bool) {
+              result.addError(field.name, 'invalid type');
+            }
+          },
+          map: () {
+            if (value is! Map) {
+              result.addError(field.name, 'invalid type');
+            }
+          },
+          array: () {
+            if (value is! List) {
+              result.addError(field.name, 'invalid type');
+            }
+          },
+          blob: (bucket) {
+            if (value is! String) {
+              result.addError(field.name, 'invalid type');
+            }
+          },
+          option: (values) {
+            if (value is! String) {
+              result.addError(field.name, 'invalid type');
+            } else if (!values.contains(value)) {
+              result.addError(field.name, 'invalid value');
+            }
+          },
+          date: () {
+            if (value is! DateTime) {
+              result.addError(field.name, 'invalid type');
+            }
+          },
+          document: (collection) {
+            if (value is! Map) {
+              result.addError(field.name, 'invalid type');
+            }
+          },
+          dynamic: () {},
+        );
+      }
+    }
+    return result;
+  }
+}
+
+class ValidationResult {
+  ValidationResult();
+
+  bool get valid => errors.isEmpty;
+  final List<String> errors = [];
+
+  void addError(String field, String error) {
+    errors.add('$field: $error');
+  }
 }

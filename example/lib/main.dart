@@ -6,7 +6,7 @@ import 'firebase.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initFirebase(kDebugMode);
+  await initFirebase(emulators: kDebugMode);
   runApp(const MyApp());
 }
 
