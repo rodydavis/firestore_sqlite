@@ -209,6 +209,10 @@ By defining relationships in the schema, you can generate functions based on tri
 
 For a given collection **Albums** and another collection **Songs**, if the album schema has a trigger to remove a song from the album when the song is deleted, then a firebase function will be setup to watch the correct records.
 
+#### Generated Bundles (WIP)
+
+https://firebase.google.com/docs/firestore/bundles
+
 ### GraphQL (Optional)
 
 GraphQL end point can be generated from the schema.
