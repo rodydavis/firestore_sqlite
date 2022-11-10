@@ -97,4 +97,66 @@ void main() {
 
     expect(client.collections.length, 1);
   });
+
+  test('functions generator', () {
+    final outFile =  File('./test/functions.ts');
+
+    final client = FunctionsGenerator(
+      collections: List.generate(
+        5,
+        (index) => Collection(
+          name: 'test_$index',
+          created: DateTime(1970),
+          updated: DateTime(1970),
+          description: 'Random collection $index',
+          fields: const [
+            Field(
+              name: 'name',
+              type: StringField(),
+              description: 'Display name',
+            ),
+          ],
+        ),
+      ),
+      outFile: outFile,
+    );
+
+    client.render();
+
+    expect(client.collections.length, 5);
+    expect(outFile.existsSync(), true);
+
+    outFile.deleteSync();
+  });
+
+  test('schema generator', () {
+    final outFile = File('./test/schema.json');
+
+    final client = SchemaGenerator(
+      collections: List.generate(
+        5,
+        (index) => Collection(
+          name: 'test_$index',
+          created: DateTime(1970),
+          updated: DateTime(1970),
+          description: 'Random collection $index',
+          fields: const [
+            Field(
+              name: 'name',
+              type: StringField(),
+              description: 'Display name',
+            ),
+          ],
+        ),
+      ),
+      outFile: outFile,
+    );
+
+    client.render();
+
+    expect(client.collections.length, 5);
+    expect(outFile.existsSync(), true);
+
+    outFile.deleteSync();
+  });
 }

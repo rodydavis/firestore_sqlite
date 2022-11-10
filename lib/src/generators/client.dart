@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import '../classes/collection.dart';
+import '../utils/file.dart';
 import 'base.dart';
 import 'collection.dart';
 import 'utils/format.dart';
@@ -36,7 +37,7 @@ class ClientGenerator extends GeneratorBase {
   Map<String, Object?> get args => {
         'collections': collections.map((e) => e.toJson()).toList(),
       };
-
+      
   @override
   String render() {
     final result = super.render();
@@ -50,11 +51,5 @@ class ClientGenerator extends GeneratorBase {
     final outFile = File('${output.path}/client.dart')..check();
     outFile.writeAsStringSync(formatted);
     return result;
-  }
-}
-
-extension on File {
-  void check() {
-    if (!existsSync()) createSync(recursive: true);
   }
 }
