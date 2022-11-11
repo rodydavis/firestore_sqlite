@@ -6,6 +6,9 @@ import '../utils/file.dart';
 import '../utils/json.dart';
 import 'base.dart';
 
+// TODO: Graphql document fields
+// TODO: Graphql mutations
+
 String imports({
   bool graphql = false,
   bool bundles = false,
