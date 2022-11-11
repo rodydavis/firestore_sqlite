@@ -21,10 +21,12 @@ class Doc {
     Collection collection,
     Json data,
   ) {
+    final id = data['document_id'] ?? data['id']  ?? '';
     final base = Doc(
-      id: data['document_id'] ?? data['id'],
+      id: id,
       collection: collection,
     );
+    data['id'] = id;
     base.setJson(data);
     return base;
   }

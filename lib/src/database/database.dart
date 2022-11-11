@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 
@@ -31,7 +33,7 @@ class Database extends _$Database {
   @override
   int get schemaVersion => 1;
 
-  Future<void> insertOrReplaceNode(Map<String, Object?> data) async {
+  Future<void> insertOrReplaceDocument(Map<String, Object?> data) async {
     final id = data['id'] as String?;
     if (id == null || id.isEmpty) {
       throw ArgumentError('Node missing id: $data');
@@ -78,9 +80,16 @@ class Database extends _$Database {
           .get()
           .then((value) => value.map((e) => e.r).where((d) {
                 if (filter != null) {
-                  return filter(d.toJson());
+                  return filter(d.toMap());
                 } else {
                   return true;
                 }
               }).toList());
+}
+
+extension DocUtils on Document {
+  Map<String, Object?> toMap() => {
+        ...jsonDecode(data),
+        'id': documentId,
+      };
 }

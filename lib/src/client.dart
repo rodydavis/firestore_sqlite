@@ -12,7 +12,7 @@ class FirestoreClient {
     try {
       // Insert node into documents
       debugPrint('Inserting node into documents: $source');
-      await database.insertOrReplaceNode(doc.toJson());
+      await database.insertOrReplaceDocument(doc.toJson());
     } catch (e) {
       debugPrint('Error adding node: $e');
     }
@@ -23,7 +23,7 @@ class FirestoreClient {
     try {
       // Insert node into documents
       debugPrint('Updating node into documents: $source');
-      await database.insertOrReplaceNode(doc.toJson());
+      await database.insertOrReplaceDocument(doc.toJson());
     } catch (e) {
       debugPrint('Error updating node: $e');
     }
@@ -90,7 +90,7 @@ class FirestoreClientCollection<T extends Doc> {
     GetOptions options = const GetOptions(),
   }) async* {
     final local = await client.database.getDocument(collection.name, id);
-    yield local != null ? Doc.fromJson(collection, local.toJson()) : null;
+    yield local != null ? Doc.fromJson(collection, local.toMap()) : null;
     if (_needsUpdate(options)) {
       await collection.checkForUpdate();
       final doc = Doc(collection: collection, id: id);
@@ -105,7 +105,7 @@ class FirestoreClientCollection<T extends Doc> {
     } else {
       yield* client.database
           .watchDocument(collection.name, id)
-          .map((e) => e != null ? Doc.fromJson(collection, e.toJson()) : null);
+          .map((e) => e != null ? Doc.fromJson(collection, e.toMap()) : null);
     }
   }
 
@@ -133,7 +133,7 @@ class FirestoreClientCollection<T extends Doc> {
     } else {
       final nodes = await client.database.getDocuments(collection.name);
       return nodes
-          .map((e) => Doc.fromJson(collection, e.toJson()))
+          .map((e) => Doc.fromJson(collection, e.toMap()))
           .where((e) => deleted ? e.deleted == true : true)
           .toList();
     }
@@ -146,7 +146,7 @@ class FirestoreClientCollection<T extends Doc> {
   }) async* {
     final docs = await client.database.getDocuments(collection.name).then((e) =>
         e
-            .map((e) => Doc.fromJson(collection, e.toJson()))
+            .map((e) => Doc.fromJson(collection, e.toMap()))
             .where((e) => deleted ? e.deleted == true : true)
             .toList());
     yield docs;
@@ -173,7 +173,7 @@ class FirestoreClientCollection<T extends Doc> {
     }
 
     yield* client.database.watchDocuments(collection.name).map((e) => e
-        .map((e) => Doc.fromJson(collection, e.toJson()))
+        .map((e) => Doc.fromJson(collection, e.toMap()))
         .where((e) => deleted ? e.deleted == true : true)
         .toList());
   }
@@ -206,7 +206,7 @@ class FirestoreClientCollection<T extends Doc> {
     await collection.checkForUpdate();
     final local = await client.database.getDocuments(collection.name);
     final newestItems = local
-        .map((e) => Doc.fromJson(collection, e.toJson()))
+        .map((e) => Doc.fromJson(collection, e.toMap()))
         .map((e) => e.updated)
         .toList();
     final newest = newestItems.isEmpty
@@ -219,7 +219,7 @@ class FirestoreClientCollection<T extends Doc> {
         .then((docs) =>
             docs.map((e) => Doc.fromDocumentSnapshot(collection, e)).toList());
     for (final node in latest) {
-      await client.database.insertOrReplaceNode(node.toJson());
+      await client.database.insertOrReplaceDocument(node.toJson());
     }
   }
 
@@ -227,7 +227,7 @@ class FirestoreClientCollection<T extends Doc> {
     final results = await client.database.searchAllDocuments(query);
     return results
         .where((e) => e.collection == collection.name)
-        .map((e) => Doc.fromJson(collection, e.toJson()))
+        .map((e) => Doc.fromJson(collection, e.toMap()))
         .where((e) => e.deleted != true)
         .toList();
   }
