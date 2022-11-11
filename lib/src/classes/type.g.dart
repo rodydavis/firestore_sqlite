@@ -108,12 +108,14 @@ Map<String, dynamic> _$$DateFieldToJson(_$DateField instance) =>
 _$DocumentField _$$DocumentFieldFromJson(Map<String, dynamic> json) =>
     _$DocumentField(
       json['collection'] as String,
+      triggerDelete: json['triggerDelete'] as bool?,
       $type: json['runtimeType'] as String?,
     );
 
 Map<String, dynamic> _$$DocumentFieldToJson(_$DocumentField instance) =>
     <String, dynamic>{
       'collection': instance.collection,
+      'triggerDelete': instance.triggerDelete,
       'runtimeType': instance.$type,
     };
 

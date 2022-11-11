@@ -17,7 +17,8 @@ class FieldType with _$FieldType {
   const factory FieldType.blob(String bucket) = BlobField;
   const factory FieldType.option(List<String> values) = OptionField;
   const factory FieldType.date() = DateField;
-  const factory FieldType.document(String collection) = DocumentField;
+  const factory FieldType.document(String collection, {bool? triggerDelete}) =
+      DocumentField;
   const factory FieldType.dynamic() = DynamicField;
 
   factory FieldType.fromJson(Json json) => _$FieldTypeFromJson(json);
@@ -35,7 +36,7 @@ extension FieldTypeUtils on FieldType {
         blob: (_) => 'blob',
         option: (_) => 'option',
         date: () => 'date',
-        document: (_) => 'document',
+        document: (_, __) => 'document',
         dynamic: () => 'dynamic',
       );
 }

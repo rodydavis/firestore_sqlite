@@ -99,7 +99,7 @@ void main() {
   });
 
   test('functions generator', () {
-    final outFile =  File('./test/functions.ts');
+    final outFile = File('./test/functions.ts');
 
     final client = FunctionsGenerator(
       collections: List.generate(
@@ -109,12 +109,21 @@ void main() {
           created: DateTime(1970),
           updated: DateTime(1970),
           description: 'Random collection $index',
-          fields: const [
-            Field(
+          fields: [
+            const Field(
               name: 'name',
               type: StringField(),
               description: 'Display name',
             ),
+            if (index == 2)
+              const Field(
+                name: 'test_id',
+                type: DocumentField(
+                  'test_1',
+                  triggerDelete: true,
+                ),
+                description: 'Test reference',
+              ),
           ],
         ),
       ),

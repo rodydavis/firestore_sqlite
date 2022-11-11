@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:firestore_sqlite/firestore_sqlite.dart';
+
 import '../classes/collection.dart';
 import '../utils/file.dart';
 import 'base.dart';
@@ -67,6 +69,24 @@ async function handelCollection(request: functions.https.Request, response: func
 export const collection_{{#camel_case}}{{name}}{{/camel_case}} = functions.https.onRequest((request, response) => handelCollection(request, response, "{{name}}"));
 {{/collections}}
 
+/**
+ * Generated firestore triggers
+ */
+{{#all_triggers}}
+export const collection_{{collection}}_trigger = functions.firestore
+  .document('{{collection}}/{docId}')
+  .onDelete(async (snapshot, context) => { 
+    const batch = db.batch();
+    {{#triggers}}
+    const {{collection}}Items = await db.collection("{{collection}}").where("{{field}}", "==", context.params.docId).get();
+    for (const item of {{collection}}Items.docs) {
+      batch.delete(item.ref);
+    }
+    {{/triggers}}
+    await batch.commit();
+   });
+{{/all_triggers}}
+
 ''';
 
 class FunctionsGenerator extends GeneratorBase {
@@ -78,9 +98,34 @@ class FunctionsGenerator extends GeneratorBase {
   String get template => _template;
 
   @override
-  Map<String, Object?> get args => {
-        'collections': collections.map((e) => e.toJson()).toList(),
-      };
+  Map<String, Object?> get args {
+    final triggers = <String, List<Trigger>>{};
+    for (final collection in collections) {
+      for (final field in collection.fields) {
+        field.type.whenOrNull(
+          document: (target, triggerDelete) {
+            if (triggerDelete == true) {
+              triggers[target] ??= [];
+              triggers[target]!.add(Trigger(
+                collection: collection.name,
+                field: field.name,
+              ));
+            }
+          },
+        );
+      }
+    }
+    return {
+      'collections': copyJson(collections),
+      'all_triggers': [
+        for (final entry in triggers.entries)
+          {
+            'collection': entry.key,
+            'triggers': copyJson(entry.value),
+          }
+      ],
+    };
+  }
 
   @override
   String render() {
@@ -88,5 +133,21 @@ class FunctionsGenerator extends GeneratorBase {
     outFile.check();
     outFile.writeAsStringSync(result);
     return result;
+  }
+}
+
+class Trigger {
+  Trigger({
+    required this.collection,
+    required this.field,
+  });
+  final String collection;
+  final String field;
+
+  Map<String, Object?> toJson() {
+    return {
+      'collection': collection,
+      'field': field,
+    };
   }
 }

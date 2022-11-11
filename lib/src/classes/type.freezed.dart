@@ -61,7 +61,7 @@ mixin _$FieldType {
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
-    required TResult Function(String collection) document,
+    required TResult Function(String collection, bool? triggerDelete) document,
     required TResult Function() dynamic,
   }) =>
       throw _privateConstructorUsedError;
@@ -77,7 +77,7 @@ mixin _$FieldType {
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
-    TResult? Function(String collection)? document,
+    TResult? Function(String collection, bool? triggerDelete)? document,
     TResult? Function()? dynamic,
   }) =>
       throw _privateConstructorUsedError;
@@ -93,7 +93,7 @@ mixin _$FieldType {
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
-    TResult Function(String collection)? document,
+    TResult Function(String collection, bool? triggerDelete)? document,
     TResult Function()? dynamic,
     required TResult orElse(),
   }) =>
@@ -250,7 +250,7 @@ class _$StringField implements StringField {
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
-    required TResult Function(String collection) document,
+    required TResult Function(String collection, bool? triggerDelete) document,
     required TResult Function() dynamic,
   }) {
     return string(maxLength);
@@ -269,7 +269,7 @@ class _$StringField implements StringField {
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
-    TResult? Function(String collection)? document,
+    TResult? Function(String collection, bool? triggerDelete)? document,
     TResult? Function()? dynamic,
   }) {
     return string?.call(maxLength);
@@ -288,7 +288,7 @@ class _$StringField implements StringField {
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
-    TResult Function(String collection)? document,
+    TResult Function(String collection, bool? triggerDelete)? document,
     TResult Function()? dynamic,
     required TResult orElse(),
   }) {
@@ -433,7 +433,7 @@ class _$IntField implements IntField {
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
-    required TResult Function(String collection) document,
+    required TResult Function(String collection, bool? triggerDelete) document,
     required TResult Function() dynamic,
   }) {
     return int();
@@ -452,7 +452,7 @@ class _$IntField implements IntField {
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
-    TResult? Function(String collection)? document,
+    TResult? Function(String collection, bool? triggerDelete)? document,
     TResult? Function()? dynamic,
   }) {
     return int?.call();
@@ -471,7 +471,7 @@ class _$IntField implements IntField {
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
-    TResult Function(String collection)? document,
+    TResult Function(String collection, bool? triggerDelete)? document,
     TResult Function()? dynamic,
     required TResult orElse(),
   }) {
@@ -610,7 +610,7 @@ class _$NumField implements NumField {
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
-    required TResult Function(String collection) document,
+    required TResult Function(String collection, bool? triggerDelete) document,
     required TResult Function() dynamic,
   }) {
     return num();
@@ -629,7 +629,7 @@ class _$NumField implements NumField {
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
-    TResult? Function(String collection)? document,
+    TResult? Function(String collection, bool? triggerDelete)? document,
     TResult? Function()? dynamic,
   }) {
     return num?.call();
@@ -648,7 +648,7 @@ class _$NumField implements NumField {
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
-    TResult Function(String collection)? document,
+    TResult Function(String collection, bool? triggerDelete)? document,
     TResult Function()? dynamic,
     required TResult orElse(),
   }) {
@@ -788,7 +788,7 @@ class _$DoubleField implements DoubleField {
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
-    required TResult Function(String collection) document,
+    required TResult Function(String collection, bool? triggerDelete) document,
     required TResult Function() dynamic,
   }) {
     return double();
@@ -807,7 +807,7 @@ class _$DoubleField implements DoubleField {
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
-    TResult? Function(String collection)? document,
+    TResult? Function(String collection, bool? triggerDelete)? document,
     TResult? Function()? dynamic,
   }) {
     return double?.call();
@@ -826,7 +826,7 @@ class _$DoubleField implements DoubleField {
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
-    TResult Function(String collection)? document,
+    TResult Function(String collection, bool? triggerDelete)? document,
     TResult Function()? dynamic,
     required TResult orElse(),
   }) {
@@ -967,7 +967,7 @@ class _$BoolField implements BoolField {
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
-    required TResult Function(String collection) document,
+    required TResult Function(String collection, bool? triggerDelete) document,
     required TResult Function() dynamic,
   }) {
     return bool();
@@ -986,7 +986,7 @@ class _$BoolField implements BoolField {
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
-    TResult? Function(String collection)? document,
+    TResult? Function(String collection, bool? triggerDelete)? document,
     TResult? Function()? dynamic,
   }) {
     return bool?.call();
@@ -1005,7 +1005,7 @@ class _$BoolField implements BoolField {
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
-    TResult Function(String collection)? document,
+    TResult Function(String collection, bool? triggerDelete)? document,
     TResult Function()? dynamic,
     required TResult orElse(),
   }) {
@@ -1144,7 +1144,7 @@ class _$MapField implements MapField {
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
-    required TResult Function(String collection) document,
+    required TResult Function(String collection, bool? triggerDelete) document,
     required TResult Function() dynamic,
   }) {
     return map();
@@ -1163,7 +1163,7 @@ class _$MapField implements MapField {
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
-    TResult? Function(String collection)? document,
+    TResult? Function(String collection, bool? triggerDelete)? document,
     TResult? Function()? dynamic,
   }) {
     return map?.call();
@@ -1182,7 +1182,7 @@ class _$MapField implements MapField {
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
-    TResult Function(String collection)? document,
+    TResult Function(String collection, bool? triggerDelete)? document,
     TResult Function()? dynamic,
     required TResult orElse(),
   }) {
@@ -1322,7 +1322,7 @@ class _$ListField implements ListField {
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
-    required TResult Function(String collection) document,
+    required TResult Function(String collection, bool? triggerDelete) document,
     required TResult Function() dynamic,
   }) {
     return array();
@@ -1341,7 +1341,7 @@ class _$ListField implements ListField {
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
-    TResult? Function(String collection)? document,
+    TResult? Function(String collection, bool? triggerDelete)? document,
     TResult? Function()? dynamic,
   }) {
     return array?.call();
@@ -1360,7 +1360,7 @@ class _$ListField implements ListField {
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
-    TResult Function(String collection)? document,
+    TResult Function(String collection, bool? triggerDelete)? document,
     TResult Function()? dynamic,
     required TResult orElse(),
   }) {
@@ -1527,7 +1527,7 @@ class _$BlobField implements BlobField {
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
-    required TResult Function(String collection) document,
+    required TResult Function(String collection, bool? triggerDelete) document,
     required TResult Function() dynamic,
   }) {
     return blob(bucket);
@@ -1546,7 +1546,7 @@ class _$BlobField implements BlobField {
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
-    TResult? Function(String collection)? document,
+    TResult? Function(String collection, bool? triggerDelete)? document,
     TResult? Function()? dynamic,
   }) {
     return blob?.call(bucket);
@@ -1565,7 +1565,7 @@ class _$BlobField implements BlobField {
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
-    TResult Function(String collection)? document,
+    TResult Function(String collection, bool? triggerDelete)? document,
     TResult Function()? dynamic,
     required TResult orElse(),
   }) {
@@ -1743,7 +1743,7 @@ class _$OptionField implements OptionField {
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
-    required TResult Function(String collection) document,
+    required TResult Function(String collection, bool? triggerDelete) document,
     required TResult Function() dynamic,
   }) {
     return option(values);
@@ -1762,7 +1762,7 @@ class _$OptionField implements OptionField {
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
-    TResult? Function(String collection)? document,
+    TResult? Function(String collection, bool? triggerDelete)? document,
     TResult? Function()? dynamic,
   }) {
     return option?.call(values);
@@ -1781,7 +1781,7 @@ class _$OptionField implements OptionField {
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
-    TResult Function(String collection)? document,
+    TResult Function(String collection, bool? triggerDelete)? document,
     TResult Function()? dynamic,
     required TResult orElse(),
   }) {
@@ -1927,7 +1927,7 @@ class _$DateField implements DateField {
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
-    required TResult Function(String collection) document,
+    required TResult Function(String collection, bool? triggerDelete) document,
     required TResult Function() dynamic,
   }) {
     return date();
@@ -1946,7 +1946,7 @@ class _$DateField implements DateField {
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
-    TResult? Function(String collection)? document,
+    TResult? Function(String collection, bool? triggerDelete)? document,
     TResult? Function()? dynamic,
   }) {
     return date?.call();
@@ -1965,7 +1965,7 @@ class _$DateField implements DateField {
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
-    TResult Function(String collection)? document,
+    TResult Function(String collection, bool? triggerDelete)? document,
     TResult Function()? dynamic,
     required TResult orElse(),
   }) {
@@ -2056,7 +2056,7 @@ abstract class _$$DocumentFieldCopyWith<$Res> {
           _$DocumentField value, $Res Function(_$DocumentField) then) =
       __$$DocumentFieldCopyWithImpl<$Res>;
   @useResult
-  $Res call({String collection});
+  $Res call({String collection, bool? triggerDelete});
 }
 
 /// @nodoc
@@ -2071,12 +2071,17 @@ class __$$DocumentFieldCopyWithImpl<$Res>
   @override
   $Res call({
     Object? collection = null,
+    Object? triggerDelete = freezed,
   }) {
     return _then(_$DocumentField(
       null == collection
           ? _value.collection
           : collection // ignore: cast_nullable_to_non_nullable
               as String,
+      triggerDelete: freezed == triggerDelete
+          ? _value.triggerDelete
+          : triggerDelete // ignore: cast_nullable_to_non_nullable
+              as bool?,
     ));
   }
 }
@@ -2084,7 +2089,8 @@ class __$$DocumentFieldCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$DocumentField implements DocumentField {
-  const _$DocumentField(this.collection, {final String? $type})
+  const _$DocumentField(this.collection,
+      {this.triggerDelete, final String? $type})
       : $type = $type ?? 'document';
 
   factory _$DocumentField.fromJson(Map<String, dynamic> json) =>
@@ -2092,13 +2098,15 @@ class _$DocumentField implements DocumentField {
 
   @override
   final String collection;
+  @override
+  final bool? triggerDelete;
 
   @JsonKey(name: 'runtimeType')
   final String $type;
 
   @override
   String toString() {
-    return 'FieldType.document(collection: $collection)';
+    return 'FieldType.document(collection: $collection, triggerDelete: $triggerDelete)';
   }
 
   @override
@@ -2107,12 +2115,14 @@ class _$DocumentField implements DocumentField {
         (other.runtimeType == runtimeType &&
             other is _$DocumentField &&
             (identical(other.collection, collection) ||
-                other.collection == collection));
+                other.collection == collection) &&
+            (identical(other.triggerDelete, triggerDelete) ||
+                other.triggerDelete == triggerDelete));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, collection);
+  int get hashCode => Object.hash(runtimeType, collection, triggerDelete);
 
   @JsonKey(ignore: true)
   @override
@@ -2133,10 +2143,10 @@ class _$DocumentField implements DocumentField {
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
-    required TResult Function(String collection) document,
+    required TResult Function(String collection, bool? triggerDelete) document,
     required TResult Function() dynamic,
   }) {
-    return document(collection);
+    return document(collection, triggerDelete);
   }
 
   @override
@@ -2152,10 +2162,10 @@ class _$DocumentField implements DocumentField {
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
-    TResult? Function(String collection)? document,
+    TResult? Function(String collection, bool? triggerDelete)? document,
     TResult? Function()? dynamic,
   }) {
-    return document?.call(collection);
+    return document?.call(collection, triggerDelete);
   }
 
   @override
@@ -2171,12 +2181,12 @@ class _$DocumentField implements DocumentField {
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
-    TResult Function(String collection)? document,
+    TResult Function(String collection, bool? triggerDelete)? document,
     TResult Function()? dynamic,
     required TResult orElse(),
   }) {
     if (document != null) {
-      return document(collection);
+      return document(collection, triggerDelete);
     }
     return orElse();
   }
@@ -2251,12 +2261,14 @@ class _$DocumentField implements DocumentField {
 }
 
 abstract class DocumentField implements FieldType {
-  const factory DocumentField(final String collection) = _$DocumentField;
+  const factory DocumentField(final String collection,
+      {final bool? triggerDelete}) = _$DocumentField;
 
   factory DocumentField.fromJson(Map<String, dynamic> json) =
       _$DocumentField.fromJson;
 
   String get collection;
+  bool? get triggerDelete;
   @JsonKey(ignore: true)
   _$$DocumentFieldCopyWith<_$DocumentField> get copyWith =>
       throw _privateConstructorUsedError;
@@ -2317,7 +2329,7 @@ class _$DynamicField implements DynamicField {
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
-    required TResult Function(String collection) document,
+    required TResult Function(String collection, bool? triggerDelete) document,
     required TResult Function() dynamic,
   }) {
     return dynamic();
@@ -2336,7 +2348,7 @@ class _$DynamicField implements DynamicField {
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
-    TResult? Function(String collection)? document,
+    TResult? Function(String collection, bool? triggerDelete)? document,
     TResult? Function()? dynamic,
   }) {
     return dynamic?.call();
@@ -2355,7 +2367,7 @@ class _$DynamicField implements DynamicField {
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
-    TResult Function(String collection)? document,
+    TResult Function(String collection, bool? triggerDelete)? document,
     TResult Function()? dynamic,
     required TResult orElse(),
   }) {

@@ -227,19 +227,36 @@ class _EditCollectionState extends State<EditCollection> {
                                                     .toJson();
                                           },
                                         ),
-                                        document: (doc) => dropdownField(
-                                          label: 'Collection',
-                                          value: doc,
-                                          required: true,
-                                          items: widget.collections
-                                              .map((e) => e.name)
-                                              .toList(),
-                                          onChanged: (value) {
-                                            raw[i]['type'] = (field.type
-                                                    as DocumentField)
-                                                .copyWith(collection: value!)
-                                                .toJson();
-                                          },
+                                        document: (doc, triggerDelete) =>
+                                            Column(
+                                          children: [
+                                            dropdownField(
+                                              label: 'Collection',
+                                              value: doc,
+                                              required: true,
+                                              items: widget.collections
+                                                  .map((e) => e.name)
+                                                  .toList(),
+                                              onChanged: (value) {
+                                                raw[i]['type'] = (field.type
+                                                        as DocumentField)
+                                                    .copyWith(
+                                                        collection: value!)
+                                                    .toJson();
+                                              },
+                                            ),
+                                            boolField(
+                                              label: 'Trigger Delete',
+                                              value: triggerDelete,
+                                              onChanged: (val) {
+                                                raw[i]['type'] = (field.type
+                                                        as DocumentField)
+                                                    .copyWith(
+                                                        triggerDelete: val)
+                                                    .toJson();
+                                              },
+                                            ),
+                                          ],
                                         ),
                                         option: (options) => textField(
                                           label: 'Values',

@@ -126,7 +126,7 @@ extension CollectionX on Collection {
               result.addError(field.name, 'invalid type');
             }
           },
-          document: (collection) {
+          document: (collection, triggerDelete) {
             if (value is! Map) {
               result.addError(field.name, 'invalid type');
             }
