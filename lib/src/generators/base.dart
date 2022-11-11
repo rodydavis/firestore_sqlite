@@ -1,3 +1,4 @@
+import 'package:firestore_sqlite/src/generators/json.dart';
 import 'package:mustache_template/mustache_template.dart';
 import 'package:mustache_recase/mustache_recase.dart' as mustache_recase;
 
@@ -10,7 +11,7 @@ abstract class GeneratorBase {
 
   String render() {
     final template = Template(this.template, htmlEscapeValues: false);
-    final variables = {...args};
+    final variables = copyJson(args) as Map<String, Object?>;
     variables["dart_type"] = (LambdaContext ctx) {
       return convertType(ctx.renderString());
     };

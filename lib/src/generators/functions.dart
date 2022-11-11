@@ -116,12 +116,12 @@ class FunctionsGenerator extends GeneratorBase {
       }
     }
     return {
-      'collections': copyJson(collections),
+      'collections': collections,
       'all_triggers': [
         for (final entry in triggers.entries)
           {
             'collection': entry.key,
-            'triggers': copyJson(entry.value),
+            'triggers': entry.value,
           }
       ],
     };
