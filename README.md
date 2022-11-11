@@ -209,10 +209,6 @@ By defining relationships in the schema, you can generate functions based on tri
 
 For a given collection **Albums** and another collection **Songs**, if the album schema has a trigger to remove a song from the album when the song is deleted, then a firebase function will be setup to watch the correct records.
 
-#### Generated Bundles (WIP)
-
-https://firebase.google.com/docs/firestore/bundles
-
 ### GraphQL (Optional)
 
 GraphQL end point can be generated from the schema.
@@ -266,8 +262,14 @@ You can still query the deleted documents but they will not be returned in the r
 
 A cron job can be used to remove the deleted documents after a certain period of time.
 
-## Time to Live
+## Not Scoped
+
+### Time to Live
 
 Using the new firebase feature we can set a TTL on a given collection to help clean up documents.
 
 This is used for [logging](#logging--analytics) collection and has a default of 30 days.
+
+### Firestore Bundles
+
+https://firebase.google.com/docs/firestore/bundles

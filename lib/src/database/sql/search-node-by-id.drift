@@ -1,5 +1,0 @@
-import 'schema.drift';
-
-searchNodeById: 
-    SELECT body FROM nodes 
-    WHERE id = ?;

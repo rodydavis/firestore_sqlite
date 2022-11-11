@@ -13,7 +13,7 @@ class Doc {
   Doc({required this.id, required this.collection});
 
   factory Doc.modify(Collection collection, String? id) {
-    final docId = id ?? collection.reference.id;
+    final docId = id ?? collection.reference.doc().id;
     return Doc(id: docId, collection: collection);
   }
 
@@ -22,7 +22,7 @@ class Doc {
     Json data,
   ) {
     final base = Doc(
-      id: data['id'],
+      id: data['document_id'] ?? data['id'],
       collection: collection,
     );
     base.setJson(data);
@@ -33,7 +33,10 @@ class Doc {
     Collection collection,
     DocumentSnapshot<Json?> snapshot,
   ) =>
-      Doc.fromJson(collection, {...snapshot.data() ?? {}, 'id': snapshot.id});
+      Doc.fromJson(collection, {
+        ...snapshot.data() ?? {},
+        'id': snapshot.id,
+      });
 
   static Future<Doc> fromSnapshot(
     Collection collection,
@@ -89,9 +92,9 @@ class Doc {
 
   operator []=(String key, Object? value) => setValue(key, value);
 
-  DateTime get created => this['created'] as DateTime;
+  DateTime get created => getDate(this['created']);
 
-  DateTime get updated => this['updated'] as DateTime;
+  DateTime get updated => getDate(this['updated']);
 
   bool? get deleted => this['deleted'] as bool?;
 
@@ -190,4 +193,14 @@ class Doc {
   }
 
   Future<void> setValue(String key, Object? value) => update({key: value});
+}
+
+DateTime getDate(Object? object) {
+  if (object is DateTime) {
+    return object;
+  } else if (object is String) {
+    return DateTime.parse(object);
+  } else {
+    throw Exception('Invalid date type');
+  }
 }

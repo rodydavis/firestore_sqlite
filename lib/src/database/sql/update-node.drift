@@ -1,5 +1,0 @@
-import 'schema.drift';
-
-updateNode: 
-    UPDATE nodes SET body = json(?) 
-    WHERE id = ?;

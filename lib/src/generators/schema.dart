@@ -2,6 +2,7 @@ import 'dart:io';
 
 import '../classes/collection.dart';
 import '../utils/file.dart';
+import '../utils/json.dart';
 import 'base.dart';
 import 'json.dart';
 

@@ -43,6 +43,7 @@ class Example extends StatefulWidget {
 
 class _ExampleState extends State<Example> {
   final collection = client.artist;
+  final controller = TextEditingController();
 
   @override
   void initState() {
@@ -64,30 +65,59 @@ class _ExampleState extends State<Example> {
             ),
         ],
       ),
-      body: StreamBuilder(
-        stream: collection.watch(),
-        builder: (context, snapshot) {
-          if (snapshot.data == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final items = snapshot.data ?? [];
-          if (items.isEmpty) {
-            return const Center(child: Text('No items found'));
-          }
-          return ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              final item = items[index];
-              final artist = Artist(id: item.id);
-              artist.setJson(item.data());
-              return ListTile(
-                title: Text(artist.name ?? 'N/A'),
-                subtitle: Text(item.id),
-              );
-            },
-          );
-        },
+      body: Column(
+        children: [
+          TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              labelText: 'Search',
+              prefixIcon: Icon(Icons.search),
+            ),
+            onChanged: (value) => setState(() {}),
+          ),
+          Expanded(
+            child: controller.text.trim().isEmpty
+                ? StreamBuilder(
+                    stream: collection.watch(),
+                    builder: (context, snapshot) {
+                      if (snapshot.data == null) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      final items = snapshot.data ?? [];
+                      return buildDocs(items);
+                    },
+                  )
+                : FutureBuilder(
+                    future: collection.search(controller.text),
+                    builder: (context, snapshot) {
+                      if (snapshot.data == null) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      final items = snapshot.data ?? [];
+                      return buildDocs(items);
+                    },
+                  ),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget buildDocs(List<Doc> items) {
+    if (items.isEmpty) {
+      return const Center(child: Text('No items found'));
+    }
+    return ListView.builder(
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        final item = items[index];
+        final artist = Artist(id: item.id);
+        artist.setJson(item.data());
+        return ListTile(
+          title: Text(artist.name ?? 'N/A'),
+          subtitle: Text(item.id),
+        );
+      },
     );
   }
 }

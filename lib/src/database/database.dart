@@ -1,9 +1,7 @@
-import 'dart:convert';
-
 import 'package:drift/drift.dart';
-import 'package:drift/extensions/json1.dart';
 import 'package:flutter/foundation.dart';
 
+import '../utils/json.dart';
 import 'connection/connection.dart' as impl;
 
 part 'database.g.dart';
@@ -12,24 +10,8 @@ part 'database.g.dart';
 // TODO: Relation triggers
 // TODO: Full text search
 @DriftDatabase(include: {
-  'sql/schema.drift',
-  'sql/queries.drift',
-  'sql/delete-edge.drift',
-  'sql/delete-node.drift',
-  'sql/insert-edge.drift',
-  'sql/insert-node.drift',
-  'sql/search-edges-inbound.drift',
-  'sql/search-edges-outbound.drift',
-  'sql/search-edges.drift',
-  'sql/search-node-by-id.drift',
-  'sql/search-node.drift',
-  'sql/traverse-inbound.drift',
-  'sql/traverse-outbound.drift',
-  'sql/traverse-with-bodies-inbound.drift',
-  'sql/traverse-with-bodies-outbound.drift',
-  'sql/traverse-with-bodies.drift',
-  'sql/traverse.drift',
-  'sql/update-node.drift',
+  'sql/firestore.drift',
+  'sql/search.drift',
 })
 class Database extends _$Database {
   Database({
@@ -49,119 +31,56 @@ class Database extends _$Database {
   @override
   int get schemaVersion => 1;
 
-  Future<void> addGraphData(
-    Map<String, dynamic> data, {
-    bool shouldBatch = false,
-  }) {
-    return transaction(() async {
-      try {
-        final localNodes = data['nodes'] as List<dynamic>;
-        final localEdges = data['edges'] as List<dynamic>;
-        // Update nodes
-        for (final node in localNodes) {
-          final id = node['id'] as String?;
-          if (id != null) {
-            final current = await searchNodeById(id).getSingleOrNull();
-            final body = jsonEncode(node);
-            if (current != null) {
-              await updateNode(id, body);
-            } else {
-              await insertNode(body);
-            }
-          }
-        }
-        // Update edges
-        for (final edge in localEdges) {
-          final source = edge['from'] ?? edge['source'] as String?;
-          final target = edge['to'] ?? edge['target'] as String?;
-          if (source != null && target != null) {
-            final body = jsonEncode(edge);
-            await insertEdge(source, target, body);
-          }
-        }
-      } catch (e) {
-        debugPrint('Error adding graph data: $e');
+  Future<void> insertOrReplaceNode(Map<String, Object?> data) async {
+    final id = data['id'] as String?;
+    if (id == null || id.isEmpty) {
+      throw ArgumentError('Node missing id: $data');
+    }
+    final body = jsonToString(data);
+    final current = await getDocumentById(id).getSingleOrNull();
+    try {
+      if (current == null) {
+        await createDocument(body);
+      } else {
+        await updateDocument(body);
       }
-    });
+    } catch (e) {
+      debugPrint('Error inserting node: $e $body');
+    }
   }
 
-  Future<void> deleteAll() {
-    return transaction(() async {
-      try {
-        await deleteAllEdges();
-        await deleteAllNodes();
-      } catch (e) {
-        debugPrint('Error clearing graph data: $e');
-      }
-    });
+  Future<void> deleteDocument(String id) async {
+    await (delete(documents)..where((t) => t.documentId.equals(id))).go();
   }
 
-  Future<void> deleteAllEdges() {
-    return transaction(() async {
-      final edges = await getAllEdges().get();
-      for (final edge in edges) {
-        await deleteEdge(edge.source, edge.target);
-      }
-    });
+  Future<List<Document>> getDocuments(String collection) {
+    return getDocumentsByCollection(collection).get();
   }
 
-  Future<void> deleteAllNodes() {
-    return transaction(() async {
-      final nodes = await getAllNodes().get();
-      for (final node in nodes) {
-        await deleteNode(node.id);
-      }
-    });
+  Stream<List<Document>> watchDocuments(String collection) {
+    return getDocumentsByCollection(collection).watch();
   }
 
-  Future<void> insertAllNodes(List<Map<String, dynamic>> nodes) {
-    return transaction(() async {
-      for (final node in nodes) {
-        final id = node['id'] as String?;
-        if (id != null) {
-          final body = jsonEncode(node);
-          await insertNode(body);
-        }
-      }
-    });
+  Future<Document?> getDocument(String collection, String id) {
+    return getDocumentByIdAndCollection(id, collection).getSingleOrNull();
   }
 
-  Future<void> insertAllEdges(List<Map<String, dynamic>> edges) {
-    return transaction(() async {
-      for (final edge in edges) {
-        final source = edge['from'] ?? edge['source'] as String?;
-        final target = edge['to'] ?? edge['target'] as String?;
-        if (source != null && target != null) {
-          final body = jsonEncode(edge);
-          await insertEdge(source, target, body);
-        }
-      }
-    });
+  Stream<Document?> watchDocument(String collection, String id) {
+    return getDocumentByIdAndCollection(id, collection).watchSingleOrNull();
   }
 
-  Future<List<Node>> getDocuments(String collection) =>
-      (select(nodes)..where((t) => t.body.jsonExtract(collection))).get();
-
-  Stream<List<Node>> watchDocuments(String collection) =>
-      (select(nodes)..where((t) => t.body.jsonExtract(collection))).watch();
-
-  Future<Node?> getDocument(String collection, String id) => (select(nodes)
-        ..where((t) => t.body.jsonExtract(collection))
-        ..where((t) => t.id.equals(id)))
-      .getSingleOrNull();
-
-  Stream<Node?> watchDocument(String collection, String id) => (select(nodes)
-        ..where((t) => t.body.jsonExtract(collection))
-        ..where((t) => t.id.equals(id)))
-      .watchSingleOrNull();
-
-  Future<List<Node>> searchDocuments(String query,
-          {bool Function(Map<String, Object?>)? filter}) =>
-      searchNode(query).get().then((value) => value.map((e) => e.r).where((d) {
-            if (filter != null) {
-              return filter(d.toJson());
-            } else {
-              return true;
-            }
-          }).toList());
+  Future<List<Document>> searchAllDocuments(
+    String query, {
+    bool Function(Map<String, Object?>)? filter,
+  }) =>
+      super
+          .searchDocuments(query)
+          .get()
+          .then((value) => value.map((e) => e.r).where((d) {
+                if (filter != null) {
+                  return filter(d.toJson());
+                } else {
+                  return true;
+                }
+              }).toList());
 }

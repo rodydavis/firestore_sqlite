@@ -25,6 +25,7 @@ dependencies:
   mustache_template: ^2.0.0
   mustache_recase: ^2.1.0
   dart_style: ^2.2.4
+  args: ^2.3.1
 
 dev_dependencies:
   flutter_test:
@@ -40,5 +41,6 @@ dev_dependencies:
 flutter:
 
 scripts:
+  generate: dart bin/generate.dart -s ./example/schema.json -g ./example/lib/generated -f ./example/functions/src/index.ts
   build: flutter pub run build_runner build --delete-conflicting-outputs
   dev: firebase emulators:start

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../generators/json.dart';
+import '../utils/json.dart';
 import 'collection.dart';
 import 'doc.dart';
 import 'field.dart';

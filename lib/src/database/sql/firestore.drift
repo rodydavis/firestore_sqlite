@@ -1,0 +1,28 @@
+CREATE TABLE IF NOT EXISTS documents (
+    id INT NOT NULL PRIMARY KEY AUTOINCREMENT,
+    data TEXT NOT NULL,
+    document_id TEXT GENERATED ALWAYS AS (json_extract(data, '$.id')) VIRTUAL NOT NULL UNIQUE,
+    collection TEXT GENERATED ALWAYS AS (json_extract(data, '$.collection')) VIRTUAL NOT NULL,
+    created TEXT GENERATED ALWAYS AS (json_extract(data, '$.created')) VIRTUAL NOT NULL,
+    updated TEXT GENERATED ALWAYS AS (json_extract(data, '$.updated')) VIRTUAL NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS document_id_idx ON documents(document_id);
+CREATE INDEX IF NOT EXISTS collection_idx ON documents(collection);
+CREATE INDEX IF NOT EXISTS created_idx ON documents(created);
+CREATE INDEX IF NOT EXISTS updated_idx ON documents(updated);
+
+createDocument: 
+    INSERT INTO documents (data) VALUES(json(:data));
+updateDocument(:text as TEXT): 
+    UPDATE documents SET data = json(:text) WHERE document_id = json_extract(:text, '$.id');
+getAllDocuments:
+    SELECT * FROM documents;
+getDocumentById: 
+    SELECT * FROM documents WHERE document_id = :id;
+getDocumentsByCollection:
+    SELECT * FROM documents WHERE collection = :collection;
+getDocumentByIdAndCollection:
+    SELECT * FROM documents WHERE document_id = :id AND collection = :collection;
+getLatestDocumentInCollection:
+    SELECT * FROM documents WHERE collection = :collection ORDER BY updated DESC LIMIT 1;

@@ -67,7 +67,6 @@ export const collectionArtist = functions.https.onRequest((req, res) => {
 });
 
 
-
 const typeDefs = gql`
   type Artist {
     name: String

@@ -1,5 +1,0 @@
-import 'schema.drift';
-
-deleteNode: 
-    DELETE FROM nodes 
-    WHERE id = ?;

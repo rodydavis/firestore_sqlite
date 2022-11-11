@@ -11,7 +11,7 @@ abstract class GeneratorBase {
 
   String render() {
     final template = Template(this.template, htmlEscapeValues: false);
-    final variables = copyJson(args) as Map<String, Object?>;
+    final variables = {...args};
     variables["dart_type"] = (LambdaContext ctx) {
       return convertType(ctx.renderString());
     };

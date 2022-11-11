@@ -2,9 +2,10 @@ import 'package:mustache_template/mustache_template.dart';
 
 import '../classes/collection.dart';
 import '../classes/field.dart';
+import '../utils/json.dart';
 import 'base.dart';
 import 'json.dart';
-import 'utils/format.dart';
+import '../utils/format.dart';
 
 const _template = r'''import 'package:firestore_sqlite/firestore_sqlite.dart';
 

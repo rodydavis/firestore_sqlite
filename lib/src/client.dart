@@ -1,59 +1,38 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firestore_sqlite/firestore_sqlite.dart';
 import 'package:flutter/foundation.dart';
 
 class FirestoreClient {
-  final database = Database();
+  final database = Database(logStatements: kDebugMode);
   final firestore = FirebaseFirestore.instance;
   late final schemas = firestore.collection('schema');
 
   Future<void> _add(Doc doc) async {
-    final source = doc.reference.id;
-    final jsonString = jsonEncode(doc.toJson());
-    // Insert node into nodes
-    await database.insertNode(jsonString);
-    // Insert edges on relationships
-    final fields = doc.collection.allFields;
-    final relationFields = fields.whereType<DocumentField>().toList();
-    for (final field in relationFields) {
-      final target = (field as Field).getString(doc);
-      if (target != null) {
-        await database.insertEdge(source, target, '{}');
-      }
+    final source = doc.id;
+    try {
+      // Insert node into documents
+      debugPrint('Inserting node into documents: $source');
+      await database.insertOrReplaceNode(doc.toJson());
+    } catch (e) {
+      debugPrint('Error adding node: $e');
     }
   }
 
   Future<void> _update(Doc doc) async {
     final source = doc.id;
-    final jsonString = jsonEncode(doc.toJson());
-    // Insert node into nodes
-    await database.updateNode(jsonString, source);
-    // Insert edges on relationships
-    final fields = doc.collection.allFields;
-    final relationFields = fields.whereType<DocumentField>().toList();
-    for (final field in relationFields) {
-      final target = (field as Field).getString(doc);
-      if (target != null) {
-        await database.insertEdge(source, target, '{}');
-      }
+    try {
+      // Insert node into documents
+      debugPrint('Updating node into documents: $source');
+      await database.insertOrReplaceNode(doc.toJson());
+    } catch (e) {
+      debugPrint('Error updating node: $e');
     }
   }
 
   Future<void> _delete(Doc doc) async {
     final source = doc.id;
     // Delete nodes
-    await database.deleteNode(source);
-    // Delete edges
-    final fields = doc.collection.allFields;
-    final relationFields = fields.whereType<DocumentField>().toList();
-    for (final field in relationFields) {
-      final target = (field as Field).getString(doc);
-      if (target != null) {
-        await database.deleteEdge(source, target);
-      }
-    }
+    await database.deleteDocument(source);
   }
 
   Future<void> addDoc(Doc doc) async {
@@ -192,6 +171,11 @@ class FirestoreClientCollection<T extends Doc> {
         }
       }
     }
+
+    yield* client.database.watchDocuments(collection.name).map((e) => e
+        .map((e) => Doc.fromJson(collection, e.toJson()))
+        .where((e) => deleted ? e.deleted == true : true)
+        .toList());
   }
 
   Future<List<Doc>> get({
@@ -234,8 +218,17 @@ class FirestoreClientCollection<T extends Doc> {
         .then((snap) => snap.docs)
         .then((docs) =>
             docs.map((e) => Doc.fromDocumentSnapshot(collection, e)).toList());
-    await client.database.insertAllNodes(
-      latest.map((e) => e.toJson()).toList(),
-    );
+    for (final node in latest) {
+      await client.database.insertOrReplaceNode(node.toJson());
+    }
+  }
+
+  Future<List<Doc>> search(String query) async {
+    final results = await client.database.searchAllDocuments(query);
+    return results
+        .where((e) => e.collection == collection.name)
+        .map((e) => Doc.fromJson(collection, e.toJson()))
+        .where((e) => e.deleted != true)
+        .toList();
   }
 }

@@ -1,9 +1,11 @@
 import 'dart:io';
 
-import 'package:firestore_sqlite/firestore_sqlite.dart';
-
+import '../classes/collection.dart';
+import '../classes/field.dart';
 import '../utils/file.dart';
+import '../utils/json.dart';
 import 'base.dart';
+import 'json.dart';
 
 String imports({bool graphql = false}) {
   final sb = StringBuffer();
@@ -101,12 +103,13 @@ export const collection{{#pascal_case}}{{collection}}{{/pascal_case}}Trigger = f
 {{/all_triggers}}
 
 {{#graphql}}
-
 const typeDefs = gql`
 {{#collections}}
   type {{#pascal_case}}{{name}}{{/pascal_case}} {
     {{#fields}}
+    {{#graphql_type}}
     {{#camel_case}}{{name}}{{/camel_case}}: {{graphql_type}}
+    {{/graphql_type}}
     {{/fields}}
   }
 {{/collections}}
@@ -259,8 +262,8 @@ extension on Field {
       bool: () => 'Boolean',
       date: () => 'String',
       document: (target, triggerDelete) => 'String',
-      array: () => 'String',
-      map: () => 'String',
+      array: () => 'false',
+      map: () => 'false',
       blob: (_) => 'String',
       dynamic: () => 'String',
       num: () => 'Float',

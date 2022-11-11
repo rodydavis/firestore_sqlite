@@ -7,285 +7,392 @@ part of 'database.dart';
 // **************************************************************************
 
 // ignore_for_file: type=lint
-class Node extends DataClass implements Insertable<Node> {
-  final String? body;
-  final String id;
-  const Node({this.body, required this.id});
+class Document extends DataClass implements Insertable<Document> {
+  final int id;
+  final String data;
+  final String documentId;
+  final String collection;
+  final String created;
+  final String updated;
+  const Document(
+      {required this.id,
+      required this.data,
+      required this.documentId,
+      required this.collection,
+      required this.created,
+      required this.updated});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (!nullToAbsent || body != null) {
-      map['body'] = Variable<String>(body);
-    }
+    map['id'] = Variable<int>(id);
+    map['data'] = Variable<String>(data);
     return map;
   }
 
-  NodesCompanion toCompanion(bool nullToAbsent) {
-    return NodesCompanion(
-      body: body == null && nullToAbsent ? const Value.absent() : Value(body),
+  DocumentsCompanion toCompanion(bool nullToAbsent) {
+    return DocumentsCompanion(
+      id: Value(id),
+      data: Value(data),
     );
   }
 
-  factory Node.fromJson(Map<String, dynamic> json,
+  factory Document.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Node(
-      body: serializer.fromJson<String?>(json['body']),
-      id: serializer.fromJson<String>(json['id']),
+    return Document(
+      id: serializer.fromJson<int>(json['id']),
+      data: serializer.fromJson<String>(json['data']),
+      documentId: serializer.fromJson<String>(json['document_id']),
+      collection: serializer.fromJson<String>(json['collection']),
+      created: serializer.fromJson<String>(json['created']),
+      updated: serializer.fromJson<String>(json['updated']),
     );
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'body': serializer.toJson<String?>(body),
-      'id': serializer.toJson<String>(id),
+      'id': serializer.toJson<int>(id),
+      'data': serializer.toJson<String>(data),
+      'document_id': serializer.toJson<String>(documentId),
+      'collection': serializer.toJson<String>(collection),
+      'created': serializer.toJson<String>(created),
+      'updated': serializer.toJson<String>(updated),
     };
   }
 
-  Node copyWith({Value<String?> body = const Value.absent(), String? id}) =>
-      Node(
-        body: body.present ? body.value : this.body,
+  Document copyWith(
+          {int? id,
+          String? data,
+          String? documentId,
+          String? collection,
+          String? created,
+          String? updated}) =>
+      Document(
         id: id ?? this.id,
+        data: data ?? this.data,
+        documentId: documentId ?? this.documentId,
+        collection: collection ?? this.collection,
+        created: created ?? this.created,
+        updated: updated ?? this.updated,
       );
   @override
   String toString() {
-    return (StringBuffer('Node(')
-          ..write('body: $body, ')
-          ..write('id: $id')
+    return (StringBuffer('Document(')
+          ..write('id: $id, ')
+          ..write('data: $data, ')
+          ..write('documentId: $documentId, ')
+          ..write('collection: $collection, ')
+          ..write('created: $created, ')
+          ..write('updated: $updated')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(body, id);
+  int get hashCode =>
+      Object.hash(id, data, documentId, collection, created, updated);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Node && other.body == this.body && other.id == this.id);
+      (other is Document &&
+          other.id == this.id &&
+          other.data == this.data &&
+          other.documentId == this.documentId &&
+          other.collection == this.collection &&
+          other.created == this.created &&
+          other.updated == this.updated);
 }
 
-class NodesCompanion extends UpdateCompanion<Node> {
-  final Value<String?> body;
-  const NodesCompanion({
-    this.body = const Value.absent(),
+class DocumentsCompanion extends UpdateCompanion<Document> {
+  final Value<int> id;
+  final Value<String> data;
+  const DocumentsCompanion({
+    this.id = const Value.absent(),
+    this.data = const Value.absent(),
   });
-  NodesCompanion.insert({
-    this.body = const Value.absent(),
-  });
-  static Insertable<Node> custom({
-    Expression<String>? body,
+  DocumentsCompanion.insert({
+    this.id = const Value.absent(),
+    required String data,
+  }) : data = Value(data);
+  static Insertable<Document> custom({
+    Expression<int>? id,
+    Expression<String>? data,
   }) {
     return RawValuesInsertable({
-      if (body != null) 'body': body,
+      if (id != null) 'id': id,
+      if (data != null) 'data': data,
     });
   }
 
-  NodesCompanion copyWith({Value<String?>? body}) {
-    return NodesCompanion(
-      body: body ?? this.body,
+  DocumentsCompanion copyWith({Value<int>? id, Value<String>? data}) {
+    return DocumentsCompanion(
+      id: id ?? this.id,
+      data: data ?? this.data,
     );
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (body.present) {
-      map['body'] = Variable<String>(body.value);
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (data.present) {
+      map['data'] = Variable<String>(data.value);
     }
     return map;
   }
 
   @override
   String toString() {
-    return (StringBuffer('NodesCompanion(')
-          ..write('body: $body')
+    return (StringBuffer('DocumentsCompanion(')
+          ..write('id: $id, ')
+          ..write('data: $data')
           ..write(')'))
         .toString();
   }
 }
 
-class Nodes extends Table with TableInfo<Nodes, Node> {
+class Documents extends Table with TableInfo<Documents, Document> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  Nodes(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _bodyMeta = const VerificationMeta('body');
-  late final GeneratedColumn<String> body = GeneratedColumn<String>(
-      'body', aliasedName, true,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      $customConstraints: '');
+  Documents(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
+  final VerificationMeta _dataMeta = const VerificationMeta('data');
+  late final GeneratedColumn<String> data = GeneratedColumn<String>(
+      'data', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  final VerificationMeta _documentIdMeta = const VerificationMeta('documentId');
+  late final GeneratedColumn<String> documentId = GeneratedColumn<String>(
+      'document_id', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints:
-          'GENERATED ALWAYS AS (json_extract(body, \'\$.id\')) VIRTUAL NOT NULL UNIQUE');
+          'GENERATED ALWAYS AS (json_extract(data, \'\$.id\')) VIRTUAL NOT NULL UNIQUE');
+  final VerificationMeta _collectionMeta = const VerificationMeta('collection');
+  late final GeneratedColumn<String> collection = GeneratedColumn<String>(
+      'collection', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      $customConstraints:
+          'GENERATED ALWAYS AS (json_extract(data, \'\$.collection\')) VIRTUAL NOT NULL');
+  final VerificationMeta _createdMeta = const VerificationMeta('created');
+  late final GeneratedColumn<String> created = GeneratedColumn<String>(
+      'created', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      $customConstraints:
+          'GENERATED ALWAYS AS (json_extract(data, \'\$.created\')) VIRTUAL NOT NULL');
+  final VerificationMeta _updatedMeta = const VerificationMeta('updated');
+  late final GeneratedColumn<String> updated = GeneratedColumn<String>(
+      'updated', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      $customConstraints:
+          'GENERATED ALWAYS AS (json_extract(data, \'\$.updated\')) VIRTUAL NOT NULL');
   @override
-  List<GeneratedColumn> get $columns => [body, id];
+  List<GeneratedColumn> get $columns =>
+      [id, data, documentId, collection, created, updated];
   @override
-  String get aliasedName => _alias ?? 'nodes';
+  String get aliasedName => _alias ?? 'documents';
   @override
-  String get actualTableName => 'nodes';
+  String get actualTableName => 'documents';
   @override
-  VerificationContext validateIntegrity(Insertable<Node> instance,
+  VerificationContext validateIntegrity(Insertable<Document> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('body')) {
-      context.handle(
-          _bodyMeta, body.isAcceptableOrUnknown(data['body']!, _bodyMeta));
-    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('data')) {
+      context.handle(
+          _dataMeta, this.data.isAcceptableOrUnknown(data['data']!, _dataMeta));
+    } else if (isInserting) {
+      context.missing(_dataMeta);
+    }
+    if (data.containsKey('document_id')) {
+      context.handle(
+          _documentIdMeta,
+          documentId.isAcceptableOrUnknown(
+              data['document_id']!, _documentIdMeta));
+    }
+    if (data.containsKey('collection')) {
+      context.handle(
+          _collectionMeta,
+          collection.isAcceptableOrUnknown(
+              data['collection']!, _collectionMeta));
+    }
+    if (data.containsKey('created')) {
+      context.handle(_createdMeta,
+          created.isAcceptableOrUnknown(data['created']!, _createdMeta));
+    }
+    if (data.containsKey('updated')) {
+      context.handle(_updatedMeta,
+          updated.isAcceptableOrUnknown(data['updated']!, _updatedMeta));
     }
     return context;
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
+  Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Node map(Map<String, dynamic> data, {String? tablePrefix}) {
+  Document map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Node(
-      body: attachedDatabase.options.types
-          .read(DriftSqlType.string, data['${effectivePrefix}body']),
+    return Document(
       id: attachedDatabase.options.types
-          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      data: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}data'])!,
+      documentId: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}document_id'])!,
+      collection: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}collection'])!,
+      created: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}created'])!,
+      updated: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}updated'])!,
     );
   }
 
   @override
-  Nodes createAlias(String alias) {
-    return Nodes(attachedDatabase, alias);
+  Documents createAlias(String alias) {
+    return Documents(attachedDatabase, alias);
   }
 
   @override
   bool get dontWriteConstraints => true;
 }
 
-class NodeEntrie extends DataClass implements Insertable<NodeEntrie> {
-  final String body;
-  const NodeEntrie({required this.body});
+class DocumentEntrie extends DataClass implements Insertable<DocumentEntrie> {
+  final String data;
+  const DocumentEntrie({required this.data});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['body'] = Variable<String>(body);
+    map['data'] = Variable<String>(data);
     return map;
   }
 
-  NodeEntriesCompanion toCompanion(bool nullToAbsent) {
-    return NodeEntriesCompanion(
-      body: Value(body),
+  DocumentEntriesCompanion toCompanion(bool nullToAbsent) {
+    return DocumentEntriesCompanion(
+      data: Value(data),
     );
   }
 
-  factory NodeEntrie.fromJson(Map<String, dynamic> json,
+  factory DocumentEntrie.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return NodeEntrie(
-      body: serializer.fromJson<String>(json['body']),
+    return DocumentEntrie(
+      data: serializer.fromJson<String>(json['data']),
     );
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'body': serializer.toJson<String>(body),
+      'data': serializer.toJson<String>(data),
     };
   }
 
-  NodeEntrie copyWith({String? body}) => NodeEntrie(
-        body: body ?? this.body,
+  DocumentEntrie copyWith({String? data}) => DocumentEntrie(
+        data: data ?? this.data,
       );
   @override
   String toString() {
-    return (StringBuffer('NodeEntrie(')
-          ..write('body: $body')
+    return (StringBuffer('DocumentEntrie(')
+          ..write('data: $data')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => body.hashCode;
+  int get hashCode => data.hashCode;
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is NodeEntrie && other.body == this.body);
+      (other is DocumentEntrie && other.data == this.data);
 }
 
-class NodeEntriesCompanion extends UpdateCompanion<NodeEntrie> {
-  final Value<String> body;
-  const NodeEntriesCompanion({
-    this.body = const Value.absent(),
+class DocumentEntriesCompanion extends UpdateCompanion<DocumentEntrie> {
+  final Value<String> data;
+  const DocumentEntriesCompanion({
+    this.data = const Value.absent(),
   });
-  NodeEntriesCompanion.insert({
-    required String body,
-  }) : body = Value(body);
-  static Insertable<NodeEntrie> custom({
-    Expression<String>? body,
+  DocumentEntriesCompanion.insert({
+    required String data,
+  }) : data = Value(data);
+  static Insertable<DocumentEntrie> custom({
+    Expression<String>? data,
   }) {
     return RawValuesInsertable({
-      if (body != null) 'body': body,
+      if (data != null) 'data': data,
     });
   }
 
-  NodeEntriesCompanion copyWith({Value<String>? body}) {
-    return NodeEntriesCompanion(
-      body: body ?? this.body,
+  DocumentEntriesCompanion copyWith({Value<String>? data}) {
+    return DocumentEntriesCompanion(
+      data: data ?? this.data,
     );
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (body.present) {
-      map['body'] = Variable<String>(body.value);
+    if (data.present) {
+      map['data'] = Variable<String>(data.value);
     }
     return map;
   }
 
   @override
   String toString() {
-    return (StringBuffer('NodeEntriesCompanion(')
-          ..write('body: $body')
+    return (StringBuffer('DocumentEntriesCompanion(')
+          ..write('data: $data')
           ..write(')'))
         .toString();
   }
 }
 
-class NodeEntries extends Table
+class DocumentEntries extends Table
     with
-        TableInfo<NodeEntries, NodeEntrie>,
-        VirtualTableInfo<NodeEntries, NodeEntrie> {
+        TableInfo<DocumentEntries, DocumentEntrie>,
+        VirtualTableInfo<DocumentEntries, DocumentEntrie> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  NodeEntries(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _bodyMeta = const VerificationMeta('body');
-  late final GeneratedColumn<String> body = GeneratedColumn<String>(
-      'body', aliasedName, false,
+  DocumentEntries(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _dataMeta = const VerificationMeta('data');
+  late final GeneratedColumn<String> data = GeneratedColumn<String>(
+      'data', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: '');
   @override
-  List<GeneratedColumn> get $columns => [body];
+  List<GeneratedColumn> get $columns => [data];
   @override
-  String get aliasedName => _alias ?? 'node_entries';
+  String get aliasedName => _alias ?? 'document_entries';
   @override
-  String get actualTableName => 'node_entries';
+  String get actualTableName => 'document_entries';
   @override
-  VerificationContext validateIntegrity(Insertable<NodeEntrie> instance,
+  VerificationContext validateIntegrity(Insertable<DocumentEntrie> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('body')) {
+    if (data.containsKey('data')) {
       context.handle(
-          _bodyMeta, body.isAcceptableOrUnknown(data['body']!, _bodyMeta));
+          _dataMeta, this.data.isAcceptableOrUnknown(data['data']!, _dataMeta));
     } else if (isInserting) {
-      context.missing(_bodyMeta);
+      context.missing(_dataMeta);
     }
     return context;
   }
@@ -293,469 +400,128 @@ class NodeEntries extends Table
   @override
   Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
   @override
-  NodeEntrie map(Map<String, dynamic> data, {String? tablePrefix}) {
+  DocumentEntrie map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return NodeEntrie(
-      body: attachedDatabase.options.types
-          .read(DriftSqlType.string, data['${effectivePrefix}body'])!,
+    return DocumentEntrie(
+      data: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}data'])!,
     );
   }
 
   @override
-  NodeEntries createAlias(String alias) {
-    return NodeEntries(attachedDatabase, alias);
+  DocumentEntries createAlias(String alias) {
+    return DocumentEntries(attachedDatabase, alias);
   }
 
   @override
   bool get dontWriteConstraints => true;
   @override
-  String get moduleAndArgs => 'fts5(body, content=nodes, content_rowid=id)';
-}
-
-class Edge extends DataClass implements Insertable<Edge> {
-  final String? source;
-  final String? target;
-  final String? properties;
-  const Edge({this.source, this.target, this.properties});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (!nullToAbsent || source != null) {
-      map['source'] = Variable<String>(source);
-    }
-    if (!nullToAbsent || target != null) {
-      map['target'] = Variable<String>(target);
-    }
-    if (!nullToAbsent || properties != null) {
-      map['properties'] = Variable<String>(properties);
-    }
-    return map;
-  }
-
-  EdgesCompanion toCompanion(bool nullToAbsent) {
-    return EdgesCompanion(
-      source:
-          source == null && nullToAbsent ? const Value.absent() : Value(source),
-      target:
-          target == null && nullToAbsent ? const Value.absent() : Value(target),
-      properties: properties == null && nullToAbsent
-          ? const Value.absent()
-          : Value(properties),
-    );
-  }
-
-  factory Edge.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Edge(
-      source: serializer.fromJson<String?>(json['source']),
-      target: serializer.fromJson<String?>(json['target']),
-      properties: serializer.fromJson<String?>(json['properties']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'source': serializer.toJson<String?>(source),
-      'target': serializer.toJson<String?>(target),
-      'properties': serializer.toJson<String?>(properties),
-    };
-  }
-
-  Edge copyWith(
-          {Value<String?> source = const Value.absent(),
-          Value<String?> target = const Value.absent(),
-          Value<String?> properties = const Value.absent()}) =>
-      Edge(
-        source: source.present ? source.value : this.source,
-        target: target.present ? target.value : this.target,
-        properties: properties.present ? properties.value : this.properties,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('Edge(')
-          ..write('source: $source, ')
-          ..write('target: $target, ')
-          ..write('properties: $properties')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(source, target, properties);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is Edge &&
-          other.source == this.source &&
-          other.target == this.target &&
-          other.properties == this.properties);
-}
-
-class EdgesCompanion extends UpdateCompanion<Edge> {
-  final Value<String?> source;
-  final Value<String?> target;
-  final Value<String?> properties;
-  const EdgesCompanion({
-    this.source = const Value.absent(),
-    this.target = const Value.absent(),
-    this.properties = const Value.absent(),
-  });
-  EdgesCompanion.insert({
-    this.source = const Value.absent(),
-    this.target = const Value.absent(),
-    this.properties = const Value.absent(),
-  });
-  static Insertable<Edge> custom({
-    Expression<String>? source,
-    Expression<String>? target,
-    Expression<String>? properties,
-  }) {
-    return RawValuesInsertable({
-      if (source != null) 'source': source,
-      if (target != null) 'target': target,
-      if (properties != null) 'properties': properties,
-    });
-  }
-
-  EdgesCompanion copyWith(
-      {Value<String?>? source,
-      Value<String?>? target,
-      Value<String?>? properties}) {
-    return EdgesCompanion(
-      source: source ?? this.source,
-      target: target ?? this.target,
-      properties: properties ?? this.properties,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (source.present) {
-      map['source'] = Variable<String>(source.value);
-    }
-    if (target.present) {
-      map['target'] = Variable<String>(target.value);
-    }
-    if (properties.present) {
-      map['properties'] = Variable<String>(properties.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('EdgesCompanion(')
-          ..write('source: $source, ')
-          ..write('target: $target, ')
-          ..write('properties: $properties')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class Edges extends Table with TableInfo<Edges, Edge> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  Edges(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _sourceMeta = const VerificationMeta('source');
-  late final GeneratedColumn<String> source = GeneratedColumn<String>(
-      'source', aliasedName, true,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  final VerificationMeta _targetMeta = const VerificationMeta('target');
-  late final GeneratedColumn<String> target = GeneratedColumn<String>(
-      'target', aliasedName, true,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  final VerificationMeta _propertiesMeta = const VerificationMeta('properties');
-  late final GeneratedColumn<String> properties = GeneratedColumn<String>(
-      'properties', aliasedName, true,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  @override
-  List<GeneratedColumn> get $columns => [source, target, properties];
-  @override
-  String get aliasedName => _alias ?? 'edges';
-  @override
-  String get actualTableName => 'edges';
-  @override
-  VerificationContext validateIntegrity(Insertable<Edge> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('source')) {
-      context.handle(_sourceMeta,
-          source.isAcceptableOrUnknown(data['source']!, _sourceMeta));
-    }
-    if (data.containsKey('target')) {
-      context.handle(_targetMeta,
-          target.isAcceptableOrUnknown(data['target']!, _targetMeta));
-    }
-    if (data.containsKey('properties')) {
-      context.handle(
-          _propertiesMeta,
-          properties.isAcceptableOrUnknown(
-              data['properties']!, _propertiesMeta));
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
-  @override
-  Edge map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Edge(
-      source: attachedDatabase.options.types
-          .read(DriftSqlType.string, data['${effectivePrefix}source']),
-      target: attachedDatabase.options.types
-          .read(DriftSqlType.string, data['${effectivePrefix}target']),
-      properties: attachedDatabase.options.types
-          .read(DriftSqlType.string, data['${effectivePrefix}properties']),
-    );
-  }
-
-  @override
-  Edges createAlias(String alias) {
-    return Edges(attachedDatabase, alias);
-  }
-
-  @override
-  List<String> get customConstraints => const [
-        'UNIQUE(source, target, properties) ON CONFLICT REPLACE',
-        'FOREIGN KEY(source) REFERENCES nodes(id)',
-        'FOREIGN KEY(target) REFERENCES nodes(id)'
-      ];
-  @override
-  bool get dontWriteConstraints => true;
+  String get moduleAndArgs => 'fts5(data, content=documents, content_rowid=id)';
 }
 
 abstract class _$Database extends GeneratedDatabase {
   _$Database(QueryExecutor e) : super(e);
   _$Database.connect(DatabaseConnection c) : super.connect(c);
-  late final Nodes nodes = Nodes(this);
-  late final NodeEntries nodeEntries = NodeEntries(this);
-  late final Trigger nodesInsert = Trigger(
-      'CREATE TRIGGER nodes_insert AFTER INSERT ON nodes BEGIN INSERT INTO node_entries ("rowid", body) VALUES (new.id, new.body);END',
-      'nodes_insert');
-  late final Trigger nodesDelete = Trigger(
-      'CREATE TRIGGER nodes_delete AFTER DELETE ON nodes BEGIN INSERT INTO node_entries (node_entries, "rowid", body) VALUES (\'delete\', old.id, old.body);END',
-      'nodes_delete');
-  late final Trigger nodesUpdate = Trigger(
-      'CREATE TRIGGER nodes_update AFTER UPDATE ON nodes BEGIN INSERT INTO node_entries (node_entries, "rowid", body) VALUES (\'delete\', new.id, new.body);INSERT INTO node_entries ("rowid", body) VALUES (new.id, new.body);END',
-      'nodes_update');
-  late final Index idIdx =
-      Index('id_idx', 'CREATE INDEX IF NOT EXISTS id_idx ON nodes (id)');
-  late final Edges edges = Edges(this);
-  late final Index sourceIdx = Index(
-      'source_idx', 'CREATE INDEX IF NOT EXISTS source_idx ON edges (source)');
-  late final Index targetIdx = Index(
-      'target_idx', 'CREATE INDEX IF NOT EXISTS target_idx ON edges (target)');
-  Future<int> updateNode(String var1, String var2) {
-    return customUpdate(
-      'UPDATE nodes SET body = json(?1) WHERE id = ?2',
-      variables: [Variable<String>(var1), Variable<String>(var2)],
-      updates: {nodes},
-      updateKind: UpdateKind.update,
-    );
-  }
-
-  Selectable<String?> traverse(String source) {
+  late final Documents documents = Documents(this);
+  late final DocumentEntries documentEntries = DocumentEntries(this);
+  late final Trigger documentsInsert = Trigger(
+      'CREATE TRIGGER documents_insert AFTER INSERT ON documents BEGIN INSERT INTO document_entries ("rowid", data) VALUES (new.id, new.data);END',
+      'documents_insert');
+  late final Trigger documentsDelete = Trigger(
+      'CREATE TRIGGER documents_delete AFTER DELETE ON documents BEGIN INSERT INTO document_entries (document_entries, "rowid", data) VALUES (\'delete\', old.id, old.data);END',
+      'documents_delete');
+  late final Trigger documentsUpdate = Trigger(
+      'CREATE TRIGGER documents_update AFTER UPDATE ON documents BEGIN INSERT INTO document_entries (document_entries, "rowid", data) VALUES (\'delete\', new.id, new.data);INSERT INTO document_entries ("rowid", data) VALUES (new.id, new.data);END',
+      'documents_update');
+  late final Index documentIdIdx = Index('document_id_idx',
+      'CREATE INDEX IF NOT EXISTS document_id_idx ON documents (document_id)');
+  late final Index collectionIdx = Index('collection_idx',
+      'CREATE INDEX IF NOT EXISTS collection_idx ON documents (collection)');
+  late final Index createdIdx = Index('created_idx',
+      'CREATE INDEX IF NOT EXISTS created_idx ON documents (created)');
+  late final Index updatedIdx = Index('updated_idx',
+      'CREATE INDEX IF NOT EXISTS updated_idx ON documents (updated)');
+  Selectable<SearchDocumentsResult> searchDocuments(String query) {
     return customSelect(
-        'WITH RECURSIVE traverse(id) AS (SELECT ?1 UNION SELECT source FROM edges JOIN traverse ON target = id UNION SELECT target FROM edges JOIN traverse ON source = id) SELECT id FROM traverse',
-        variables: [
-          Variable<String>(source)
-        ],
-        readsFrom: {
-          edges,
-        }).map((QueryRow row) => row.readNullable<String>('id'));
-  }
-
-  Selectable<TraverseWithBodiesResult> traverseWithBodies(String source) {
-    return customSelect(
-        'WITH RECURSIVE traverse(x, y, obj) AS (SELECT ?1, \'()\', \'{}\' UNION SELECT id, \'()\', body FROM nodes JOIN traverse ON id = x UNION SELECT source, \'<-\', properties FROM edges JOIN traverse ON target = x UNION SELECT target, \'->\', properties FROM edges JOIN traverse ON source = x) SELECT x, y, obj FROM traverse',
-        variables: [
-          Variable<String>(source)
-        ],
-        readsFrom: {
-          nodes,
-          edges,
-        }).map((QueryRow row) {
-      return TraverseWithBodiesResult(
-        x: row.readNullable<String>('x'),
-        y: row.read<String>('y'),
-        obj: row.readNullable<String>('obj'),
-      );
-    });
-  }
-
-  Selectable<TraverseWithBodiesOutboundResult> traverseWithBodiesOutbound(
-      String source) {
-    return customSelect(
-        'WITH RECURSIVE traverse(x, y, obj) AS (SELECT ?1, \'()\', \'{}\' UNION SELECT id, \'()\', body FROM nodes JOIN traverse ON id = x UNION SELECT target, \'->\', properties FROM edges JOIN traverse ON source = x) SELECT x, y, obj FROM traverse',
-        variables: [
-          Variable<String>(source)
-        ],
-        readsFrom: {
-          nodes,
-          edges,
-        }).map((QueryRow row) {
-      return TraverseWithBodiesOutboundResult(
-        x: row.readNullable<String>('x'),
-        y: row.read<String>('y'),
-        obj: row.readNullable<String>('obj'),
-      );
-    });
-  }
-
-  Selectable<TraverseWithBodiesInboundResult> traverseWithBodiesInbound(
-      String source) {
-    return customSelect(
-        'WITH RECURSIVE traverse(x, y, obj) AS (SELECT ?1, \'()\', \'{}\' UNION SELECT id, \'()\', body FROM nodes JOIN traverse ON id = x UNION SELECT source, \'<-\', properties FROM edges JOIN traverse ON target = x) SELECT x, y, obj FROM traverse',
-        variables: [
-          Variable<String>(source)
-        ],
-        readsFrom: {
-          nodes,
-          edges,
-        }).map((QueryRow row) {
-      return TraverseWithBodiesInboundResult(
-        x: row.readNullable<String>('x'),
-        y: row.read<String>('y'),
-        obj: row.readNullable<String>('obj'),
-      );
-    });
-  }
-
-  Selectable<String?> traverseOutbound(String source) {
-    return customSelect(
-        'WITH RECURSIVE traverse(id) AS (SELECT ?1 UNION SELECT target FROM edges JOIN traverse ON source = id) SELECT id FROM traverse',
-        variables: [
-          Variable<String>(source)
-        ],
-        readsFrom: {
-          edges,
-        }).map((QueryRow row) => row.readNullable<String>('id'));
-  }
-
-  Selectable<String?> traverseInbound(String source) {
-    return customSelect(
-        'WITH RECURSIVE traverse(id) AS (SELECT ?1 UNION SELECT source FROM edges JOIN traverse ON target = id) SELECT id FROM traverse',
-        variables: [
-          Variable<String>(source)
-        ],
-        readsFrom: {
-          edges,
-        }).map((QueryRow row) => row.readNullable<String>('id'));
-  }
-
-  Selectable<SearchNodeResult> searchNode(String query) {
-    return customSelect(
-        'SELECT"r"."body" AS "nested_0.body", "r"."id" AS "nested_0.id" FROM node_entries INNER JOIN nodes AS r ON r.id = node_entries."rowid" WHERE node_entries MATCH ?1 ORDER BY rank',
+        'SELECT"r"."id" AS "nested_0.id", "r"."data" AS "nested_0.data", "r"."document_id" AS "nested_0.document_id", "r"."collection" AS "nested_0.collection", "r"."created" AS "nested_0.created", "r"."updated" AS "nested_0.updated" FROM document_entries INNER JOIN documents AS r ON r.id = document_entries."rowid" WHERE document_entries MATCH ?1 ORDER BY rank',
         variables: [
           Variable<String>(query)
         ],
         readsFrom: {
-          nodeEntries,
-          nodes,
+          documentEntries,
+          documents,
         }).asyncMap((QueryRow row) async {
-      return SearchNodeResult(
-        r: await nodes.mapFromRow(row, tablePrefix: 'nested_0'),
+      return SearchDocumentsResult(
+        r: await documents.mapFromRow(row, tablePrefix: 'nested_0'),
       );
     });
   }
 
-  Selectable<String?> searchNodeById(String var1) {
-    return customSelect('SELECT body FROM nodes WHERE id = ?1', variables: [
-      Variable<String>(var1)
-    ], readsFrom: {
-      nodes,
-    }).map((QueryRow row) => row.readNullable<String>('body'));
+  Future<int> createDocument(String data) {
+    return customInsert(
+      'INSERT INTO documents (data) VALUES (json(?1))',
+      variables: [Variable<String>(data)],
+      updates: {documents},
+    );
   }
 
-  Selectable<Edge> searchEdges(String? var1, String? var2) {
-    return customSelect(
-        'SELECT * FROM edges WHERE source = ?1 UNION SELECT * FROM edges WHERE target = ?2',
+  Future<int> updateDocument(String text) {
+    return customUpdate(
+      'UPDATE documents SET data = json(?1) WHERE document_id = json_extract(?1, \'\$.id\')',
+      variables: [Variable<String>(text)],
+      updates: {documents},
+      updateKind: UpdateKind.update,
+    );
+  }
+
+  Selectable<Document> getAllDocuments() {
+    return customSelect('SELECT * FROM documents', variables: [], readsFrom: {
+      documents,
+    }).asyncMap(documents.mapFromRow);
+  }
+
+  Selectable<Document> getDocumentById(String id) {
+    return customSelect('SELECT * FROM documents WHERE document_id = ?1',
         variables: [
-          Variable<String>(var1),
-          Variable<String>(var2)
+          Variable<String>(id)
         ],
         readsFrom: {
-          edges,
-        }).asyncMap(edges.mapFromRow);
+          documents,
+        }).asyncMap(documents.mapFromRow);
   }
 
-  Selectable<Edge> searchEdgesOutbound(String? var1) {
-    return customSelect('SELECT * FROM edges WHERE target = ?1', variables: [
-      Variable<String>(var1)
-    ], readsFrom: {
-      edges,
-    }).asyncMap(edges.mapFromRow);
+  Selectable<Document> getDocumentsByCollection(String collection) {
+    return customSelect('SELECT * FROM documents WHERE collection = ?1',
+        variables: [
+          Variable<String>(collection)
+        ],
+        readsFrom: {
+          documents,
+        }).asyncMap(documents.mapFromRow);
   }
 
-  Selectable<Edge> searchEdgesInbound(String? var1) {
-    return customSelect('SELECT * FROM edges WHERE source = ?1', variables: [
-      Variable<String>(var1)
-    ], readsFrom: {
-      edges,
-    }).asyncMap(edges.mapFromRow);
+  Selectable<Document> getDocumentByIdAndCollection(
+      String id, String collection) {
+    return customSelect(
+        'SELECT * FROM documents WHERE document_id = ?1 AND collection = ?2',
+        variables: [
+          Variable<String>(id),
+          Variable<String>(collection)
+        ],
+        readsFrom: {
+          documents,
+        }).asyncMap(documents.mapFromRow);
   }
 
-  Future<int> insertNode(String text) {
-    return customInsert(
-      'INSERT INTO nodes VALUES (json(?1))',
-      variables: [Variable<String>(text)],
-      updates: {nodes},
-    );
-  }
-
-  Future<int> insertEdge(String source, String target, String body) {
-    return customInsert(
-      'INSERT INTO edges VALUES (?1, ?2, json(?3))',
-      variables: [
-        Variable<String>(source),
-        Variable<String>(target),
-        Variable<String>(body)
-      ],
-      updates: {edges},
-    );
-  }
-
-  Future<int> deleteNode(String var1) {
-    return customUpdate(
-      'DELETE FROM nodes WHERE id = ?1',
-      variables: [Variable<String>(var1)],
-      updates: {nodes},
-      updateKind: UpdateKind.delete,
-    );
-  }
-
-  Future<int> deleteEdge(String? var1, String? var2) {
-    return customUpdate(
-      'DELETE FROM edges WHERE source = ?1 OR target = ?2',
-      variables: [Variable<String>(var1), Variable<String>(var2)],
-      updates: {edges},
-      updateKind: UpdateKind.delete,
-    );
-  }
-
-  Selectable<Node> getAllNodes() {
-    return customSelect('SELECT * FROM nodes', variables: [], readsFrom: {
-      nodes,
-    }).asyncMap(nodes.mapFromRow);
-  }
-
-  Selectable<Edge> getAllEdges() {
-    return customSelect('SELECT * FROM edges', variables: [], readsFrom: {
-      edges,
-    }).asyncMap(edges.mapFromRow);
+  Selectable<Document> getLatestDocumentInCollection(String collection) {
+    return customSelect(
+        'SELECT * FROM documents WHERE collection = ?1 ORDER BY updated DESC LIMIT 1',
+        variables: [
+          Variable<String>(collection)
+        ],
+        readsFrom: {
+          documents,
+        }).asyncMap(documents.mapFromRow);
   }
 
   @override
@@ -763,80 +529,47 @@ abstract class _$Database extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
-        nodes,
-        nodeEntries,
-        nodesInsert,
-        nodesDelete,
-        nodesUpdate,
-        idIdx,
-        edges,
-        sourceIdx,
-        targetIdx
+        documents,
+        documentEntries,
+        documentsInsert,
+        documentsDelete,
+        documentsUpdate,
+        documentIdIdx,
+        collectionIdx,
+        createdIdx,
+        updatedIdx
       ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
         [
           WritePropagation(
-            on: TableUpdateQuery.onTableName('nodes',
+            on: TableUpdateQuery.onTableName('documents',
                 limitUpdateKind: UpdateKind.insert),
             result: [
-              TableUpdate('node_entries', kind: UpdateKind.insert),
+              TableUpdate('document_entries', kind: UpdateKind.insert),
             ],
           ),
           WritePropagation(
-            on: TableUpdateQuery.onTableName('nodes',
+            on: TableUpdateQuery.onTableName('documents',
                 limitUpdateKind: UpdateKind.delete),
             result: [
-              TableUpdate('node_entries', kind: UpdateKind.insert),
+              TableUpdate('document_entries', kind: UpdateKind.insert),
             ],
           ),
           WritePropagation(
-            on: TableUpdateQuery.onTableName('nodes',
+            on: TableUpdateQuery.onTableName('documents',
                 limitUpdateKind: UpdateKind.update),
             result: [
-              TableUpdate('node_entries', kind: UpdateKind.insert),
+              TableUpdate('document_entries', kind: UpdateKind.insert),
             ],
           ),
         ],
       );
 }
 
-class TraverseWithBodiesResult {
-  final String? x;
-  final String y;
-  final String? obj;
-  TraverseWithBodiesResult({
-    this.x,
-    required this.y,
-    this.obj,
-  });
-}
-
-class TraverseWithBodiesOutboundResult {
-  final String? x;
-  final String y;
-  final String? obj;
-  TraverseWithBodiesOutboundResult({
-    this.x,
-    required this.y,
-    this.obj,
-  });
-}
-
-class TraverseWithBodiesInboundResult {
-  final String? x;
-  final String y;
-  final String? obj;
-  TraverseWithBodiesInboundResult({
-    this.x,
-    required this.y,
-    this.obj,
-  });
-}
-
-class SearchNodeResult {
-  final Node r;
-  SearchNodeResult({
+class SearchDocumentsResult {
+  final Document r;
+  SearchDocumentsResult({
     required this.r,
   });
 }

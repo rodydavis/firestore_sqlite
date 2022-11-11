@@ -45,7 +45,7 @@ class Test extends Doc {
 ''';
 
 void main() {
-  final schemaFile = File('example/bin/schema.json');
+  final schemaFile = File('.example/schema.json');
   final items = jsonDecode(schemaFile.readAsStringSync()) as List;
   final collections = items.map((e) => Collection.fromJson(e)).toList();
 
@@ -109,7 +109,7 @@ void main() {
   });
 
   test('schema generator', () {
-    final outFile = File('./test/schema.json');
+    final outFile = File('./example/schema.json');
 
     final client = SchemaGenerator(
       collections: collections,

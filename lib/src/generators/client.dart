@@ -4,7 +4,7 @@ import '../classes/collection.dart';
 import '../utils/file.dart';
 import 'base.dart';
 import 'collection.dart';
-import 'utils/format.dart';
+import '../utils/format.dart';
 
 const _template = r'''import 'package:firestore_sqlite/firestore_sqlite.dart';
 

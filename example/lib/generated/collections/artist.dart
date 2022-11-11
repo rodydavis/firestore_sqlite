@@ -4,7 +4,7 @@ import 'package:firestore_sqlite/firestore_sqlite.dart';
 final artistCollection = Collection.fromJson(const {
   "name": "artist",
   "created": "2022-11-08T18:41:42.555",
-  "updated": "2022-11-08T18:41:42.559",
+  "updated": "2022-11-10T21:54:18.281",
   "description": "",
   "fields": [
     {
@@ -24,7 +24,7 @@ final artistCollection = Collection.fromJson(const {
       "previous": null
     },
     {
-      "name": "updated",
+      "name": "created",
       "type": {"runtimeType": "date"},
       "description": null,
       "required": true,

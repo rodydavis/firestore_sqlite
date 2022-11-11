@@ -1,0 +1,28 @@
+import 'firestore.drift';
+
+-- Create a text index of entries, see https://www.sqlite.org/fts5.html#external_content_tables
+CREATE VIRTUAL TABLE document_entries USING fts5 (
+    data,
+    content=documents,
+    content_rowid=id
+);
+
+-- Triggers to keep entries and fts5 index in sync.
+CREATE TRIGGER documents_insert AFTER INSERT ON documents BEGIN
+  INSERT INTO document_entries(rowid, data) VALUES (new.id, new.data);
+END;
+
+CREATE TRIGGER documents_delete AFTER DELETE ON documents BEGIN
+  INSERT INTO document_entries(document_entries, rowid, data) VALUES ('delete', old.id, old.data);
+END;
+
+CREATE TRIGGER documents_update AFTER UPDATE ON documents BEGIN
+  INSERT INTO document_entries(document_entries, rowid, data) VALUES ('delete', new.id, new.data);
+  INSERT INTO document_entries(rowid, data) VALUES (new.id, new.data);
+END;
+
+-- Full text search query.
+searchDocuments: SELECT r.** FROM document_entries
+    INNER JOIN documents r ON r.id = document_entries.rowid
+    WHERE document_entries MATCH :query
+    ORDER BY rank;
