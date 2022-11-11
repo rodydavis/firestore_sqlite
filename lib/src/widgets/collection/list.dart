@@ -41,7 +41,7 @@ class CollectionsEditor extends StatelessWidget {
               actions: [
                 IconButton(
                   tooltip: 'Copy Schemas to Clipboard',
-                  icon: const Icon(Icons.copy),
+                  icon: const Icon(Icons.file_copy),
                   onPressed: snapshot.data == null
                       ? null
                       : () async {
@@ -55,6 +55,48 @@ class CollectionsEditor extends StatelessWidget {
                             ),
                           );
                         },
+                ),
+                IconButton(
+                  tooltip: 'Read Schemas from Clipboard',
+                  icon: const Icon(Icons.paste),
+                  onPressed: () async {
+                    final messenger = ScaffoldMessenger.of(context);
+                    final jsonString = await Clipboard.getData('text/plain');
+                    if (jsonString?.text == null) {
+                      messenger.showSnackBar(
+                        const SnackBar(
+                          content: Text('No text found in Clipboard'),
+                        ),
+                      );
+                      return;
+                    }
+                    try {
+                      final data = jsonDecode(jsonString!.text!);
+                      if (data is! List) {
+                        throw const FormatException('Expected List');
+                      }
+                      final collections = data
+                          .map((e) => Collection.fromJson(e))
+                          .whereType<Collection>()
+                          .toList();
+                      await db.runTransaction((transaction) async {
+                        for (final collection in collections) {
+                          await collection.save();
+                        }
+                      });
+                      messenger.showSnackBar(
+                        const SnackBar(
+                          content: Text('Schemas saved'),
+                        ),
+                      );
+                    } catch (e) {
+                      messenger.showSnackBar(
+                        SnackBar(
+                          content: Text('Error parsing schemas: $e'),
+                        ),
+                      );
+                    }
+                  },
                 ),
               ],
             ),

@@ -28,7 +28,7 @@
           "previous": null
         },
         {
-          "name": "updated",
+          "name": "created",
           "type": {
             "runtimeType": "date"
           },

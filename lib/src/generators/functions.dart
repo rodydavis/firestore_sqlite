@@ -2,17 +2,30 @@ import 'dart:io';
 
 import 'package:firestore_sqlite/firestore_sqlite.dart';
 
-import '../classes/collection.dart';
 import '../utils/file.dart';
 import 'base.dart';
 
-const _template = r'''import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
+String imports({bool graphql = false}) {
+  final sb = StringBuffer();
+  sb.writeln('import * as functions from "firebase-functions";');
+  sb.writeln('import * as admin from "firebase-admin";');
+  if (graphql) {
+    sb.writeln(
+        'import {ApolloServer, gql} from "apollo-server-cloud-functions";');
+  }
+  sb.writeln();
+  sb.writeln('admin.initializeApp(functions.config().firebase);');
+  sb.writeln('const db = admin.firestore();');
+  return sb.toString();
+}
 
-admin.initializeApp(functions.config().firebase);
-const db = admin.firestore();
+const _template = r'''
 
-async function handelCollection(request: functions.https.Request, response: functions.Response<any>, collection: string) {
+async function handelCollection(
+  request: functions.https.Request,
+  response: functions.Response<any>,
+  collection: string,
+  ) {
   const method = request.method;
   if (method === "GET") {
     const id = request.query.id;
@@ -66,20 +79,20 @@ async function handelCollection(request: functions.https.Request, response: func
 /**
  * {{name}} - {{description}}
  */
-export const collection_{{#camel_case}}{{name}}{{/camel_case}} = functions.https.onRequest((request, response) => handelCollection(request, response, "{{name}}"));
+export const collection{{#pascal_case}}{{name}}{{/pascal_case}} = functions.https.onRequest((req, res) => {
+  return handelCollection(req, res, "{{name}}");
+});
 {{/collections}}
 
-/**
- * Generated firestore triggers
- */
 {{#all_triggers}}
-export const collection_{{collection}}_trigger = functions.firestore
+export const collection{{#pascal_case}}{{collection}}{{/pascal_case}}Trigger = functions.firestore
   .document('{{collection}}/{docId}')
   .onDelete(async (snapshot, context) => { 
+    const docId = context.params.docId;
     const batch = db.batch();
     {{#triggers}}
-    const {{collection}}Items = await db.collection("{{collection}}").where("{{field}}", "==", context.params.docId).get();
-    for (const item of {{collection}}Items.docs) {
+    const {{#camel_case}}{{collection}}{{/camel_case}}Items = await db.collection("{{collection}}").where("{{field}}", "==", docId).get();
+    for (const item of {{#camel_case}}{{collection}}{{/camel_case}}Items.docs) {
       batch.delete(item.ref);
     }
     {{/triggers}}
@@ -87,12 +100,71 @@ export const collection_{{collection}}_trigger = functions.firestore
    });
 {{/all_triggers}}
 
+{{#graphql}}
+
+const typeDefs = gql`
+{{#collections}}
+  type {{#pascal_case}}{{name}}{{/pascal_case}} {
+    {{#fields}}
+    {{#camel_case}}{{name}}{{/camel_case}}: {{graphql_type}}
+    {{/fields}}
+  }
+{{/collections}}
+  type Query {
+    {{#collections}}    
+    {{#camel_case}}{{name}}{{/camel_case}}: [{{#pascal_case}}{{name}}{{/pascal_case}}]
+    {{/collections}}
+  }
+`;
+
+const resolvers = {
+  Query: {
+    {{#collections}}
+    {{#camel_case}}{{name}}{{/camel_case}}: async () => {
+      const docs = await db.collection("{{name}}").get();
+      return docs.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }));
+    },
+    {{/collections}}
+  },
+};
+
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  introspection: true,
+  // @ts-ignore
+  playground: true,
+});
+
+export const graphql = functions.https.onRequest((req, res) => {
+  {{#cors}}
+  const handler = server.createHandler({
+    // @ts-ignore
+    cors: { origin: true, credentials: true },
+  });
+  {{/cors}}
+  {{^cors}}
+  const handler = server.createHandler();
+  {{/cors}}
+  return handler(req, res, () => { });
+});
+{{/graphql}}
+
 ''';
 
+const startKey = '// GENERATED_FUNCTIONS_START';
+const endKey = '// GENERATED_FUNCTIONS_END';
+
 class FunctionsGenerator extends GeneratorBase {
-  FunctionsGenerator({required this.outFile, required this.collections});
+  FunctionsGenerator({
+    required this.outFile,
+    required this.collections,
+    this.graphql = false,
+    this.cors = false,
+  });
   final List<Collection> collections;
   final File outFile;
+  final bool graphql, cors;
 
   @override
   String get template => _template;
@@ -116,7 +188,21 @@ class FunctionsGenerator extends GeneratorBase {
       }
     }
     return {
-      'collections': collections,
+      'collections': [
+        for (final collection in collections)
+          {
+            ...copyJson(collection) as Map<String, Object?>,
+            'fields': [
+              for (final field in collection.fields)
+                {
+                  ...copyJson(field) as Map<String, Object?>,
+                  'graphql_type': field.graphqlType,
+                }
+            ],
+          }
+      ],
+      'graphql': graphql,
+      'cors': cors,
       'all_triggers': [
         for (final entry in triggers.entries)
           {
@@ -131,7 +217,18 @@ class FunctionsGenerator extends GeneratorBase {
   String render() {
     final result = super.render();
     outFile.check();
-    outFile.writeAsStringSync(result);
+    final content = outFile.readAsStringSync();
+    final prefix = imports(graphql: graphql);
+    if (content.contains(startKey) && content.contains(endKey)) {
+      // Replace tags with content
+      final output = content.replaceAllMapped(
+        RegExp('$startKey.*$endKey', dotAll: true),
+        (match) => result,
+      );
+      outFile.writeAsStringSync(output);
+    } else {
+      outFile.writeAsStringSync('$prefix$result');
+    }
     return result;
   }
 }
@@ -149,5 +246,30 @@ class Trigger {
       'collection': collection,
       'field': field,
     };
+  }
+}
+
+extension on Field {
+  String get graphqlType {
+    if (name == 'id') return 'ID!';
+    final base = type.when(
+      string: (_) => 'String',
+      int: () => 'Int',
+      double: () => 'Float',
+      bool: () => 'Boolean',
+      date: () => 'String',
+      document: (target, triggerDelete) => 'String',
+      array: () => 'String',
+      map: () => 'String',
+      blob: (_) => 'String',
+      dynamic: () => 'String',
+      num: () => 'Float',
+      option: (values) => 'String',
+    );
+    if (required == true) {
+      return base;
+    } else {
+      return '$base!';
+    }
   }
 }

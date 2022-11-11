@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firestore_sqlite/firestore_sqlite.dart';
 
 import '../form.dart';
@@ -40,16 +42,19 @@ class _CollectionFormState extends State<CollectionForm> {
   }
 
   Future<void> save(BuildContext context) async {
+    final nav = Navigator.of(context);
     if (formKey.currentState?.validate() ?? false) {
       formKey.currentState?.save();
+      final now = DateTime.now().toIso8601String();
+      data['created'] ??= now;
+      data['updated'] = now;
       final valid = widget.collection.validate(data);
       if (valid.valid) {
         doc.endBatch();
         doc.setJson(data);
         await doc.save();
+        nav.pop();
       } else {
-        final errors = valid.errors;
-        final nav = Navigator.of(context);
         nav.push(
           MaterialPageRoute(
             builder: (context) => Scaffold(
@@ -58,7 +63,7 @@ class _CollectionFormState extends State<CollectionForm> {
               ),
               body: ListView(
                 children: [
-                  for (final error in errors)
+                  for (final error in valid.errors)
                     ListTile(
                       title: Text(error),
                     ),

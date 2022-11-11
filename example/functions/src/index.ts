@@ -1,10 +1,15 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+import {ApolloServer, gql} from "apollo-server-cloud-functions";
 
 admin.initializeApp(functions.config().firebase);
 const db = admin.firestore();
 
-async function handelCollection(request: functions.https.Request, response: functions.Response<any>, collection: string) {
+async function handelCollection(
+  request: functions.https.Request,
+  response: functions.Response<any>,
+  collection: string,
+  ) {
   const method = request.method;
   if (method === "GET") {
     const id = request.query.id;
@@ -55,23 +60,49 @@ async function handelCollection(request: functions.https.Request, response: func
 }
 
 /**
- * test_0 - Random collection 0
+ * artist - 
  */
-export const collection_test0 = functions.https.onRequest((request, response) => handelCollection(request, response, "test_0"));
-/**
- * test_1 - Random collection 1
- */
-export const collection_test1 = functions.https.onRequest((request, response) => handelCollection(request, response, "test_1"));
-/**
- * test_2 - Random collection 2
- */
-export const collection_test2 = functions.https.onRequest((request, response) => handelCollection(request, response, "test_2"));
-/**
- * test_3 - Random collection 3
- */
-export const collection_test3 = functions.https.onRequest((request, response) => handelCollection(request, response, "test_3"));
-/**
- * test_4 - Random collection 4
- */
-export const collection_test4 = functions.https.onRequest((request, response) => handelCollection(request, response, "test_4"));
+export const collectionArtist = functions.https.onRequest((req, res) => {
+  return handelCollection(req, res, "artist");
+});
+
+
+
+const typeDefs = gql`
+  type Artist {
+    name: String
+    id: ID!
+    created: String
+    updated: String
+    deleted: Boolean!
+  }
+  type Query {
+    artist: [Artist]
+  }
+`;
+
+const resolvers = {
+  Query: {
+    artist: async () => {
+      const docs = await db.collection("artist").get();
+      return docs.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }));
+    },
+  },
+};
+
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  introspection: true,
+  // @ts-ignore
+  playground: true,
+});
+
+export const graphql = functions.https.onRequest((req, res) => {
+  const handler = server.createHandler({
+    // @ts-ignore
+    cors: { origin: true, credentials: true },
+  });
+  return handler(req, res, () => { });
+});
 

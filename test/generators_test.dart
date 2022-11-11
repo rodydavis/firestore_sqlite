@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -44,6 +45,10 @@ class Test extends Doc {
 ''';
 
 void main() {
+  final schemaFile = File('example/bin/schema.json');
+  final items = jsonDecode(schemaFile.readAsStringSync()) as List;
+  final collections = items.map((e) => Collection.fromJson(e)).toList();
+
   test('json generator', () {
     final args = {'key': 'value'};
 
@@ -75,22 +80,9 @@ void main() {
   });
 
   test('client generator', () {
-    final collection = Collection(
-      name: 'test',
-      created: DateTime(1970),
-      updated: DateTime(1970),
-      description: 'Test class generation',
-      fields: const [
-        Field(
-          name: 'name',
-          type: StringField(),
-          description: 'Display name',
-        ),
-      ],
-    );
     final client = ClientGenerator(
-      collections: [collection],
-      output: Directory('./generated'),
+      collections: collections,
+      output: Directory('./example/lib/generated'),
     );
 
     client.render();
@@ -99,65 +91,28 @@ void main() {
   });
 
   test('functions generator', () {
-    final outFile = File('./test/functions.ts');
+    final outFile = File('./example/functions/src/index.ts');
 
     final client = FunctionsGenerator(
-      collections: List.generate(
-        5,
-        (index) => Collection(
-          name: 'test_$index',
-          created: DateTime(1970),
-          updated: DateTime(1970),
-          description: 'Random collection $index',
-          fields: [
-            const Field(
-              name: 'name',
-              type: StringField(),
-              description: 'Display name',
-            ),
-            if (index == 2)
-              const Field(
-                name: 'test_id',
-                type: DocumentField(
-                  'test_1',
-                  triggerDelete: true,
-                ),
-                description: 'Test reference',
-              ),
-          ],
-        ),
-      ),
+      graphql: true,
+      cors: true,
+      collections: collections,
       outFile: outFile,
     );
 
     client.render();
 
-    expect(client.collections.length, 5);
+    expect(client.collections.length, 1);
     expect(outFile.existsSync(), true);
 
-    outFile.deleteSync();
+    // outFile.deleteSync();
   });
 
   test('schema generator', () {
     final outFile = File('./test/schema.json');
 
     final client = SchemaGenerator(
-      collections: List.generate(
-        5,
-        (index) => Collection(
-          name: 'test_$index',
-          created: DateTime(1970),
-          updated: DateTime(1970),
-          description: 'Random collection $index',
-          fields: const [
-            Field(
-              name: 'name',
-              type: StringField(),
-              description: 'Display name',
-            ),
-          ],
-        ),
-      ),
+      collections: collections,
       outFile: outFile,
     );
 
@@ -166,6 +121,6 @@ void main() {
     expect(client.collections.length, 5);
     expect(outFile.existsSync(), true);
 
-    outFile.deleteSync();
+    // outFile.deleteSync();
   });
 }
