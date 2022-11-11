@@ -70,9 +70,9 @@ Before schema change:
 
 There are some auto generated fields created to help with the UI and class generation:
 
-- **@id** (string) - The id of the document
-- **@created** (date) - The date the document was created
-- **@updated** (date) - The date the document was last updated
+- **id** (string) - The id of the document
+- **created** (date) - The date the document was created
+- **updated** (date) - The date the document was last updated
 
 > These fields are not required in the schema but will be added to the document.
 
@@ -252,7 +252,7 @@ Even if the data is local and a call to the server is not required Firebase Anal
 
 Since the database is a SQLite file it is possible to sync the local database for a user across multiple devices using a cloud storage provider like Firebase Storage and/or [iCloud Storage](https://pub.dev/packages/icloud_storage).
 
-It is easy to check for updates on the document by using the `@updated` field.
+It is easy to check for updates on the document by using the `updated` field.
 
 ## Deletion
 
@@ -262,14 +262,14 @@ You can still query the deleted documents but they will not be returned in the r
 
 A cron job can be used to remove the deleted documents after a certain period of time.
 
-## Not Scoped
-
-### Time to Live
+## Time to Live
 
 Using the new firebase feature we can set a TTL on a given collection to help clean up documents.
 
 This is used for [logging](#logging--analytics) collection and has a default of 30 days.
 
-### Firestore Bundles
+## Firestore Bundles
 
-https://firebase.google.com/docs/firestore/bundles
+Firestore [bundles](https://firebase.google.com/docs/firestore/bundles) are generated if the collection opts in.
+
+There is a helper method to download and load them on the client.
