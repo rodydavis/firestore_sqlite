@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firestore_sqlite/firestore_sqlite.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 
-class FirestoreClient {
+import 'package:firestore_sqlite/firestore_sqlite.dart';
+
+abstract class FirestoreClient {
   final database = Database(logStatements: kDebugMode);
-  final firestore = FirebaseFirestore.instance;
-  late final schemas = firestore.collection('schema');
+  final firebase = Firebase.instance();
+  late final schemas = firebase.firestore.collection('schema');
+  List<Collection> get collections;
 
   Future<void> _add(Doc doc) async {
     final source = doc.id;
@@ -49,7 +52,32 @@ class FirestoreClient {
     await doc.delete();
     return _delete(doc);
   }
+
+  Stream<BundleState> downloadBundle() async* {
+    final hasBundles = collections.any((e) => e.bundle == true);
+    if (!hasBundles) {
+      yield BundleState.success;
+      return;
+    }
+    final bucket = firebase.storage.ref();
+    final bundle = await bucket.child('collections-bundle').getData();
+    if (bundle == null) {
+      yield BundleState.error;
+      return;
+    }
+    yield* loadBundle(bundle);
+  }
+
+  Stream<BundleState> loadBundle(Uint8List bundle) async* {
+    final task = firebase.firestore.loadBundle(bundle);
+    await for (final event in task.stream) {
+      final idx = event.taskState.index;
+      yield BundleState.values[idx];
+    }
+  }
 }
+
+enum BundleState { running, success, error }
 
 class FirestoreClientCollection<T extends Doc> {
   FirestoreClientCollection(this.client, this.collection);
@@ -231,4 +259,21 @@ class FirestoreClientCollection<T extends Doc> {
         .where((e) => e.deleted != true)
         .toList();
   }
+}
+
+class Firebase {
+  Firebase({
+    required this.firestore,
+    required this.storage,
+  });
+
+  factory Firebase.instance() {
+    return Firebase(
+      firestore: FirebaseFirestore.instance,
+      storage: FirebaseStorage.instance,
+    );
+  }
+
+  final FirebaseFirestore firestore;
+  final FirebaseStorage storage;
 }

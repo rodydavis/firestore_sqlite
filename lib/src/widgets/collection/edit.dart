@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:firestore_sqlite/firestore_sqlite.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../utils/json.dart';
 import '../form.dart';
@@ -27,22 +30,49 @@ class _EditCollectionState extends State<EditCollection> {
   @override
   void initState() {
     super.initState();
-    delayedValidate();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      removeDefaults();
+      delayedValidate();
+    });
   }
 
-  void save(BuildContext context) {
-    if (formKey.currentState!.validate()) {
-      formKey.currentState!.save();
-      data['updated'] ??= DateTime.now().toIso8601String();
-      data['created'] ??= DateTime.now().toIso8601String();
-      collection = Collection.fromJson(data);
-      Navigator.of(context).pop(collection);
+  void removeDefaults() {
+    final fields = CollectionX.defaultFields;
+    final dataFields = data['fields'] as List<dynamic>?;
+    for (final field in fields) {
+      dataFields?.removeWhere((e) => e['name'] == field.name);
     }
+    if (mounted) setState(() {});
   }
 
   void delayedValidate() async {
     await Future<void>.delayed(const Duration(milliseconds: 100));
     formKey.currentState!.validate();
+  }
+
+  void save(BuildContext context) {
+    if (formKey.currentState!.validate()) {
+      formKey.currentState!.save();
+      // Add default fields
+      final fields = CollectionX.defaultFields;
+      final dataFields = data['fields'] as List<dynamic>? ?? [];
+      for (final field in fields) {
+        if (dataFields.any((e) => e['name'] == field.name) != true) {
+          dataFields.add(copyJson(field));
+        }
+      }
+      for (final f in dataFields) {
+        // Remove name from previous if exists
+        final prev = f['previous'] as List? ?? [];
+        prev.removeWhere((e) => e == f['name']);
+        f['previous'] = prev;
+      }
+      data['fields'] = dataFields;
+      data['updated'] ??= DateTime.now().toIso8601String();
+      data['created'] ??= DateTime.now().toIso8601String();
+      collection = Collection.fromJson(data);
+      Navigator.of(context).pop(collection);
+    }
   }
 
   @override
@@ -58,6 +88,107 @@ class _EditCollectionState extends State<EditCollection> {
         appBar: AppBar(
           title: Text('${collection == null ? 'Add' : 'Edit'} Collection'),
           actions: [
+            IconButton(
+              tooltip: 'Read json from Clipboard to generate fields',
+              icon: const Icon(Icons.paste),
+              onPressed: () async {
+                final messenger = ScaffoldMessenger.of(context);
+                final jsonString = await Clipboard.getData('text/plain');
+                if (jsonString?.text == null) {
+                  messenger.showSnackBar(
+                    const SnackBar(
+                      content: Text('No json found in Clipboard'),
+                    ),
+                  );
+                  return;
+                }
+                try {
+                  final jsonData = jsonDecode(jsonString!.text!);
+                  Map? target;
+                  if (jsonData is List) {
+                    target = jsonData.first;
+                  } else if (jsonData is Map) {
+                    target = jsonData;
+                  }
+                  if (target != null) {
+                    // Try to convert json into field type
+                    final fields = <Field>[];
+                    for (final entry in target.entries) {
+                      final name = entry.key;
+                      final value = entry.value;
+                      if (value is String) {
+                        fields.add(
+                          Field(
+                            name: name,
+                            type: const FieldType.string(),
+                          ),
+                        );
+                      } else if (value is num) {
+                        fields.add(
+                          Field(
+                            name: name,
+                            type: const FieldType.num(),
+                          ),
+                        );
+                      } else if (value is int) {
+                        fields.add(
+                          Field(
+                            name: name,
+                            type: const FieldType.int(),
+                          ),
+                        );
+                      } else if (value is double) {
+                        fields.add(
+                          Field(
+                            name: name,
+                            type: const FieldType.double(),
+                          ),
+                        );
+                      } else if (value is bool) {
+                        fields.add(
+                          Field(
+                            name: name,
+                            type: const FieldType.bool(),
+                          ),
+                        );
+                      } else if (value is List) {
+                        fields.add(
+                          Field(
+                            name: name,
+                            type: const FieldType.array(),
+                          ),
+                        );
+                      } else if (value is Map) {
+                        fields.add(
+                          Field(
+                            name: name,
+                            type: const FieldType.map(),
+                          ),
+                        );
+                      }
+                    }
+                    if (mounted) {
+                      setState(() {
+                        data['fields'] = copyJson(fields);
+                        removeDefaults();
+                      });
+                    }
+                    formKey.currentState!.reset();
+                    messenger.showSnackBar(
+                      const SnackBar(
+                        content: Text('Fields generated from json'),
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  messenger.showSnackBar(
+                    SnackBar(
+                      content: Text('Invalid json found in Clipboard: $e'),
+                    ),
+                  );
+                }
+              },
+            ),
             IconButton(
               tooltip: 'Save Collection',
               onPressed: !edited ? null : () => save(context),
@@ -97,6 +228,13 @@ class _EditCollectionState extends State<EditCollection> {
                   value: collection?.description,
                   onChanged: (value) {
                     data['description'] = value;
+                  },
+                ),
+                boolField(
+                  label: 'Bundle',
+                  value: collection?.bundle,
+                  onChanged: (value) {
+                    data['bundle'] = value;
                   },
                 ),
                 Builder(
@@ -159,13 +297,19 @@ class _EditCollectionState extends State<EditCollection> {
                                               RegExp(r'^[a-zA-Z_-]+$');
                                           if (regex.hasMatch(value)) {
                                             final allFields = <String>{};
-                                            for (final f
-                                                in collection?.allFields ??
-                                                    CollectionX.defaultFields) {
-                                              allFields.add(f.name);
-                                              allFields
-                                                  .addAll(f.previous ?? []);
+                                            final dataFields =
+                                                data['fields'] as List<dynamic>;
+                                            for (final f in dataFields) {
+                                              allFields.add(f['name']);
+                                              allFields.addAll(
+                                                  ((f['previous'] ?? [])
+                                                          as List<dynamic>)
+                                                      .map((e) => e.toString())
+                                                      .toList());
                                             }
+                                            allFields.addAll(CollectionX
+                                                .defaultFields
+                                                .map((e) => e.name));
                                             if (allFields.contains(value) &&
                                                 value != field.name) {
                                               return 'Field name already exists';
@@ -179,11 +323,9 @@ class _EditCollectionState extends State<EditCollection> {
                                               widget.collection == null) {
                                             raw[i]['name'] = value?.trim();
                                           } else {
-                                            final oldField =
-                                                widget.collection!.fields[i];
                                             raw[i]['previous'] = {
                                               ...prev,
-                                              oldField.name
+                                              field.name
                                             }.toSet().toList();
                                             raw[i]['name'] = value?.trim();
                                           }

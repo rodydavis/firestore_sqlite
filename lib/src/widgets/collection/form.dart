@@ -130,9 +130,19 @@ class _CollectionFormState extends State<CollectionForm> {
     final key = field.name;
     final label = field.name;
     final value = doc[key];
+    final defaults = CollectionX.defaultFields;
+    if (defaults.map((e) => e.name).contains(field.name)) {
+      return const SizedBox.shrink();
+    }
     return field.type.maybeWhen(
       string: (maxLength) => textField(
         label: label,
+        value: value as String?,
+        onChanged: (value) => data[key] = value,
+        required: field.required ?? false,
+      ),
+      document: (collection, _) => textField(
+        label: '$label ($collection)',
         value: value as String?,
         onChanged: (value) => data[key] = value,
         required: field.required ?? false,
@@ -177,7 +187,6 @@ class _CollectionFormState extends State<CollectionForm> {
         onChanged: (value) => data[key] = value,
         required: field.required ?? false,
       ),
-      // document: document,
       // dynamic: dynamic,
       orElse: () => Container(),
     );

@@ -4,7 +4,6 @@ import '../classes/collection.dart';
 import '../classes/field.dart';
 import '../utils/json.dart';
 import 'base.dart';
-import 'json.dart';
 import '../utils/format.dart';
 
 const _template = r'''import 'package:firestore_sqlite/firestore_sqlite.dart';
@@ -15,6 +14,7 @@ final {{#camel_case}}{{name}}{{/camel_case}}Collection = Collection.fromJson(con
   "created": "{{created}}",
   "updated": "{{updated}}",
   "description": "{{description}}",
+  {{#bundle}}"bundle": {{bundle}},{{/bundle}}
   "fields": [
     {{#all_fields}}
     {{#json_field}}{{name}}{{/json_field}},

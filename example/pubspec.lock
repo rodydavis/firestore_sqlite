@@ -13,10 +13,10 @@ packages:
     dependency: transitive
     description:
       name: _flutterfire_internals
-      sha256: "6b8dc2a6fb4ffd8b807f99f273c02ba8e24f1a8eb08f8f1c53c2c67d512a6a90"
+      sha256: d2901ab922bc04fb1592998c10e78871b9d09419c6d9075967b4cfedb63a2e2d
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.7"
+    version: "1.0.8"
   analyzer:
     dependency: transitive
     description:
@@ -77,18 +77,18 @@ packages:
     dependency: transitive
     description:
       name: cloud_firestore_platform_interface
-      sha256: c17e2f9eaefbbce5950f9921779872f44a2ca94e3061a047a18bd09eb9561cd3
+      sha256: b6d5b15383fc9b4bb6d6f0015cffb320b00d6e7bfb56046cfc93017a77aa3cea
       url: "https://pub.dev"
     source: hosted
-    version: "5.8.4"
+    version: "5.8.5"
   cloud_firestore_web:
     dependency: transitive
     description:
       name: cloud_firestore_web
-      sha256: "3a4fe7fd092c0bc907db77e261d18bc59e98bb07018e2f29f9804dbc53e543c8"
+      sha256: "36ef9d3062538358147364da7be4d2c5948217c64893f7fa351d6641f703e0b1"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.4"
+    version: "3.0.5"
   collection:
     dependency: transitive
     description:
@@ -188,10 +188,10 @@ packages:
     dependency: "direct main"
     description:
       name: firebase_core
-      sha256: e7efae5248305dc7dbe4eb968508f3ac7bf48eec0fa294fd7c1eaec534437ffe
+      sha256: "76a98f2c07d7c44d4669b9e63129e0c91a08a55f822a9f0fb3eb762cc5f44d96"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.1"
+    version: "2.2.0"
   firebase_core_platform_interface:
     dependency: transitive
     description:
@@ -212,26 +212,26 @@ packages:
     dependency: "direct main"
     description:
       name: firebase_storage
-      sha256: "8f0edf320c6c14cae4310b95c66d48fd8ed073da87bffc6bf90ff7f1d72fb680"
+      sha256: a0c0bae9282ebd60369ef9d5632ac8233a7585b5fe90ae7c0667957ddfd3e3a6
       url: "https://pub.dev"
     source: hosted
-    version: "11.0.4"
+    version: "11.0.5"
   firebase_storage_platform_interface:
     dependency: transitive
     description:
       name: firebase_storage_platform_interface
-      sha256: "909f0dc7b6a2fd465d5bd1658de5bec452bc66c70d36a0dbb299ae37c4bdf03c"
+      sha256: "561b27715df7192834c28e45ed509998a721dc7c8ae223df7bac1b8cba68cce8"
       url: "https://pub.dev"
     source: hosted
-    version: "4.1.22"
+    version: "4.1.23"
   firebase_storage_web:
     dependency: transitive
     description:
       name: firebase_storage_web
-      sha256: "3548935c7eeaca2467800e3c141f23458e542ba440e527ac9751dffb9766c4cd"
+      sha256: "5475e636f0e64a54e727d50b1908548cf61d1e933ad05e36e752d406c814196e"
       url: "https://pub.dev"
     source: hosted
-    version: "3.3.14"
+    version: "3.3.15"
   firestore_sqlite:
     dependency: "direct main"
     description:

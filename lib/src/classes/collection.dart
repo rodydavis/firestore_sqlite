@@ -16,6 +16,7 @@ class Collection with _$Collection {
     required DateTime updated,
     required String? description,
     required List<Field> fields,
+    bool? bundle,
   }) = _Collection;
 
   factory Collection.fromJson(Json json) => _$CollectionFromJson(json);

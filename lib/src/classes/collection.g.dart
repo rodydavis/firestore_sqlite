@@ -15,6 +15,7 @@ _$_Collection _$$_CollectionFromJson(Map<String, dynamic> json) =>
       fields: (json['fields'] as List<dynamic>)
           .map((e) => Field.fromJson(e as Map<String, dynamic>))
           .toList(),
+      bundle: json['bundle'] as bool?,
     );
 
 Map<String, dynamic> _$$_CollectionToJson(_$_Collection instance) =>
@@ -24,4 +25,5 @@ Map<String, dynamic> _$$_CollectionToJson(_$_Collection instance) =>
       'updated': instance.updated.toIso8601String(),
       'description': instance.description,
       'fields': instance.fields,
+      'bundle': instance.bundle,
     };

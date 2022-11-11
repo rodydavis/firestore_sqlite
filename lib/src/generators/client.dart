@@ -17,6 +17,13 @@ export "collections/{{name}}.dart";
 {{/collections}}
 
 class Client extends FirestoreClient {
+   @override
+   List<Collection> get collections => [
+   {{#collections}}
+      {{#camel_case}}{{name}}{{/camel_case}}Collection,
+   {{/collections}}
+   ];
+
    {{#collections}}
    /// {{description}}
    late final {{#camel_case}}{{name}}{{/camel_case}} = FirestoreClientCollection(this, {{#camel_case}}{{name}}{{/camel_case}}Collection);

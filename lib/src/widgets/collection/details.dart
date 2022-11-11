@@ -122,7 +122,9 @@ class CollectionDetails extends StatelessWidget {
                   child: DataTable(
                     columns: [
                       for (final field in collection.allFields)
-                        DataColumn(label: Text(field.name)),
+                        DataColumn(
+                          label: Text(field.name),
+                        ),
                       const DataColumn(label: Text('Delete')),
                     ],
                     rows: [
@@ -140,7 +142,7 @@ class CollectionDetails extends StatelessWidget {
                           cells: [
                             for (final field in collection.allFields)
                               DataCell(
-                                Text('${doc[field.name] ?? ''}'.toString()),
+                                SelectableText('${doc[field.name] ?? ''}'.toString()),
                               ),
                             DataCell(
                               IconButton(

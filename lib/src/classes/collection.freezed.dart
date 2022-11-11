@@ -25,6 +25,7 @@ mixin _$Collection {
   DateTime get updated => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   List<Field> get fields => throw _privateConstructorUsedError;
+  bool? get bundle => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -43,7 +44,8 @@ abstract class $CollectionCopyWith<$Res> {
       DateTime created,
       DateTime updated,
       String? description,
-      List<Field> fields});
+      List<Field> fields,
+      bool? bundle});
 }
 
 /// @nodoc
@@ -64,6 +66,7 @@ class _$CollectionCopyWithImpl<$Res, $Val extends Collection>
     Object? updated = null,
     Object? description = freezed,
     Object? fields = null,
+    Object? bundle = freezed,
   }) {
     return _then(_value.copyWith(
       name: null == name
@@ -86,6 +89,10 @@ class _$CollectionCopyWithImpl<$Res, $Val extends Collection>
           ? _value.fields
           : fields // ignore: cast_nullable_to_non_nullable
               as List<Field>,
+      bundle: freezed == bundle
+          ? _value.bundle
+          : bundle // ignore: cast_nullable_to_non_nullable
+              as bool?,
     ) as $Val);
   }
 }
@@ -103,7 +110,8 @@ abstract class _$$_CollectionCopyWith<$Res>
       DateTime created,
       DateTime updated,
       String? description,
-      List<Field> fields});
+      List<Field> fields,
+      bool? bundle});
 }
 
 /// @nodoc
@@ -122,6 +130,7 @@ class __$$_CollectionCopyWithImpl<$Res>
     Object? updated = null,
     Object? description = freezed,
     Object? fields = null,
+    Object? bundle = freezed,
   }) {
     return _then(_$_Collection(
       name: null == name
@@ -144,6 +153,10 @@ class __$$_CollectionCopyWithImpl<$Res>
           ? _value._fields
           : fields // ignore: cast_nullable_to_non_nullable
               as List<Field>,
+      bundle: freezed == bundle
+          ? _value.bundle
+          : bundle // ignore: cast_nullable_to_non_nullable
+              as bool?,
     ));
   }
 }
@@ -156,7 +169,8 @@ class _$_Collection implements _Collection {
       required this.created,
       required this.updated,
       required this.description,
-      required final List<Field> fields})
+      required final List<Field> fields,
+      this.bundle})
       : _fields = fields;
 
   factory _$_Collection.fromJson(Map<String, dynamic> json) =>
@@ -178,8 +192,11 @@ class _$_Collection implements _Collection {
   }
 
   @override
+  final bool? bundle;
+
+  @override
   String toString() {
-    return 'Collection(name: $name, created: $created, updated: $updated, description: $description, fields: $fields)';
+    return 'Collection(name: $name, created: $created, updated: $updated, description: $description, fields: $fields, bundle: $bundle)';
   }
 
   @override
@@ -192,13 +209,14 @@ class _$_Collection implements _Collection {
             (identical(other.updated, updated) || other.updated == updated) &&
             (identical(other.description, description) ||
                 other.description == description) &&
-            const DeepCollectionEquality().equals(other._fields, _fields));
+            const DeepCollectionEquality().equals(other._fields, _fields) &&
+            (identical(other.bundle, bundle) || other.bundle == bundle));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, name, created, updated,
-      description, const DeepCollectionEquality().hash(_fields));
+      description, const DeepCollectionEquality().hash(_fields), bundle);
 
   @JsonKey(ignore: true)
   @override
@@ -220,7 +238,8 @@ abstract class _Collection implements Collection {
       required final DateTime created,
       required final DateTime updated,
       required final String? description,
-      required final List<Field> fields}) = _$_Collection;
+      required final List<Field> fields,
+      final bool? bundle}) = _$_Collection;
 
   factory _Collection.fromJson(Map<String, dynamic> json) =
       _$_Collection.fromJson;
@@ -235,6 +254,8 @@ abstract class _Collection implements Collection {
   String? get description;
   @override
   List<Field> get fields;
+  @override
+  bool? get bundle;
   @override
   @JsonKey(ignore: true)
   _$$_CollectionCopyWith<_$_Collection> get copyWith =>

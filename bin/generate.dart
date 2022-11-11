@@ -14,6 +14,12 @@ Future<void> main(List<String> args) async {
     'schema',
     abbr: 's',
     help: 'Path to schema file',
+    defaultsTo: 'schema.json',
+  );
+  parser.addOption(
+    'output',
+    abbr: 'o',
+    help: 'Output directory',
   );
   parser.addOption(
     'generated',
@@ -27,17 +33,38 @@ Future<void> main(List<String> args) async {
     help: 'Path to functions file',
     defaultsTo: 'functions/src/index.ts',
   );
+  parser.addFlag(
+    'graphql',
+    abbr: 'q',
+    help: 'Generate GraphQL',
+  );
+  parser.addFlag(
+    'rest',
+    abbr: 'r',
+    help: 'Generate Rest API',
+  );
+  parser.addFlag(
+    'cors',
+    abbr: 'c',
+    help: 'Generate CORS',
+  );
 
   final results = parser.parse(args);
+  Directory.current = Directory(results['output'] ?? Directory.current.path);
+
   final schemaPath = results['schema'];
-  if (schemaPath == null || schemaPath.isEmpty) {
-    print('Missing schema file: -s <path>');
-    return;
-  }
+  final buildGraphQl = results['graphql'] ?? false;
+  final buildRest = results['rest'] ?? false;
+  final buildCors = results['cors'] ?? false;
   final outputPath = results['generated'] ?? '';
   final functionsPath = results['functions'] ?? '';
 
-  final schema = File(schemaPath).readAsStringSync();
+  final schemaFile = File(schemaPath);
+  if (!schemaFile.existsSync()) {
+    print('Missing schema file: -s <path>');
+    return;
+  }
+  final schema = schemaFile.readAsStringSync();
   final docs = jsonDecode(schema) as List;
   final collections = docs.map((e) => Collection.fromJson(e)).toList();
   if (outputPath.isNotEmpty) {
@@ -48,8 +75,9 @@ Future<void> main(List<String> args) async {
   }
   if (functionsPath.isNotEmpty) {
     FunctionsGenerator(
-      graphql: true,
-      cors: true,
+      graphql: buildGraphQl,
+      cors: buildCors,
+      rest: buildRest,
       collections: collections,
       outFile: File(functionsPath),
     ).render();

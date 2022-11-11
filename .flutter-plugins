@@ -1,8 +1,10 @@
 # This is a generated file; do not edit or check into version control.
 cloud_firestore=/Users/rodydavis/.pub-cache/hosted/pub.dev/cloud_firestore-4.0.4/
-cloud_firestore_web=/Users/rodydavis/.pub-cache/hosted/pub.dev/cloud_firestore_web-3.0.4/
-firebase_core=/Users/rodydavis/.pub-cache/hosted/pub.dev/firebase_core-2.1.1/
+cloud_firestore_web=/Users/rodydavis/.pub-cache/hosted/pub.dev/cloud_firestore_web-3.0.5/
+firebase_core=/Users/rodydavis/.pub-cache/hosted/pub.dev/firebase_core-2.2.0/
 firebase_core_web=/Users/rodydavis/.pub-cache/hosted/pub.dev/firebase_core_web-2.0.1/
+firebase_storage=/Users/rodydavis/.pub-cache/hosted/pub.dev/firebase_storage-11.0.5/
+firebase_storage_web=/Users/rodydavis/.pub-cache/hosted/pub.dev/firebase_storage_web-3.3.15/
 icloud_storage=/Users/rodydavis/.pub-cache/hosted/pub.dev/icloud_storage-2.1.0/
 path_provider=/Users/rodydavis/.pub-cache/hosted/pub.dev/path_provider-2.0.11/
 path_provider_android=/Users/rodydavis/.pub-cache/hosted/pub.dev/path_provider_android-2.0.21/

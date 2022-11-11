@@ -1,20 +1,32 @@
 [
   {
-    "name": "artist",
-    "created": "2022-11-08T18:41:42.555",
-    "updated": "2022-11-10T21:54:18.281",
-    "description": "",
+    "name": "album",
+    "created": "2022-11-11T13:12:16.307",
+    "updated": "2022-11-11T13:18:52.516",
+    "description": "Albums by an artist",
     "fields": [
       {
-        "name": "name",
+        "name": "artist_id",
         "type": {
-          "maxLength": null,
-          "runtimeType": "string"
+          "collection": "artist",
+          "triggerDelete": true,
+          "runtimeType": "document"
         },
         "description": "",
         "required": true,
         "defaultValue": null,
-        "previous": null
+        "previous": []
+      },
+      {
+        "name": "title",
+        "type": {
+          "maxLength": null,
+          "runtimeType": "string"
+        },
+        "description": "Album title",
+        "required": true,
+        "defaultValue": null,
+        "previous": []
       },
       {
         "name": "id",
@@ -25,7 +37,7 @@
         "description": null,
         "required": true,
         "defaultValue": null,
-        "previous": null
+        "previous": []
       },
       {
         "name": "created",
@@ -35,7 +47,7 @@
         "description": null,
         "required": true,
         "defaultValue": null,
-        "previous": null
+        "previous": []
       },
       {
         "name": "updated",
@@ -45,7 +57,7 @@
         "description": null,
         "required": true,
         "defaultValue": null,
-        "previous": null
+        "previous": []
       },
       {
         "name": "deleted",
@@ -55,8 +67,101 @@
         "description": null,
         "required": null,
         "defaultValue": null,
-        "previous": null
+        "previous": []
       }
-    ]
+    ],
+    "bundle": true
+  },
+  {
+    "name": "artist",
+    "created": "2022-11-08T18:41:42.555",
+    "updated": "2022-11-11T13:19:00.800",
+    "description": "",
+    "fields": [
+      {
+        "name": "name",
+        "type": {
+          "maxLength": null,
+          "runtimeType": "string"
+        },
+        "description": "",
+        "required": null,
+        "defaultValue": null,
+        "previous": []
+      },
+      {
+        "name": "description",
+        "type": {
+          "maxLength": null,
+          "runtimeType": "string"
+        },
+        "description": "",
+        "required": null,
+        "defaultValue": null,
+        "previous": []
+      },
+      {
+        "name": "age",
+        "type": {
+          "runtimeType": "num"
+        },
+        "description": "",
+        "required": null,
+        "defaultValue": null,
+        "previous": []
+      },
+      {
+        "name": "alive",
+        "type": {
+          "runtimeType": "bool"
+        },
+        "description": "",
+        "required": null,
+        "defaultValue": null,
+        "previous": []
+      },
+      {
+        "name": "id",
+        "type": {
+          "maxLength": null,
+          "runtimeType": "string"
+        },
+        "description": null,
+        "required": true,
+        "defaultValue": null,
+        "previous": []
+      },
+      {
+        "name": "created",
+        "type": {
+          "runtimeType": "date"
+        },
+        "description": null,
+        "required": true,
+        "defaultValue": null,
+        "previous": []
+      },
+      {
+        "name": "updated",
+        "type": {
+          "runtimeType": "date"
+        },
+        "description": null,
+        "required": true,
+        "defaultValue": null,
+        "previous": []
+      },
+      {
+        "name": "deleted",
+        "type": {
+          "runtimeType": "bool"
+        },
+        "description": null,
+        "required": null,
+        "defaultValue": null,
+        "previous": []
+      }
+    ],
+    "bundle": true
   }
 ]

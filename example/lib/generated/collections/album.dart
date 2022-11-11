@@ -1,42 +1,30 @@
 import 'package:firestore_sqlite/firestore_sqlite.dart';
 
-///
-final artistCollection = Collection.fromJson(const {
-  "name": "artist",
-  "created": "2022-11-08T18:41:42.555",
-  "updated": "2022-11-11T13:19:00.800",
-  "description": "",
+/// Albums by an artist
+final albumCollection = Collection.fromJson(const {
+  "name": "album",
+  "created": "2022-11-11T13:12:16.307",
+  "updated": "2022-11-11T13:18:52.516",
+  "description": "Albums by an artist",
   "bundle": true,
   "fields": [
     {
-      "name": "name",
+      "name": "artist_id",
+      "type": {
+        "collection": "artist",
+        "triggerDelete": true,
+        "runtimeType": "document"
+      },
+      "description": "",
+      "required": true,
+      "defaultValue": null,
+      "previous": []
+    },
+    {
+      "name": "title",
       "type": {"maxLength": null, "runtimeType": "string"},
-      "description": "",
-      "required": null,
-      "defaultValue": null,
-      "previous": []
-    },
-    {
-      "name": "description",
-      "type": {"maxLength": null, "runtimeType": "string"},
-      "description": "",
-      "required": null,
-      "defaultValue": null,
-      "previous": []
-    },
-    {
-      "name": "age",
-      "type": {"runtimeType": "num"},
-      "description": "",
-      "required": null,
-      "defaultValue": null,
-      "previous": []
-    },
-    {
-      "name": "alive",
-      "type": {"runtimeType": "bool"},
-      "description": "",
-      "required": null,
+      "description": "Album title",
+      "required": true,
       "defaultValue": null,
       "previous": []
     },
@@ -75,9 +63,9 @@ final artistCollection = Collection.fromJson(const {
   ],
 });
 
-///
-class Artist extends Doc {
-  Artist({required super.id}) : super(collection: artistCollection);
+/// Albums by an artist
+class Album extends Doc {
+  Album({required super.id}) : super(collection: albumCollection);
 
   @override
   DateTime get created => this['created'] as DateTime;
@@ -89,18 +77,10 @@ class Artist extends Doc {
   bool? get deleted => this['deleted'] as bool?;
 
   ///
-  String? get name => this['name'] as String?;
-  set name(String? value) => this['name'] = value;
+  String? get artistId => this['artist_id'] as String?;
+  set artistId(String? value) => this['artist_id'] = value;
 
-  ///
-  String? get description => this['description'] as String?;
-  set description(String? value) => this['description'] = value;
-
-  ///
-  num? get age => this['age'] as num?;
-  set age(num? value) => this['age'] = value;
-
-  ///
-  bool? get alive => this['alive'] as bool?;
-  set alive(bool? value) => this['alive'] = value;
+  /// Album title
+  String? get title => this['title'] as String?;
+  set title(String? value) => this['title'] = value;
 }
