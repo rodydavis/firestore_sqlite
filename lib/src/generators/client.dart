@@ -23,7 +23,6 @@ class Client extends FirestoreClient {
       {{#camel_case}}{{name}}{{/camel_case}}Collection,
    {{/collections}}
    ];
-
    {{#collections}}
    /// {{description}}
    late final {{#camel_case}}{{name}}{{/camel_case}} = FirestoreClientCollection(this, {{#camel_case}}{{name}}{{/camel_case}}Collection);
