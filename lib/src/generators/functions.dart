@@ -151,6 +151,7 @@ const typeDefs = gql`
   type Query {
     {{#collections}}    
     {{name}}: [{{#pascal_case}}{{name}}{{/pascal_case}}]
+    {{name}}ById(id: ID!): {{#pascal_case}}{{name}}{{/pascal_case}}
     {{/collections}}
   }
 `;
@@ -160,6 +161,14 @@ const resolvers = {
     {{name}}: async () => {
       const docs = await db.collection("{{name}}").get();
       return docs.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }));
+    },
+    {{name}}ById: async (_: any, { id }: any) => {
+      const doc = await db.collection("{{name}}").doc(id).get();
+      if (doc.exists) {
+        return { ...doc.data(), id: doc.id };
+      } else {
+        return null;
+      }
     },
     {{/collections}}
   },
@@ -296,33 +305,6 @@ class FunctionsGenerator extends GeneratorBase {
             ],
             "has_resolvers": resolvers[collection.name] != null,
             "resolvers": resolvers[collection.name] ?? [],
-            // "has_id_resolvers": collection.fields
-            //     .where((e) => e.type is DocumentField)
-            //     .isNotEmpty,
-            // "id_resolvers": [
-            //   for (final field
-            //       in collection.fields.where((e) => e.type is DocumentField))
-            //     {
-            //       "target": (field.type as DocumentField).collection,
-            //       "field": field.name,
-            //     }
-            // ],
-            // "has_child_resolvers": collections
-            //     .where((e) => e.fields.any((f) =>
-            //         f.type is DocumentField &&
-            //         (f.type as DocumentField).collection == collection.name))
-            //     .isNotEmpty,
-            // "child_resolvers": [
-            //   for (final col in collections)
-            //     for (final field in col.fields)
-            //       if (field.type is DocumentField &&
-            //           (field.type as DocumentField).collection ==
-            //               collection.name)
-            //         {
-            //           "target": col.name,
-            //           "field": field.name,
-            //         }
-            // ],
           }
       ],
       'graphql': graphql,

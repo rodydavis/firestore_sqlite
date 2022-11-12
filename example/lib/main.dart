@@ -22,9 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData.dark(useMaterial3: true),
       initialRoute: '/',
       routes: {
         '/': (_) => const Example(),
@@ -48,7 +46,9 @@ class _ExampleState extends State<Example> {
   @override
   void initState() {
     super.initState();
-    collection.checkForUpdates();
+    client.downloadBundle().last.then((_) {
+      collection.checkForUpdates();
+    });
   }
 
   @override
@@ -67,13 +67,17 @@ class _ExampleState extends State<Example> {
       ),
       body: Column(
         children: [
-          TextField(
-            controller: controller,
-            decoration: const InputDecoration(
-              labelText: 'Search',
-              prefixIcon: Icon(Icons.search),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                labelText: 'Search',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (value) => setState(() {}),
             ),
-            onChanged: (value) => setState(() {}),
           ),
           Expanded(
             child: controller.text.trim().isEmpty

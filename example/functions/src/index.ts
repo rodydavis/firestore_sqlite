@@ -139,11 +139,11 @@ const typeDefs = gql`
   type Album {
     title: String
     artist_id: String
-    artwork: String!
+    artwork: String
     id: ID!
     created: String
     updated: String
-    deleted: Boolean!
+    deleted: Boolean
     artist: Artist
     albumTrack: [AlbumTrack]
   }
@@ -153,7 +153,7 @@ const typeDefs = gql`
     id: ID!
     created: String
     updated: String
-    deleted: Boolean!
+    deleted: Boolean
     song: Song
     album: Album
   }
@@ -162,7 +162,7 @@ const typeDefs = gql`
     id: ID!
     created: String
     updated: String
-    deleted: Boolean!
+    deleted: Boolean
     album: [Album]
   }
   type Song {
@@ -170,14 +170,18 @@ const typeDefs = gql`
     id: ID!
     created: String
     updated: String
-    deleted: Boolean!
+    deleted: Boolean
     albumTrack: [AlbumTrack]
   }
   type Query {
     album: [Album]
+    albumById(id: ID!): Album
     album_track: [AlbumTrack]
+    album_trackById(id: ID!): AlbumTrack
     artist: [Artist]
+    artistById(id: ID!): Artist
     song: [Song]
+    songById(id: ID!): Song
   }
 `;
 const resolvers = {
@@ -186,17 +190,49 @@ const resolvers = {
       const docs = await db.collection("album").get();
       return docs.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }));
     },
+    albumById: async (_: any, { id }: any) => {
+      const doc = await db.collection("album").doc(id).get();
+      if (doc.exists) {
+        return { ...doc.data(), id: doc.id };
+      } else {
+        return null;
+      }
+    },
     album_track: async () => {
       const docs = await db.collection("album_track").get();
       return docs.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }));
+    },
+    album_trackById: async (_: any, { id }: any) => {
+      const doc = await db.collection("album_track").doc(id).get();
+      if (doc.exists) {
+        return { ...doc.data(), id: doc.id };
+      } else {
+        return null;
+      }
     },
     artist: async () => {
       const docs = await db.collection("artist").get();
       return docs.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }));
     },
+    artistById: async (_: any, { id }: any) => {
+      const doc = await db.collection("artist").doc(id).get();
+      if (doc.exists) {
+        return { ...doc.data(), id: doc.id };
+      } else {
+        return null;
+      }
+    },
     song: async () => {
       const docs = await db.collection("song").get();
       return docs.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }));
+    },
+    songById: async (_: any, { id }: any) => {
+      const doc = await db.collection("song").doc(id).get();
+      if (doc.exists) {
+        return { ...doc.data(), id: doc.id };
+      } else {
+        return null;
+      }
     },
   },
   Album: {
