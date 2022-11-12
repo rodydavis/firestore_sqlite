@@ -80,6 +80,7 @@ Future<void> main(List<String> args) async {
       rest: buildRest,
       collections: collections,
       outFile: File(functionsPath),
+      maxAge: 60 * 60 * 24,  // Max age for Cache-Control (31536000)
     ).render();
   }
 }

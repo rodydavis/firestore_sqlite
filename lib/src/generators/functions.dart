@@ -123,7 +123,10 @@ export const uploadBundle = functions.https.onRequest(async (req, res) => {
 export const downloadBundle = functions.https.onRequest(async (req, res) => {
   const buffer = await storage.bucket().file("collections-bundle").download();
   if (buffer) {
-    res.send(buffer);
+    {{#max_age}}
+    res.set('Cache-Control', 'public, max-age={{max_age}}, s-maxage={{max_age}}');
+    {{/max_age}}
+    res.end(buffer);
   } else {
     res.status(404).send("Not Found");
   }
@@ -186,9 +189,11 @@ class FunctionsGenerator extends GeneratorBase {
     this.graphql = false,
     this.cors = false,
     this.rest = false,
+    this.maxAge,
   });
   final List<Collection> collections;
   final File outFile;
+  final int? maxAge;
   final bool graphql, cors, rest;
 
   @override
@@ -231,6 +236,7 @@ class FunctionsGenerator extends GeneratorBase {
       'graphql': graphql,
       'rest': rest,
       'cors': cors,
+      'max_age': maxAge,
       'all_triggers': [
         for (final entry in triggers.entries)
           copyJson({

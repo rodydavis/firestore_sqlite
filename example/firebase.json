@@ -35,6 +35,14 @@
     ],
     "rewrites": [
       {
+        "source": "/uploadBundle",
+        "function": "uploadBundle"
+      },
+      {
+        "source": "/downloadBundle",
+        "function": "downloadBundle"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
