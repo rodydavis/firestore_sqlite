@@ -396,10 +396,6 @@ extension on Field {
       num: () => 'Float',
       option: (values) => 'String',
     );
-    if (required == true) {
-      return base;
-    } else {
-      return '$base!';
-    }
+    return base;
   }
 }
