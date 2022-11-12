@@ -19,8 +19,8 @@ void main() {
     expect(data['name'], testClient.test.collection.name);
   });
 
-  test('test local edit', () async {
-    const docId = 'test-doc';
+  test('test local sync', () async {
+    const docId = 'test-1';
     final docData = {
       'id': docId,
       'name': 'John Doe',
@@ -29,7 +29,7 @@ void main() {
       'updated': DateTime.now().toIso8601String(),
     };
 
-    // Set schema
+    // // Set schema
     final col = testClient.test.collection;
     final ref = col.getSchema(testClient);
     await ref.set(col.toMap());
@@ -62,5 +62,38 @@ void main() {
     // Check if exists on remote
     final test4 = await doc.get();
     expect(test4.exists, true);
+  });
+
+  test('test remote sync', () async {
+    const docId = 'test-2';
+    final docData = {
+      'id': docId,
+      'name': 'John Doe',
+      'collection': testCollection.name,
+      'created': DateTime.now().toIso8601String(),
+      'updated': DateTime.now().toIso8601String(),
+    };
+
+    // // Set schema
+    final col = testClient.test.collection;
+    final ref = col.getSchema(testClient);
+    await ref.set(col.toMap());
+    final reference = ref.collection(col.name);
+    final doc = reference.doc(docId);
+
+    // Make sure doc does not exist locally
+    final test1 = await testClient.test.getSingle(
+      docId,
+      options: const GetOptions(source: Source.cache),
+    );
+    expect(test1 == null, true);
+
+    // Add doc remotely
+    await doc.set(docData);
+    await testClient.test.sync(reference);
+
+    // Make sure doc exists remotely
+    final test2 = await doc.get();
+    expect(test2.exists, true);
   });
 }
