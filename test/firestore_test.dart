@@ -43,10 +43,9 @@ void main() {
     );
     expect(test1 == null, true);
 
-    // Add doc locally
-    await testClient.database.insertOrReplaceDocument(docData);
 
     // Make sure doc exists locally
+    await testClient.database.insertOrReplaceDocument(docData);
     final test2 = await testClient.test.getSingle(
       docId,
       options: const GetOptions(source: Source.cache),
@@ -57,9 +56,9 @@ void main() {
     final test3 = await doc.get();
     expect(test3.exists, false);
 
-    await testClient.test.sync(reference: reference);
 
     // Check if exists on remote
+    await testClient.test.sync(reference: reference);
     final test4 = await doc.get();
     expect(test4.exists, true);
   });
@@ -97,7 +96,6 @@ void main() {
       'id': 'test-3',
       'updated': now.add(const Duration(seconds: 1)).toIso8601String(),
     });
-
     expect(remote.docs.length, 1);
 
     // Check server call only has latest
