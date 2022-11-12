@@ -57,7 +57,7 @@ void main() {
     final test3 = await doc.get();
     expect(test3.exists, false);
 
-    await testClient.test.sync(reference);
+    await testClient.test.sync(reference: reference);
 
     // Check if exists on remote
     final test4 = await doc.get();
@@ -66,12 +66,13 @@ void main() {
 
   test('test remote sync', () async {
     const docId = 'test-2';
+    final now = DateTime.now();
     final docData = {
       'id': docId,
       'name': 'John Doe',
       'collection': testCollection.name,
-      'created': DateTime.now().toIso8601String(),
-      'updated': DateTime.now().toIso8601String(),
+      'created': now.toIso8601String(),
+      'updated': now.toIso8601String(),
     };
 
     // // Set schema
@@ -90,7 +91,22 @@ void main() {
 
     // Add doc remotely
     await doc.set(docData);
-    await testClient.test.sync(reference);
+    final remote = await reference.get();
+    await doc.set({
+      ...docData,
+      'id': 'test-3',
+      'updated': now.add(const Duration(seconds: 1)).toIso8601String(),
+    });
+
+    expect(remote.docs.length, 1);
+
+    final newest = await testClient.test.getNewestRemote(
+      reference: reference,
+      date: now,
+    );
+    expect(newest.length, 1);
+
+    await testClient.test.sync(reference: reference);
 
     // Make sure doc exists remotely
     final test2 = await doc.get();

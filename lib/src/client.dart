@@ -276,12 +276,21 @@ class FirestoreClientCollection<T extends Doc> {
         .toList();
   }
 
-  Future<void> sync([CollectionReference<Json>? reference]) async {
+  Future<void> sync({
+    CollectionReference<Json>? reference,
+    GetOptions? options,
+  }) async {
     final ref = reference ?? collection.getReference(client);
-    final remote = await ref.get();
+    final local = await client.database.getDocuments(collection.name);
+    final newest = await getNewestItem();
+    final remote = await getNewestRemote(
+      options: options,
+      reference: reference,
+      date: newest?.updated,
+    );
 
     // Add missing items
-    for (final item in remote.docs) {
+    for (final item in remote) {
       final local = await client.database.getDocument(collection.name, item.id);
       if (local == null) {
         await client.database.insertOrReplaceDocument(item.toJson());
@@ -289,15 +298,42 @@ class FirestoreClientCollection<T extends Doc> {
     }
 
     // Check for missing remote items
-    final local = await client.database.getDocuments(collection.name);
     for (final item in local) {
-      final remoteItem = remote.docs.firstWhereOrNull(
+      final remoteItem = remote.firstWhereOrNull(
         (e) => e.id == item.documentId,
       );
       if (remoteItem == null) {
         await ref.doc(item.documentId).set(jsonToMap(item.toMap()));
       }
     }
+  }
+
+  Future<Doc?> getNewestItem() async {
+    final local = await client.database.getDocuments(collection.name);
+    if (local.isNotEmpty) {
+      final newestItem = local
+          .map((e) => Doc.fromJson(client, collection, e.toMap()))
+          .reduce((a, b) => a.updated.isAfter(b.updated) ? a : b);
+      return newestItem;
+    }
+    return null;
+  }
+
+  Future<List<DocumentSnapshot<Json?>>> getNewestRemote({
+    DateTime? date,
+    CollectionReference<Json>? reference,
+    GetOptions? options,
+  }) async {
+    final ref = collection.getReference(client);
+    Query<Json?> query = (reference ?? ref);
+    if (date != null) {
+      query = query.where(
+        'updated',
+        isGreaterThan: date.toIso8601String(),
+      );
+    }
+    final remote = await query.get(options);
+    return remote.docs;
   }
 }
 
