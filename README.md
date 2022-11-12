@@ -2,7 +2,7 @@
 
 Taking [Cloud Firestore ODM](https://pub.dev/packages/cloud_firestore_odm) to the next level.
 
-The following is a proposal I will be aiming to build.
+![](https://www.youtube.com/watch?v=54MLzCEmGnA)
 
 ## Admin UI
 
