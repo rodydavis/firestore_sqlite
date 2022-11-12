@@ -100,16 +100,18 @@ void main() {
 
     expect(remote.docs.length, 1);
 
+    // Check server call only has latest
     final newest = await testClient.test.getNewestRemote(
       reference: reference,
       date: now,
     );
     expect(newest.length, 1);
 
-    await testClient.test.sync(reference: reference);
 
     // Make sure doc exists remotely
+    await testClient.test.sync(reference: reference);
     final test2 = await doc.get();
+
     expect(test2.exists, true);
   });
 }
