@@ -32,4 +32,3 @@ build/
 
 # Firebase
 .firebaserc
-example/test.json

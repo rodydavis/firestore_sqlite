@@ -1,10 +1,21 @@
 [
   {
     "name": "album",
-    "created": "2022-11-11T13:12:16.307",
-    "updated": "2022-11-11T13:18:52.516",
-    "description": "Albums by an artist",
+    "created": "2022-11-11T16:52:42.422",
+    "updated": "2022-11-11T16:55:02.246",
+    "description": "Showcase of music",
     "fields": [
+      {
+        "name": "title",
+        "type": {
+          "maxLength": null,
+          "runtimeType": "string"
+        },
+        "description": "",
+        "required": true,
+        "defaultValue": null,
+        "previous": []
+      },
       {
         "name": "artist_id",
         "type": {
@@ -18,15 +29,17 @@
         "previous": []
       },
       {
-        "name": "title",
+        "name": "artwork",
         "type": {
           "maxLength": null,
           "runtimeType": "string"
         },
-        "description": "Album title",
-        "required": true,
+        "description": "",
+        "required": null,
         "defaultValue": null,
-        "previous": []
+        "previous": [
+          ""
+        ]
       },
       {
         "name": "id",
@@ -73,50 +86,32 @@
     "bundle": true
   },
   {
-    "name": "artist",
-    "created": "2022-11-08T18:41:42.555",
-    "updated": "2022-11-11T13:19:00.800",
-    "description": "",
+    "name": "album_track",
+    "created": "2022-11-11T16:54:43.078",
+    "updated": "2022-11-11T16:54:43.080",
+    "description": "Songs on an album",
     "fields": [
       {
-        "name": "name",
+        "name": "song_id",
         "type": {
-          "maxLength": null,
-          "runtimeType": "string"
+          "collection": "song",
+          "triggerDelete": true,
+          "runtimeType": "document"
         },
         "description": "",
-        "required": null,
+        "required": true,
         "defaultValue": null,
         "previous": []
       },
       {
-        "name": "description",
+        "name": "album_id",
         "type": {
-          "maxLength": null,
-          "runtimeType": "string"
+          "collection": "album",
+          "triggerDelete": true,
+          "runtimeType": "document"
         },
         "description": "",
-        "required": null,
-        "defaultValue": null,
-        "previous": []
-      },
-      {
-        "name": "age",
-        "type": {
-          "runtimeType": "num"
-        },
-        "description": "",
-        "required": null,
-        "defaultValue": null,
-        "previous": []
-      },
-      {
-        "name": "alive",
-        "type": {
-          "runtimeType": "bool"
-        },
-        "description": "",
-        "required": null,
+        "required": true,
         "defaultValue": null,
         "previous": []
       },
@@ -162,6 +157,128 @@
         "previous": []
       }
     ],
-    "bundle": true
+    "bundle": null
+  },
+  {
+    "name": "artist",
+    "created": "2022-11-11T16:50:10.749",
+    "updated": "2022-11-11T16:57:04.742",
+    "description": "People that like to make music",
+    "fields": [
+      {
+        "name": "name",
+        "type": {
+          "maxLength": null,
+          "runtimeType": "string"
+        },
+        "description": "",
+        "required": true,
+        "defaultValue": null,
+        "previous": []
+      },
+      {
+        "name": "id",
+        "type": {
+          "maxLength": null,
+          "runtimeType": "string"
+        },
+        "description": null,
+        "required": true,
+        "defaultValue": null,
+        "previous": []
+      },
+      {
+        "name": "created",
+        "type": {
+          "runtimeType": "date"
+        },
+        "description": null,
+        "required": true,
+        "defaultValue": null,
+        "previous": []
+      },
+      {
+        "name": "updated",
+        "type": {
+          "runtimeType": "date"
+        },
+        "description": null,
+        "required": true,
+        "defaultValue": null,
+        "previous": []
+      },
+      {
+        "name": "deleted",
+        "type": {
+          "runtimeType": "bool"
+        },
+        "description": null,
+        "required": null,
+        "defaultValue": null,
+        "previous": []
+      }
+    ],
+    "bundle": null
+  },
+  {
+    "name": "song",
+    "created": "2022-11-11T16:53:29.734",
+    "updated": "2022-11-11T16:55:25.735",
+    "description": "Expression of art in music form",
+    "fields": [
+      {
+        "name": "title",
+        "type": {
+          "maxLength": null,
+          "runtimeType": "string"
+        },
+        "description": "",
+        "required": true,
+        "defaultValue": null,
+        "previous": []
+      },
+      {
+        "name": "id",
+        "type": {
+          "maxLength": null,
+          "runtimeType": "string"
+        },
+        "description": null,
+        "required": true,
+        "defaultValue": null,
+        "previous": []
+      },
+      {
+        "name": "created",
+        "type": {
+          "runtimeType": "date"
+        },
+        "description": null,
+        "required": true,
+        "defaultValue": null,
+        "previous": []
+      },
+      {
+        "name": "updated",
+        "type": {
+          "runtimeType": "date"
+        },
+        "description": null,
+        "required": true,
+        "defaultValue": null,
+        "previous": []
+      },
+      {
+        "name": "deleted",
+        "type": {
+          "runtimeType": "bool"
+        },
+        "description": null,
+        "required": null,
+        "defaultValue": null,
+        "previous": []
+      }
+    ],
+    "bundle": null
   }
 ]

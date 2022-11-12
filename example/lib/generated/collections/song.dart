@@ -1,14 +1,14 @@
 import 'package:firestore_sqlite/firestore_sqlite.dart';
 
-/// People that like to make music
-final artistCollection = Collection.fromJson(const {
-  "name": "artist",
-  "created": "2022-11-11T16:50:10.749",
-  "updated": "2022-11-11T16:57:04.742",
-  "description": "People that like to make music",
+/// Expression of art in music form
+final songCollection = Collection.fromJson(const {
+  "name": "song",
+  "created": "2022-11-11T16:53:29.734",
+  "updated": "2022-11-11T16:55:25.735",
+  "description": "Expression of art in music form",
   "fields": [
     {
-      "name": "name",
+      "name": "title",
       "type": {"maxLength": null, "runtimeType": "string"},
       "description": "",
       "required": true,
@@ -50,9 +50,9 @@ final artistCollection = Collection.fromJson(const {
   ],
 });
 
-/// People that like to make music
-class Artist extends Doc {
-  Artist({required super.id}) : super(collection: artistCollection);
+/// Expression of art in music form
+class Song extends Doc {
+  Song({required super.id}) : super(collection: songCollection);
 
   @override
   DateTime get created => this['created'] as DateTime;
@@ -64,6 +64,6 @@ class Artist extends Doc {
   bool? get deleted => this['deleted'] as bool?;
 
   ///
-  String? get name => this['name'] as String?;
-  set name(String? value) => this['name'] = value;
+  String? get title => this['title'] as String?;
+  set title(String? value) => this['title'] = value;
 }

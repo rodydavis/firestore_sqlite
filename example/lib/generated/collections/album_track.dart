@@ -1,15 +1,31 @@
 import 'package:firestore_sqlite/firestore_sqlite.dart';
 
-/// People that like to make music
-final artistCollection = Collection.fromJson(const {
-  "name": "artist",
-  "created": "2022-11-11T16:50:10.749",
-  "updated": "2022-11-11T16:57:04.742",
-  "description": "People that like to make music",
+/// Songs on an album
+final albumTrackCollection = Collection.fromJson(const {
+  "name": "album_track",
+  "created": "2022-11-11T16:54:43.078",
+  "updated": "2022-11-11T16:54:43.080",
+  "description": "Songs on an album",
   "fields": [
     {
-      "name": "name",
-      "type": {"maxLength": null, "runtimeType": "string"},
+      "name": "song_id",
+      "type": {
+        "collection": "song",
+        "triggerDelete": true,
+        "runtimeType": "document"
+      },
+      "description": "",
+      "required": true,
+      "defaultValue": null,
+      "previous": []
+    },
+    {
+      "name": "album_id",
+      "type": {
+        "collection": "album",
+        "triggerDelete": true,
+        "runtimeType": "document"
+      },
       "description": "",
       "required": true,
       "defaultValue": null,
@@ -50,9 +66,9 @@ final artistCollection = Collection.fromJson(const {
   ],
 });
 
-/// People that like to make music
-class Artist extends Doc {
-  Artist({required super.id}) : super(collection: artistCollection);
+/// Songs on an album
+class AlbumTrack extends Doc {
+  AlbumTrack({required super.id}) : super(collection: albumTrackCollection);
 
   @override
   DateTime get created => this['created'] as DateTime;
@@ -64,6 +80,10 @@ class Artist extends Doc {
   bool? get deleted => this['deleted'] as bool?;
 
   ///
-  String? get name => this['name'] as String?;
-  set name(String? value) => this['name'] = value;
+  String? get songId => this['song_id'] as String?;
+  set songId(String? value) => this['song_id'] = value;
+
+  ///
+  String? get albumId => this['album_id'] as String?;
+  set albumId(String? value) => this['album_id'] = value;
 }

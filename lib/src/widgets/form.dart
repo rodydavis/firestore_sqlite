@@ -147,11 +147,42 @@ Widget boolField({
   String? Function(bool value)? validator,
   bool required = false,
 }) {
+  // return ListTile(
+  //   title: Text(label),
+  //   trailing: Switch(
+  //     value: value == true,
+  //     onChanged: onChanged,
+  //   ),
+  // );
   return ListTile(
-    title: Text(label),
-    trailing: Switch(
-      value: value == true,
-      onChanged: onChanged,
+    title: DropdownButtonFormField<bool>(
+      onSaved: onChanged,
+      validator: (val) {
+        if (required) {
+          if (val == null) {
+            return '$label required';
+          }
+        }
+        if (val != null && validator != null) {
+          return validator(val);
+        }
+        return null;
+      },
+      value: value,
+      items: const [
+        DropdownMenuItem<bool>(
+          value: true,
+          child: Text('Yes'),
+        ),
+        DropdownMenuItem<bool>(
+          value: false,
+          child: Text('No'),
+        ),
+      ],
+      onChanged: (val) => onChanged(val),
+      decoration: InputDecoration(
+        label: Text(label),
+      ),
     ),
   );
 }

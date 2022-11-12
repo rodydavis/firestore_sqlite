@@ -1,13 +1,21 @@
 import 'package:firestore_sqlite/firestore_sqlite.dart';
 
-/// Albums by an artist
+/// Showcase of music
 final albumCollection = Collection.fromJson(const {
   "name": "album",
-  "created": "2022-11-11T13:12:16.307",
-  "updated": "2022-11-11T13:18:52.516",
-  "description": "Albums by an artist",
+  "created": "2022-11-11T16:52:42.422",
+  "updated": "2022-11-11T16:55:02.246",
+  "description": "Showcase of music",
   "bundle": true,
   "fields": [
+    {
+      "name": "title",
+      "type": {"maxLength": null, "runtimeType": "string"},
+      "description": "",
+      "required": true,
+      "defaultValue": null,
+      "previous": []
+    },
     {
       "name": "artist_id",
       "type": {
@@ -21,12 +29,12 @@ final albumCollection = Collection.fromJson(const {
       "previous": []
     },
     {
-      "name": "title",
+      "name": "artwork",
       "type": {"maxLength": null, "runtimeType": "string"},
-      "description": "Album title",
-      "required": true,
+      "description": "",
+      "required": null,
       "defaultValue": null,
-      "previous": []
+      "previous": [""]
     },
     {
       "name": "id",
@@ -63,7 +71,7 @@ final albumCollection = Collection.fromJson(const {
   ],
 });
 
-/// Albums by an artist
+/// Showcase of music
 class Album extends Doc {
   Album({required super.id}) : super(collection: albumCollection);
 
@@ -77,10 +85,14 @@ class Album extends Doc {
   bool? get deleted => this['deleted'] as bool?;
 
   ///
+  String? get title => this['title'] as String?;
+  set title(String? value) => this['title'] = value;
+
+  ///
   String? get artistId => this['artist_id'] as String?;
   set artistId(String? value) => this['artist_id'] = value;
 
-  /// Album title
-  String? get title => this['title'] as String?;
-  set title(String? value) => this['title'] = value;
+  ///
+  String? get artwork => this['artwork'] as String?;
+  set artwork(String? value) => this['artwork'] = value;
 }

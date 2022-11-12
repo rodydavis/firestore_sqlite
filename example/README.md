@@ -1,16 +1,41 @@
-# example
+# Example
 
-A new Flutter project.
+Example of how to use the **firestore_sqlite** project.
+
+## Prerequisites
+
+- [Flutter](https://flutter.dev/docs/get-started/install)
+- [Firebase tools](https://firebase.google.com/docs/cli)
+- [Firebase project](https://firebase.google.com/docs/projects/learn-more)
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+To make the example work with the firebase emulators you will need to create a config file at `./example/.firebaserc`.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```json
+{
+  "projects": {
+    "default": "YOUR_PROJECT_ID"
+  }
+}
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Install the firebase emulators and start them.
+
+```bash
+firebase emulators:start    
+```
+
+Watch the functions to build TypeScript.
+
+```bash
+cd functions
+npm run dev
+```
+
+Run the example app.
+
+```bash
+flutter run -d chrome
+```

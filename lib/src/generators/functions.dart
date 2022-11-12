@@ -2,6 +2,7 @@ import 'dart:io';
 
 import '../classes/collection.dart';
 import '../classes/field.dart';
+import '../classes/type.dart';
 import '../utils/file.dart';
 import '../utils/json.dart';
 import 'base.dart';
@@ -113,8 +114,8 @@ export const uploadBundle = functions.https.onRequest(async (req, res) => {
   const schema = await db.collection("schema").get();
   bundle.add('schema', schema);
   {{#bundles}}
-  const {{#camel_case}}{{name}}{{/camel_case}} = await db.collection("{{name}}").get();
-  bundle.add('{{name}}', {{#camel_case}}{{name}}{{/camel_case}});
+  const {{name}} = await db.collection("{{name}}").get();
+  bundle.add('{{name}}', {{name}});
   {{/bundles}}
   const buffer = bundle.build();
   await storage.bucket().file("collections-bundle").save(buffer);
@@ -137,26 +138,55 @@ const typeDefs = gql`
   type {{#pascal_case}}{{name}}{{/pascal_case}} {
     {{#fields}}
     {{#graphql_type}}
-    {{#camel_case}}{{name}}{{/camel_case}}: {{graphql_type}}
+    {{name}}: {{graphql_type}}
     {{/graphql_type}}
     {{/fields}}
+    {{#has_resolvers}}
+    {{#resolvers}}
+    {{#camel_case}}{{target}}{{/camel_case}}: {{#array}}[{{#pascal_case}}{{target}}{{/pascal_case}}]{{/array}}{{^array}}{{#pascal_case}}{{target}}{{/pascal_case}}{{/array}}
+    {{/resolvers}}
+    {{/has_resolvers}}
   }
 {{/collections}}
   type Query {
     {{#collections}}    
-    {{#camel_case}}{{name}}{{/camel_case}}: [{{#pascal_case}}{{name}}{{/pascal_case}}]
+    {{name}}: [{{#pascal_case}}{{name}}{{/pascal_case}}]
     {{/collections}}
   }
 `;
 const resolvers = {
   Query: {
     {{#collections}}
-    {{#camel_case}}{{name}}{{/camel_case}}: async () => {
+    {{name}}: async () => {
       const docs = await db.collection("{{name}}").get();
       return docs.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }));
     },
     {{/collections}}
   },
+  {{#collections}}
+  {{#has_resolvers}}
+  {{#pascal_case}}{{name}}{{/pascal_case}}: {
+    {{#resolvers}}
+    {{#array}}
+    {{#camel_case}}{{target}}{{/camel_case}}: async (parent: any) => {
+      const docs = await db.collection("{{target}}").where("{{field}}", "==", parent.id).get();
+      return docs.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }));
+    },
+    {{/array}}
+    {{^array}}
+    {{#camel_case}}{{target}}{{/camel_case}}: async (parent: any) => {
+      const doc = await db.collection("{{target}}").doc(parent.{{field}}).get();
+      if (doc) {
+        return { ...doc.data(), id: doc.id };
+      } else {
+        return null;
+      }
+    },
+    {{/array}}
+    {{/resolvers}}
+  },
+  {{/has_resolvers}}
+  {{/collections}}
 };
 const server = new ApolloServer({
   typeDefs,
@@ -219,6 +249,39 @@ class FunctionsGenerator extends GeneratorBase {
         );
       }
     }
+    final resolvers = <String, List<dynamic>>{};
+    for (final collection in collections) {
+      if (collection.fields.where((e) => e.type is DocumentField).isNotEmpty) {
+        for (final field
+            in collection.fields.where((e) => e.type is DocumentField)) {
+          resolvers[collection.name] ??= [];
+          resolvers[collection.name]!.add({
+            "target": (field.type as DocumentField).collection,
+            "field": field.name,
+            'array': false,
+          });
+        }
+      }
+      if (collections
+          .where((e) => e.fields.any((f) =>
+              f.type is DocumentField &&
+              (f.type as DocumentField).collection == collection.name))
+          .isNotEmpty) {
+        for (final col in collections) {
+          for (final field in col.fields) {
+            if (field.type is DocumentField &&
+                (field.type as DocumentField).collection == collection.name) {
+              resolvers[collection.name] ??= [];
+              resolvers[collection.name]!.add({
+                "target": col.name,
+                "field": field.name,
+                'array': true,
+              });
+            }
+          }
+        }
+      }
+    }
     return {
       'collections': [
         for (final collection in collections)
@@ -231,6 +294,35 @@ class FunctionsGenerator extends GeneratorBase {
                   'graphql_type': field.graphqlType,
                 }
             ],
+            "has_resolvers": resolvers[collection.name] != null,
+            "resolvers": resolvers[collection.name] ?? [],
+            // "has_id_resolvers": collection.fields
+            //     .where((e) => e.type is DocumentField)
+            //     .isNotEmpty,
+            // "id_resolvers": [
+            //   for (final field
+            //       in collection.fields.where((e) => e.type is DocumentField))
+            //     {
+            //       "target": (field.type as DocumentField).collection,
+            //       "field": field.name,
+            //     }
+            // ],
+            // "has_child_resolvers": collections
+            //     .where((e) => e.fields.any((f) =>
+            //         f.type is DocumentField &&
+            //         (f.type as DocumentField).collection == collection.name))
+            //     .isNotEmpty,
+            // "child_resolvers": [
+            //   for (final col in collections)
+            //     for (final field in col.fields)
+            //       if (field.type is DocumentField &&
+            //           (field.type as DocumentField).collection ==
+            //               collection.name)
+            //         {
+            //           "target": col.name,
+            //           "field": field.name,
+            //         }
+            // ],
           }
       ],
       'graphql': graphql,
