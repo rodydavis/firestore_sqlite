@@ -9,8 +9,8 @@ import 'field.dart';
 typedef Snapshots = List<QueryDocumentSnapshot<Json?>>;
 
 extension CollectionUtils on Collection {
-  CollectionReference<Json> getReference(FirestoreClient client) =>
-      client.firebase.firestore.collection(name);
+  // CollectionReference<Json> getReference(FirestoreClient client) =>
+  //     client.firebase.firestore.collection(name);
 
   DocumentReference<Json> getSchema(FirestoreClient client) =>
       client.firebase.firestore.collection('schema').doc(name);
@@ -39,43 +39,9 @@ extension CollectionUtils on Collection {
     return results;
   }
 
-  Future<List<Doc>> getDocuments(FirestoreClient client,
-      [GetOptions? options]) {
-    return getReference(client)
-        .get(options)
-        .then((snapshot) => snapshot.docs)
-        .then((docs) => parseDocs(client, docs));
-  }
-
-  Stream<List<Doc>> watchDocuments(FirestoreClient client,
-      {bool includeMetadataChanges = false}) {
-    return getReference(client)
-        .snapshots(includeMetadataChanges: includeMetadataChanges)
-        .map((snapshot) => snapshot.docs)
-        .asyncMap((docs) => parseDocs(client, docs));
-  }
-
-  Future<Doc> getDocument(FirestoreClient client, String id,
-      [GetOptions? options]) async {
-    final reference = getReference(client).doc(id);
-    final snapshot = await reference.get(options);
-    return Doc.fromSnapshot(client, this, snapshot);
-  }
-
   Future<void> save(FirestoreClient client) async {
     final data = copyWith(updated: DateTime.now(), fields: allFields);
     await getSchema(client).set(data.toMap());
-  }
-
-  Future<String> add(FirestoreClient client, Doc base) async {
-    final doc = await getReference(client).add(base.toJson());
-    return doc.id;
-  }
-
-  Future<void> set(FirestoreClient client, Doc base,
-      [SetOptions? options]) async {
-    final ref = getReference(client).doc(base.id);
-    await ref.set(base.toJson(), options);
   }
 }
 

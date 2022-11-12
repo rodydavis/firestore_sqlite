@@ -18,8 +18,12 @@ class Doc {
   });
 
   factory Doc.modify(
-      Collection collection, FirestoreClient client, String? id) {
-    final docId = id ?? collection.getReference(client).doc().id;
+    Collection collection,
+    FirestoreClient client,
+    String? id,
+  ) {
+    final ref = client.firebase.firestore.collection(collection.name);
+    final docId = id ?? ref.doc().id;
     return Doc(
       id: docId,
       collection: collection,

@@ -22,7 +22,10 @@ class CollectionDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<Doc>>(
-      stream: collection.watchDocuments(admin),
+      stream: FirestoreClientCollection(
+        admin,
+        collection,
+      ).watchDocuments(admin),
       builder: (context, snapshot) {
         return Scaffold(
           appBar: AppBar(
@@ -86,7 +89,9 @@ class CollectionDetails extends StatelessWidget {
                     await db.runTransaction((transaction) async {
                       for (final item in data) {
                         transaction.set(
-                          collection.getReference(admin).doc(item['id']),
+                          admin.firebase.firestore
+                              .collection(collection.name)
+                              .doc(item['id']),
                           item,
                         );
                       }

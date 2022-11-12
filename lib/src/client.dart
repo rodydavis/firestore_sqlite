@@ -40,16 +40,6 @@ abstract class FirestoreClient {
     await database.deleteDocument(source, doc.collection.name);
   }
 
-  Future<void> addDoc(Doc doc) async {
-    await doc.collection.add(this, doc);
-    return _add(doc);
-  }
-
-  Future<void> updateDoc(Doc doc) async {
-    await doc.collection.set(this, doc);
-    return _update(doc);
-  }
-
   Future<void> deleteDoc(Doc doc) async {
     await doc.delete();
     return _delete(doc);
@@ -85,6 +75,57 @@ class FirestoreClientCollection<T extends Doc> {
   FirestoreClientCollection(this.client, this.collection);
   final FirestoreClient client;
   final Collection collection;
+  late CollectionReference<Json> collectionRef =
+      client.firebase.firestore.collection(collection.name);
+  late Query<Json> query = collectionRef;
+
+  void setFilter(String key, Object value) {
+    query = collectionRef.where(key, isEqualTo: value);
+  }
+
+  Future<void> addDoc(Doc doc) async {
+    await add(client, doc);
+    return client._add(doc);
+  }
+
+  Future<void> updateDoc(Doc doc) async {
+    await set(client, doc);
+    return client._update(doc);
+  }
+
+  Future<List<Doc>> getDocuments(FirestoreClient client,
+      [GetOptions? options]) {
+    return query
+        .get(options)
+        .then((snapshot) => snapshot.docs)
+        .then((docs) => collection.parseDocs(client, docs));
+  }
+
+  Stream<List<Doc>> watchDocuments(FirestoreClient client,
+      {bool includeMetadataChanges = false}) {
+    return query
+        .snapshots(includeMetadataChanges: includeMetadataChanges)
+        .map((snapshot) => snapshot.docs)
+        .asyncMap((docs) => collection.parseDocs(client, docs));
+  }
+
+  Future<Doc> getDocument(FirestoreClient client, String id,
+      [GetOptions? options]) async {
+    final reference = collectionRef.doc(id);
+    final snapshot = await reference.get(options);
+    return Doc.fromSnapshot(client, collection, snapshot);
+  }
+
+  Future<String> add(FirestoreClient client, Doc base) async {
+    final doc = await collectionRef.add(base.toJson());
+    return doc.id;
+  }
+
+  Future<void> set(FirestoreClient client, Doc base,
+      [SetOptions? options]) async {
+    final ref = collectionRef.doc(base.id);
+    await ref.set(base.toJson(), options);
+  }
 
   static bool _needsUpdate(GetOptions? options) {
     if (options == null) return false;
@@ -158,7 +199,7 @@ class FirestoreClientCollection<T extends Doc> {
   }) async {
     if (_needsUpdate(options)) {
       await collection.checkForUpdate(client);
-      final snapshot = await collection.getReference(client).get(options);
+      final snapshot = await query.get(options);
       final docs = snapshot.docs
           .map((e) => Doc.fromDocumentSnapshot(client, collection, e))
           .toList();
@@ -195,7 +236,7 @@ class FirestoreClientCollection<T extends Doc> {
 
     if (_needsUpdate(options)) {
       await collection.checkForUpdate(client);
-      final stream = collection.getReference(client).snapshots();
+      final stream = query.snapshots();
       await for (final snapshot in stream) {
         final docs = snapshot.docs
             .map((e) => Doc.fromDocumentSnapshot(client, collection, e))
@@ -254,8 +295,7 @@ class FirestoreClientCollection<T extends Doc> {
     final newest = newestItems.isEmpty
         ? DateTime(0)
         : newestItems.reduce((a, b) => a.isAfter(b) ? a : b);
-    final latest = await collection
-        .getReference(client)
+    final latest = await collectionRef
         .where('updated', isGreaterThan: newest.toIso8601String())
         .get()
         .then((snap) => snap.docs)
@@ -280,7 +320,7 @@ class FirestoreClientCollection<T extends Doc> {
     CollectionReference<Json>? reference,
     GetOptions? options,
   }) async {
-    final ref = reference ?? collection.getReference(client);
+    final ref = reference ?? collectionRef;
     final local = await client.database.getDocuments(collection.name);
     final newest = await getNewestItem();
     final remote = await getNewestRemote(
@@ -324,7 +364,7 @@ class FirestoreClientCollection<T extends Doc> {
     CollectionReference<Json>? reference,
     GetOptions? options,
   }) async {
-    final ref = collection.getReference(client);
+    final ref = collectionRef;
     Query<Json?> query = (reference ?? ref);
     if (date != null) {
       query = query.where(
