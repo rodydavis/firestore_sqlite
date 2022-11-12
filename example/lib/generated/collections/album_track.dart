@@ -68,7 +68,8 @@ final albumTrackCollection = Collection.fromJson(const {
 
 /// Songs on an album
 class AlbumTrack extends Doc {
-  AlbumTrack({required super.id}) : super(collection: albumTrackCollection);
+  AlbumTrack({required super.id, required super.client})
+      : super(collection: albumTrackCollection);
 
   @override
   DateTime get created => this['created'] as DateTime;

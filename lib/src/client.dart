@@ -39,12 +39,12 @@ abstract class FirestoreClient {
   }
 
   Future<void> addDoc(Doc doc) async {
-    await doc.collection.add(doc);
+    await doc.collection.add(this, doc);
     return _add(doc);
   }
 
   Future<void> updateDoc(Doc doc) async {
-    await doc.collection.set(doc);
+    await doc.collection.set(this, doc);
     return _update(doc);
   }
 
@@ -95,8 +95,8 @@ class FirestoreClientCollection<T extends Doc> {
     String id, {
     GetOptions options = const GetOptions(),
   }) async {
-    await collection.checkForUpdate();
-    final doc = Doc(collection: collection, id: id);
+    await collection.checkForUpdate(client);
+    final doc = Doc(client: client, collection: collection, id: id);
     final snapshot = await doc.reference.get(options);
     if (snapshot.exists) {
       await doc.loadSnapshot(snapshot);
@@ -118,22 +118,23 @@ class FirestoreClientCollection<T extends Doc> {
     GetOptions options = const GetOptions(),
   }) async* {
     final local = await client.database.getDocument(collection.name, id);
-    yield local != null ? Doc.fromJson(collection, local.toMap()) : null;
+    yield local != null
+        ? Doc.fromJson(client, collection, local.toMap())
+        : null;
     if (_needsUpdate(options)) {
-      await collection.checkForUpdate();
-      final doc = Doc(collection: collection, id: id);
+      await collection.checkForUpdate(client);
+      final doc = Doc(client: client, collection: collection, id: id);
       final stream = doc.reference.snapshots();
       await for (final snapshot in stream) {
         if (snapshot.exists) {
-          yield Doc.fromDocumentSnapshot(collection, snapshot);
+          yield Doc.fromDocumentSnapshot(client, collection, snapshot);
         } else {
           yield null;
         }
       }
     } else {
-      yield* client.database
-          .watchDocument(collection.name, id)
-          .map((e) => e != null ? Doc.fromJson(collection, e.toMap()) : null);
+      yield* client.database.watchDocument(collection.name, id).map((e) =>
+          e != null ? Doc.fromJson(client, collection, e.toMap()) : null);
     }
   }
 
@@ -143,10 +144,10 @@ class FirestoreClientCollection<T extends Doc> {
     GetOptions options = const GetOptions(),
   }) async {
     if (_needsUpdate(options)) {
-      await collection.checkForUpdate();
-      final snapshot = await collection.reference.get(options);
+      await collection.checkForUpdate(client);
+      final snapshot = await collection.getReference(client).get(options);
       final docs = snapshot.docs
-          .map((e) => Doc.fromDocumentSnapshot(collection, e))
+          .map((e) => Doc.fromDocumentSnapshot(client, collection, e))
           .toList();
       for (final doc in docs) {
         final local =
@@ -161,7 +162,7 @@ class FirestoreClientCollection<T extends Doc> {
     } else {
       final nodes = await client.database.getDocuments(collection.name);
       return nodes
-          .map((e) => Doc.fromJson(collection, e.toMap()))
+          .map((e) => Doc.fromJson(client, collection, e.toMap()))
           .where((e) => deleted ? e.deleted == true : true)
           .toList();
     }
@@ -174,17 +175,17 @@ class FirestoreClientCollection<T extends Doc> {
   }) async* {
     final docs = await client.database.getDocuments(collection.name).then((e) =>
         e
-            .map((e) => Doc.fromJson(collection, e.toMap()))
+            .map((e) => Doc.fromJson(client, collection, e.toMap()))
             .where((e) => deleted ? e.deleted == true : true)
             .toList());
     yield docs;
 
     if (_needsUpdate(options)) {
-      await collection.checkForUpdate();
-      final stream = collection.reference.snapshots();
+      await collection.checkForUpdate(client);
+      final stream = collection.getReference(client).snapshots();
       await for (final snapshot in stream) {
         final docs = snapshot.docs
-            .map((e) => Doc.fromDocumentSnapshot(collection, e))
+            .map((e) => Doc.fromDocumentSnapshot(client, collection, e))
             .toList();
         yield docs;
 
@@ -201,7 +202,7 @@ class FirestoreClientCollection<T extends Doc> {
     }
 
     yield* client.database.watchDocuments(collection.name).map((e) => e
-        .map((e) => Doc.fromJson(collection, e.toMap()))
+        .map((e) => Doc.fromJson(client, collection, e.toMap()))
         .where((e) => deleted ? e.deleted == true : true)
         .toList());
   }
@@ -231,21 +232,23 @@ class FirestoreClientCollection<T extends Doc> {
       _watchDoc(collection, id, options: options);
 
   Future<void> checkForUpdates() async {
-    await collection.checkForUpdate();
+    await collection.checkForUpdate(client);
     final local = await client.database.getDocuments(collection.name);
     final newestItems = local
-        .map((e) => Doc.fromJson(collection, e.toMap()))
+        .map((e) => Doc.fromJson(client, collection, e.toMap()))
         .map((e) => e.updated)
         .toList();
     final newest = newestItems.isEmpty
         ? DateTime(0)
         : newestItems.reduce((a, b) => a.isAfter(b) ? a : b);
-    final latest = await collection.reference
+    final latest = await collection
+        .getReference(client)
         .where('updated', isGreaterThan: newest.toIso8601String())
         .get()
         .then((snap) => snap.docs)
-        .then((docs) =>
-            docs.map((e) => Doc.fromDocumentSnapshot(collection, e)).toList());
+        .then((docs) => docs
+            .map((e) => Doc.fromDocumentSnapshot(client, collection, e))
+            .toList());
     for (final node in latest) {
       await client.database.insertOrReplaceDocument(node.toJson());
     }
@@ -255,7 +258,7 @@ class FirestoreClientCollection<T extends Doc> {
     final results = await client.database.searchAllDocuments(query);
     return results
         .where((e) => e.collection == collection.name)
-        .map((e) => Doc.fromJson(collection, e.toMap()))
+        .map((e) => Doc.fromJson(client, collection, e.toMap()))
         .where((e) => e.deleted != true)
         .toList();
   }

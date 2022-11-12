@@ -73,7 +73,8 @@ final albumCollection = Collection.fromJson(const {
 
 /// Showcase of music
 class Album extends Doc {
-  Album({required super.id}) : super(collection: albumCollection);
+  Album({required super.id, required super.client})
+      : super(collection: albumCollection);
 
   @override
   DateTime get created => this['created'] as DateTime;

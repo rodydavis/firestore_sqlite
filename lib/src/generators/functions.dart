@@ -94,6 +94,7 @@ export const collection{{#pascal_case}}{{name}}{{/pascal_case}} = functions.http
 });
 {{/collections}}
 {{/rest}}
+
 {{#all_triggers}}
 export const collection{{#pascal_case}}{{collection}}{{/pascal_case}}Trigger = functions.firestore
   .document('{{collection}}/{docId}')
@@ -122,14 +123,23 @@ export const uploadBundle = functions.https.onRequest(async (req, res) => {
   res.send(buffer);
 });
 export const downloadBundle = functions.https.onRequest(async (req, res) => {
-  const buffer = await storage.bucket().file("collections-bundle").download();
-  if (buffer) {
-    {{#max_age}}
-    res.set('Cache-Control', 'public, max-age={{max_age}}, s-maxage={{max_age}}');
-    {{/max_age}}
-    res.end(buffer);
-  } else {
-    res.status(404).send("Not Found");
+  const file = storage.bucket().file("collections-bundle");
+  try {
+    const exists = await file.exists();
+    if (exists) {
+      const result = await file.download();
+      const buffer = result[0];   
+      {{#max_age}}
+      res.set('Cache-Control', 'public, max-age={{max_age}}, s-maxage={{max_age}}');
+      {{/max_age}}
+      res.set('Content-Type', 'application/octet-stream');
+      res.set('Content-Disposition', 'attachment; filename="collections-bundle"');
+      res.end(buffer);
+    } else {
+      res.status(404).send("Not Found");
+    }
+  } catch (error) {
+    res.status(404).send(`Not Found - ${error}`);
   }
 });
 {{#graphql}}
@@ -150,19 +160,19 @@ const typeDefs = gql`
 {{/collections}}
   type Query {
     {{#collections}}    
-    {{name}}: [{{#pascal_case}}{{name}}{{/pascal_case}}]
-    {{name}}ById(id: ID!): {{#pascal_case}}{{name}}{{/pascal_case}}
+    {{#camel_case}}{{name}}{{/camel_case}}: [{{#pascal_case}}{{name}}{{/pascal_case}}]
+    {{#camel_case}}{{name}}{{/camel_case}}ById(id: ID!): {{#pascal_case}}{{name}}{{/pascal_case}}
     {{/collections}}
   }
 `;
 const resolvers = {
   Query: {
     {{#collections}}
-    {{name}}: async () => {
+    {{#camel_case}}{{name}}{{/camel_case}}: async () => {
       const docs = await db.collection("{{name}}").get();
       return docs.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }));
     },
-    {{name}}ById: async (_: any, { id }: any) => {
+    {{#camel_case}}{{name}}{{/camel_case}}ById: async (_: any, { id }: any) => {
       const doc = await db.collection("{{name}}").doc(id).get();
       if (doc.exists) {
         return { ...doc.data(), id: doc.id };

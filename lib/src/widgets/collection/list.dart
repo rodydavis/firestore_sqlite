@@ -5,6 +5,7 @@ import 'package:firestore_sqlite/firestore_sqlite.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../admin.dart';
 import '../../utils/json.dart';
 import 'details.dart';
 import 'edit.dart';
@@ -82,7 +83,7 @@ class CollectionsEditor extends StatelessWidget {
                           .toList();
                       await db.runTransaction((transaction) async {
                         for (final collection in collections) {
-                          await collection.save();
+                          await collection.save(admin);
                         }
                       });
                       messenger.showSnackBar(
@@ -157,7 +158,7 @@ class CollectionsEditor extends StatelessWidget {
       fullscreenDialog: true,
     ));
     if (value != null) {
-      await value.save();
+      await value.save(admin);
     }
   }
 }

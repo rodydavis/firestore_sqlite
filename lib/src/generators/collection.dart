@@ -24,7 +24,7 @@ final {{#camel_case}}{{name}}{{/camel_case}}Collection = Collection.fromJson(con
 
 /// {{description}}
 class {{#pascal_case}}{{name}}{{/pascal_case}} extends Doc {
-  {{#pascal_case}}{{name}}{{/pascal_case}}({required super.id})
+  {{#pascal_case}}{{name}}{{/pascal_case}}({required super.id, required super.client})
     : super(collection: {{#camel_case}}{{name}}{{/camel_case}}Collection);
 
   @override

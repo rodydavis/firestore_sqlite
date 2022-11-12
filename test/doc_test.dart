@@ -1,46 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:firestore_sqlite/firestore_sqlite.dart';
-
-class TestDoc extends Doc {
-  TestDoc({required super.id})
-      : super(
-          collection: Collection.fromJson(const {
-            "name": "test",
-            "created": "1970-01-01T00:00:00.000",
-            "updated": "1970-01-01T00:00:00.000",
-            "description": "Test class generation",
-            "fields": [
-              {
-                "name": "name",
-                "type": {"maxLength": null, "runtimeType": "string"},
-                "description": "Display name",
-                "required": null,
-                "defaultValue": null,
-                "previous": ['full_name']
-              },
-            ],
-          }),
-        );
-
-  @override
-  DateTime get created => this['created'] as DateTime;
-  set created(DateTime value) => this['created'] = value;
-
-  @override
-  DateTime get updated => this['updated'] as DateTime;
-
-  @override
-  bool? get deleted => this['deleted'] as bool?;
-
-  /// Display name
-  String? get name => this['name'] as String?;
-  set name(String? value) => this['name'] = value;
-}
+import 'client.dart';
 
 void main() {
+  final testClient = TestClient();
+
   test('test doc values', () {
-    final doc = TestDoc(id: '');
+    final doc = TestDoc(id: '', client: testClient);
     doc.setJson({'name': 'John Doe'});
 
     final name = doc.name;
@@ -49,7 +15,7 @@ void main() {
   });
 
   test('test previous values', () {
-    final doc = TestDoc(id: '');
+    final doc = TestDoc(id: '', client: testClient);
     doc.setJson({'full_name': 'John Doe'});
 
     final name = doc.name;
@@ -58,7 +24,7 @@ void main() {
   });
 
   test('test schema changes', () {
-    final doc = TestDoc(id: '');
+    final doc = TestDoc(id: '', client: testClient);
     doc.setJson({'name': 'John Doe'});
 
     expect(doc['display_name'], null);

@@ -5,6 +5,7 @@ import 'package:firestore_sqlite/firestore_sqlite.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../admin.dart';
 import '../../utils/json.dart';
 import 'edit.dart';
 import 'form.dart';
@@ -22,7 +23,7 @@ class CollectionDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<Doc>>(
-      stream: collection.watchDocuments(),
+      stream: collection.watchDocuments(admin),
       builder: (context, snapshot) {
         return Scaffold(
           appBar: AppBar(
@@ -42,7 +43,7 @@ class CollectionDetails extends StatelessWidget {
                     fullscreenDialog: true,
                   ));
                   if (value != null) {
-                    await value.save();
+                    await value.save(admin);
                   }
                 },
               ),
@@ -86,7 +87,7 @@ class CollectionDetails extends StatelessWidget {
                     await db.runTransaction((transaction) async {
                       for (final item in data) {
                         transaction.set(
-                          collection.reference.doc(item['id']),
+                          collection.getReference(admin).doc(item['id']),
                           item,
                         );
                       }
@@ -142,7 +143,8 @@ class CollectionDetails extends StatelessWidget {
                           cells: [
                             for (final field in collection.allFields)
                               DataCell(
-                                SelectableText('${doc[field.name] ?? ''}'.toString()),
+                                SelectableText(
+                                    '${doc[field.name] ?? ''}'.toString()),
                               ),
                             DataCell(
                               IconButton(

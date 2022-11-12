@@ -83,6 +83,7 @@ export const collectionArtist = functions.https.onRequest((req, res) => {
 export const collectionSong = functions.https.onRequest((req, res) => {
   return handelCollection(req, res, "song");
 });
+
 export const collectionArtistTrigger = functions.firestore
   .document('artist/{docId}')
   .onDelete(async (snapshot, context) => { 
@@ -127,12 +128,21 @@ export const uploadBundle = functions.https.onRequest(async (req, res) => {
   res.send(buffer);
 });
 export const downloadBundle = functions.https.onRequest(async (req, res) => {
-  const buffer = await storage.bucket().file("collections-bundle").download();
-  if (buffer) {
-    res.set('Cache-Control', 'public, max-age=86400, s-maxage=86400');
-    res.end(buffer);
-  } else {
-    res.status(404).send("Not Found");
+  const file = storage.bucket().file("collections-bundle");
+  try {
+    const exists = await file.exists();
+    if (exists) {
+      const result = await file.download();
+      const buffer = result[0];   
+      res.set('Cache-Control', 'public, max-age=86400, s-maxage=86400');
+      res.set('Content-Type', 'application/octet-stream');
+      res.set('Content-Disposition', 'attachment; filename="collections-bundle"');
+      res.end(buffer);
+    } else {
+      res.status(404).send("Not Found");
+    }
+  } catch (error) {
+    res.status(404).send(`Not Found - ${error}`);
   }
 });
 const typeDefs = gql`
@@ -176,8 +186,8 @@ const typeDefs = gql`
   type Query {
     album: [Album]
     albumById(id: ID!): Album
-    album_track: [AlbumTrack]
-    album_trackById(id: ID!): AlbumTrack
+    albumTrack: [AlbumTrack]
+    albumTrackById(id: ID!): AlbumTrack
     artist: [Artist]
     artistById(id: ID!): Artist
     song: [Song]
@@ -198,11 +208,11 @@ const resolvers = {
         return null;
       }
     },
-    album_track: async () => {
+    albumTrack: async () => {
       const docs = await db.collection("album_track").get();
       return docs.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }));
     },
-    album_trackById: async (_: any, { id }: any) => {
+    albumTrackById: async (_: any, { id }: any) => {
       const doc = await db.collection("album_track").doc(id).get();
       if (doc.exists) {
         return { ...doc.data(), id: doc.id };

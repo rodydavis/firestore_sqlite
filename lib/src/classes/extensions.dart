@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../generators/json.dart';
 import '../utils/json.dart';
+import '../client.dart';
 import 'collection.dart';
 import 'doc.dart';
 import 'field.dart';
@@ -9,58 +9,62 @@ import 'field.dart';
 typedef Snapshots = List<QueryDocumentSnapshot<Json?>>;
 
 extension CollectionUtils on Collection {
-  static final db = FirebaseFirestore.instance;
+  CollectionReference<Json> getReference(FirestoreClient client) =>
+      client.firebase.firestore.collection(name);
 
-  CollectionReference<Json> get reference => db.collection(name);
+  DocumentReference<Json> getSchema(FirestoreClient client) =>
+      client.firebase.firestore.collection('schema').doc(name);
 
-  DocumentReference<Json> get schema => db.collection('schema').doc(name);
-
-  Future<Collection> checkForUpdate() async {
-    final snapshot = await schema.get();
+  Future<Collection> checkForUpdate(FirestoreClient client) async {
+    final snapshot = await getSchema(client).get();
     return Collection.fromJson(snapshot.toJson());
   }
 
-  Future<List<Doc>> parseDocs(Snapshots docs) async {
+  Future<List<Doc>> parseDocs(FirestoreClient client, Snapshots docs) async {
     final results = <Doc>[];
     for (final doc in docs) {
-      final item = await Doc.fromSnapshot(this, doc);
+      final item = await Doc.fromSnapshot(client, this, doc);
       results.add(item);
     }
     return results;
   }
 
-  Future<List<Doc>> getDocuments([GetOptions? options]) {
-    return reference
+  Future<List<Doc>> getDocuments(FirestoreClient client,
+      [GetOptions? options]) {
+    return getReference(client)
         .get(options)
         .then((snapshot) => snapshot.docs)
-        .then((docs) => parseDocs(docs));
+        .then((docs) => parseDocs(client, docs));
   }
 
-  Stream<List<Doc>> watchDocuments({bool includeMetadataChanges = false}) {
-    return reference
+  Stream<List<Doc>> watchDocuments(FirestoreClient client,
+      {bool includeMetadataChanges = false}) {
+    return getReference(client)
         .snapshots(includeMetadataChanges: includeMetadataChanges)
         .map((snapshot) => snapshot.docs)
-        .asyncMap((docs) => parseDocs(docs));
+        .asyncMap((docs) => parseDocs(client, docs));
   }
 
-  Future<Doc> getDocument(String id, [GetOptions? options]) async {
-    final reference = this.reference.doc(id);
+  Future<Doc> getDocument(FirestoreClient client, String id,
+      [GetOptions? options]) async {
+    final reference = getReference(client).doc(id);
     final snapshot = await reference.get(options);
-    return Doc.fromSnapshot(this, snapshot);
+    return Doc.fromSnapshot(client, this, snapshot);
   }
 
-  Future<void> save() async {
+  Future<void> save(FirestoreClient client) async {
     final data = copyWith(updated: DateTime.now(), fields: allFields).toJson();
-    await schema.set(copyJson(data) as Map<String, Object?>);
+    await getSchema(client).set(copyJson(data) as Map<String, Object?>);
   }
 
-  Future<String> add(Doc base) async {
-    final doc = await reference.add(base.toJson());
+  Future<String> add(FirestoreClient client, Doc base) async {
+    final doc = await getReference(client).add(base.toJson());
     return doc.id;
   }
 
-  Future<void> set(Doc base, [SetOptions? options]) async {
-    final ref = reference.doc(base.id);
+  Future<void> set(FirestoreClient client, Doc base,
+      [SetOptions? options]) async {
+    final ref = getReference(client).doc(base.id);
     await ref.set(base.toJson(), options);
   }
 }

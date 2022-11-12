@@ -52,7 +52,8 @@ final artistCollection = Collection.fromJson(const {
 
 /// People that like to make music
 class Artist extends Doc {
-  Artist({required super.id}) : super(collection: artistCollection);
+  Artist({required super.id, required super.client})
+      : super(collection: artistCollection);
 
   @override
   DateTime get created => this['created'] as DateTime;

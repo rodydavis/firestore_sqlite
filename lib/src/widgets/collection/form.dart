@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:firestore_sqlite/firestore_sqlite.dart';
 
+import '../../admin.dart';
 import '../form.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +23,8 @@ class CollectionForm extends StatefulWidget {
 }
 
 class _CollectionFormState extends State<CollectionForm> {
-  late final doc = widget.doc ?? Doc.modify(widget.collection, widget.id);
+  late final doc =
+      widget.doc ?? Doc.modify(widget.collection, admin, widget.id);
   final formKey = GlobalKey<FormState>();
   bool edited = false;
   final data = <String, Object?>{};

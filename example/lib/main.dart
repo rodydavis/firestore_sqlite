@@ -46,9 +46,15 @@ class _ExampleState extends State<Example> {
   @override
   void initState() {
     super.initState();
-    client.downloadBundle().last.then((_) {
+    if (kIsWeb) {
       collection.checkForUpdates();
-    });
+    } else {
+      client.downloadBundle().listen((event) {
+        debugPrint('Bundle state: ${event.name}');
+      }).onDone(() {
+        collection.checkForUpdates();
+      });
+    }
   }
 
   @override
@@ -115,7 +121,7 @@ class _ExampleState extends State<Example> {
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
-        final artist = Artist(id: item.id);
+        final artist = Artist(client: client, id: item.id);
         artist.setJson(item.data());
         return ListTile(
           title: Text(artist.name ?? 'N/A'),

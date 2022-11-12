@@ -1,9 +1,10 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:firestore_sqlite/firestore_sqlite.dart';
+
+import 'client.dart';
 
 const _classTest = r'''import 'package:firestore_sqlite/firestore_sqlite.dart';
 
@@ -45,9 +46,7 @@ class Test extends Doc {
 ''';
 
 void main() {
-  final schemaFile = File('.example/schema.json');
-  final items = jsonDecode(schemaFile.readAsStringSync()) as List;
-  final collections = items.map((e) => Collection.fromJson(e)).toList();
+  final client = LocalClient.fromSchema();
 
   test('json generator', () {
     final args = {'key': 'value'};
@@ -80,12 +79,12 @@ void main() {
   });
 
   test('client generator', () {
-    final client = ClientGenerator(
-      collections: collections,
+    final gen = ClientGenerator(
+      collections: client.collections,
       output: Directory('./example/lib/generated'),
     );
 
-    client.render();
+    gen.render();
 
     expect(client.collections.length, 1);
   });
@@ -93,34 +92,32 @@ void main() {
   test('functions generator', () {
     final outFile = File('./example/functions/src/index.ts');
 
-    final client = FunctionsGenerator(
+    final gen = FunctionsGenerator(
       graphql: true,
       cors: true,
-      collections: collections,
+      collections: client.collections,
       outFile: outFile,
     );
-
-    client.render();
+    gen.render();
 
     expect(client.collections.length, 1);
     expect(outFile.existsSync(), true);
 
-    // outFile.deleteSync();
+    outFile.deleteSync();
   });
 
   test('schema generator', () {
     final outFile = File('./example/schema.json');
 
-    final client = SchemaGenerator(
-      collections: collections,
+    final gen = SchemaGenerator(
+      collections: client.collections,
       outFile: outFile,
     );
-
-    client.render();
+    gen.render();
 
     expect(client.collections.length, 5);
     expect(outFile.existsSync(), true);
 
-    // outFile.deleteSync();
+    outFile.deleteSync();
   });
 }

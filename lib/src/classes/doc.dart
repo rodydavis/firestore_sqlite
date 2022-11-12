@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../client.dart';
 import 'extensions.dart';
 import 'collection.dart';
 
@@ -10,21 +11,32 @@ typedef Snapshot = DocumentSnapshot<Object?>;
 
 /// Base for all items in a collection
 class Doc {
-  Doc({required this.id, required this.collection});
+  Doc({
+    required this.id,
+    required this.collection,
+    required this.client,
+  });
 
-  factory Doc.modify(Collection collection, String? id) {
-    final docId = id ?? collection.reference.doc().id;
-    return Doc(id: docId, collection: collection);
+  factory Doc.modify(
+      Collection collection, FirestoreClient client, String? id) {
+    final docId = id ?? collection.getReference(client).doc().id;
+    return Doc(
+      id: docId,
+      collection: collection,
+      client: client,
+    );
   }
 
   factory Doc.fromJson(
+    FirestoreClient client,
     Collection collection,
     Json data,
   ) {
-    final id = data['document_id'] ?? data['id']  ?? '';
+    final id = data['document_id'] ?? data['id'] ?? '';
     final base = Doc(
       id: id,
       collection: collection,
+      client: client,
     );
     data['id'] = id;
     base.setJson(data);
@@ -32,19 +44,22 @@ class Doc {
   }
 
   factory Doc.fromDocumentSnapshot(
+    FirestoreClient client,
     Collection collection,
     DocumentSnapshot<Json?> snapshot,
   ) =>
-      Doc.fromJson(collection, {
+      Doc.fromJson(client, collection, {
         ...snapshot.data() ?? {},
         'id': snapshot.id,
       });
 
   static Future<Doc> fromSnapshot(
+    FirestoreClient client,
     Collection collection,
     DocumentSnapshot<Object?> snapshot,
   ) async {
     final base = Doc(
+      client: client,
       id: snapshot.id,
       collection: collection,
     );
@@ -69,9 +84,10 @@ class Doc {
 
   /// Document id
   final String id;
+  final FirestoreClient client;
 
   /// Firestore collection reference
-  late final reference = collection.reference.doc(id);
+  late final reference = collection.getReference(client).doc(id);
 
   Object? operator [](String key) {
     for (final field in collection.allFields) {

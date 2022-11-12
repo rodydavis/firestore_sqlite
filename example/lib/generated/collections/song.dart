@@ -52,7 +52,8 @@ final songCollection = Collection.fromJson(const {
 
 /// Expression of art in music form
 class Song extends Doc {
-  Song({required super.id}) : super(collection: songCollection);
+  Song({required super.id, required super.client})
+      : super(collection: songCollection);
 
   @override
   DateTime get created => this['created'] as DateTime;
