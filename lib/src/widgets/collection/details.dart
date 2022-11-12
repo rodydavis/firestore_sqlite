@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firestore_sqlite/firestore_sqlite.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -83,7 +82,7 @@ class CollectionDetails extends StatelessWidget {
                     if (data is! List) {
                       throw const FormatException('Expected List');
                     }
-                    final db = FirebaseFirestore.instance;
+                    final db = admin.firebase.firestore;
                     await db.runTransaction((transaction) async {
                       for (final item in data) {
                         transaction.set(
@@ -153,7 +152,7 @@ class CollectionDetails extends StatelessWidget {
                                 onPressed: () async {
                                   final messenger =
                                       ScaffoldMessenger.of(context);
-                                  final db = FirebaseFirestore.instance;
+                                  final db = admin.firebase.firestore;
                                   await db.runTransaction((transaction) async {
                                     transaction.delete(doc.reference);
                                   });

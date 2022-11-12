@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:drift/drift.dart';
+import 'package:drift/extensions/json1.dart';
 import 'package:flutter/foundation.dart';
 
 import '../utils/json.dart';
@@ -8,27 +9,36 @@ import 'connection/connection.dart' as impl;
 
 part 'database.g.dart';
 
-// TODO: Document CRUD queries
+const dbName = 'firestore.sqlite';
+
 // TODO: Relation triggers
-// TODO: Full text search
 @DriftDatabase(include: {
   'sql/firestore.drift',
   'sql/search.drift',
 })
 class Database extends _$Database {
   Database({
-    String dbName = 'graph_db.db',
-    DatabaseConnection? connection,
+    required DatabaseConnection connection,
+    String dbName = dbName,
     bool useWebWorker = false,
     bool logStatements = false,
-  }) : super.connect(
-          connection ??
-              impl.connect(
-                dbName,
-                useWebWorker: useWebWorker,
-                logStatements: logStatements,
-              ),
-        );
+  }) : super.connect(connection);
+
+  factory Database.defaults({
+    bool useWebWorker = false,
+    bool logStatements = false,
+  }) {
+    return Database(
+      dbName: dbName,
+      useWebWorker: kIsWeb,
+      logStatements: kDebugMode,
+      connection: impl.connect(
+        dbName,
+        useWebWorker: useWebWorker,
+        logStatements: logStatements,
+      ),
+    );
+  }
 
   @override
   int get schemaVersion => 1;
@@ -51,8 +61,11 @@ class Database extends _$Database {
     }
   }
 
-  Future<void> deleteDocument(String id) async {
-    await (delete(documents)..where((t) => t.documentId.equals(id))).go();
+  Future<void> deleteDocument(String id, String collection) async {
+    await (delete(documents)
+          ..where((t) => t.documentId.equals(id))
+          ..where((t) => t.collection.equals(collection)))
+        .go();
   }
 
   Future<List<Document>> getDocuments(String collection) {
@@ -85,6 +98,12 @@ class Database extends _$Database {
                   return true;
                 }
               }).toList());
+
+  Future<void> removeDeletedDocuments() async {
+    await (delete(documents)
+          ..where((t) => t.data.jsonExtract('deleted').equals(true)))
+        .go();
+  }
 }
 
 extension DocUtils on Document {

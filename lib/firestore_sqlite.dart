@@ -1,6 +1,7 @@
 library firestore_sqlite;
 
 export 'src/client.dart';
+export 'src/native.dart';
 export 'src/classes/collection.dart';
 export 'src/classes/doc.dart';
 export 'src/classes/type.dart';

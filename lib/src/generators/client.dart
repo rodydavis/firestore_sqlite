@@ -16,7 +16,7 @@ import "collections/{{name}}.dart";
 export "collections/{{name}}.dart";
 {{/collections}}
 
-class Client extends FirestoreClient {
+class Client extends NativeClient {
    @override
    List<Collection> get collections => [
    {{#collections}}
@@ -43,7 +43,7 @@ class ClientGenerator extends GeneratorBase {
   Map<String, Object?> get args => {
         'collections': collections.map((e) => e.toJson()).toList(),
       };
-      
+
   @override
   String render() {
     final result = super.render();

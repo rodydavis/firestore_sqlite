@@ -27,6 +27,7 @@ dependencies:
   dart_style: ^2.2.4
   args: ^2.3.1
   firebase_storage: ^11.0.5
+  collection: ^1.17.0
 
 dev_dependencies:
   flutter_test:
@@ -38,6 +39,8 @@ dev_dependencies:
   freezed: ^2.2.1
   drift_dev: # ^2.1.0
     path: third_party/drift/drift_dev
+  fake_cloud_firestore: ^2.0.1
+  firebase_storage_mocks: ^0.6.0+1
 
 flutter:
 

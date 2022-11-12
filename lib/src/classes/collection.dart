@@ -1,3 +1,4 @@
+import 'package:firestore_sqlite/src/utils/json.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'field.dart';
@@ -138,6 +139,8 @@ extension CollectionX on Collection {
     }
     return result;
   }
+
+  Map<String, Object?> toMap() => jsonToMap(toJson());
 }
 
 class ValidationResult {

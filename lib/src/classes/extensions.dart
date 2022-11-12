@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
-import '../utils/json.dart';
 import '../client.dart';
 import 'collection.dart';
 import 'doc.dart';
@@ -16,8 +16,18 @@ extension CollectionUtils on Collection {
       client.firebase.firestore.collection('schema').doc(name);
 
   Future<Collection> checkForUpdate(FirestoreClient client) async {
-    final snapshot = await getSchema(client).get();
-    return Collection.fromJson(snapshot.toJson());
+    try {
+      final snapshot = await getSchema(client).get();
+      if (snapshot.exists) {
+        final data = snapshot.toJson();
+        if (data['name'] != null) {
+          return Collection.fromJson(data);
+        }
+      }
+    } catch (e) {
+      debugPrint('Error checking for update: $e');
+    }
+    return this;
   }
 
   Future<List<Doc>> parseDocs(FirestoreClient client, Snapshots docs) async {
@@ -53,8 +63,8 @@ extension CollectionUtils on Collection {
   }
 
   Future<void> save(FirestoreClient client) async {
-    final data = copyWith(updated: DateTime.now(), fields: allFields).toJson();
-    await getSchema(client).set(copyJson(data) as Map<String, Object?>);
+    final data = copyWith(updated: DateTime.now(), fields: allFields);
+    await getSchema(client).set(data.toMap());
   }
 
   Future<String> add(FirestoreClient client, Doc base) async {

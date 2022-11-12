@@ -87,7 +87,8 @@ class Doc {
   final FirestoreClient client;
 
   /// Firestore collection reference
-  late final reference = collection.getReference(client).doc(id);
+  late final reference =
+      client.firebase.firestore.collection(collection.name).doc(id);
 
   Object? operator [](String key) {
     for (final field in collection.allFields) {
@@ -150,12 +151,12 @@ class Doc {
   Object? get(String key) => data()[key];
   void set(String key, Object? value) => _data[key] = value;
 
-  Future<void> save() async {
+  Future<void> save([DocumentReference<Json>? ref]) async {
     if (_batch != null) {
       await _batch!.commit();
       endBatch();
     } else {
-      await reference.set(toJson());
+      await (ref ?? reference).set(toJson());
     }
   }
 
@@ -199,11 +200,10 @@ class Doc {
     return snapshot;
   }
 
-  // TODO: Setup deletion trigger on cron with deleted == true and updated > TTL
   Future<void> delete() => update({'deleted': true});
 
   void startBatch() {
-    _batch = FirebaseFirestore.instance.batch();
+    _batch = client.firebase.firestore.batch();
   }
 
   void endBatch() {

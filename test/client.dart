@@ -1,25 +1,49 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:drift/drift.dart';
+import 'package:drift/native.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
 import 'package:firestore_sqlite/firestore_sqlite.dart';
+
+final testDatabase = Database(
+  connection: DatabaseConnection(
+    NativeDatabase.memory(
+      logStatements: true,
+    ),
+  ),
+);
+
+class MockFirebase extends Firebase {
+  MockFirebase()
+      : super(
+          firestore: FakeFirebaseFirestore(),
+          storage: MockFirebaseStorage(),
+        );
+}
 
 class TestClient extends FirestoreClient {
   @override
-  List<Collection> get collections => [
-        testCollection,
-      ];
+  Firebase get firebase => MockFirebase();
+
+  @override
+  List<Collection> get collections => [testCollection];
+
+  @override
+  Database get database => testDatabase;
 
   late final test = FirestoreClientCollection(this, testCollection);
 }
 
-class LocalClient extends FirestoreClient {
+class LocalClient extends TestClient {
   LocalClient(this.collections);
 
   @override
   final List<Collection> collections;
 
   factory LocalClient.fromSchema() {
-    final schemaFile = File('.example/schema.json');
+    final schemaFile = File('./test/schema.json');
     final items = jsonDecode(schemaFile.readAsStringSync()) as List;
     final collections = items.map((e) => Collection.fromJson(e)).toList();
     return LocalClient(collections);
@@ -27,6 +51,7 @@ class LocalClient extends FirestoreClient {
 }
 
 final testCollection = Collection.fromJson(const {
+  "id": "test",
   "name": "test",
   "created": "1970-01-01T00:00:00.000",
   "updated": "1970-01-01T00:00:00.000",

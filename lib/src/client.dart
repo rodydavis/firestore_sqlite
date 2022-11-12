@@ -1,13 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:collection/collection.dart';
+import 'package:firestore_sqlite/src/utils/json.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:firestore_sqlite/firestore_sqlite.dart';
 
 abstract class FirestoreClient {
-  final database = Database(logStatements: kDebugMode);
-  final firebase = Firebase.instance();
   late final schemas = firebase.firestore.collection('schema');
+  Database get database;
+  Firebase get firebase;
   List<Collection> get collections;
 
   Future<void> _add(Doc doc) async {
@@ -35,7 +37,7 @@ abstract class FirestoreClient {
   Future<void> _delete(Doc doc) async {
     final source = doc.id;
     // Delete nodes
-    await database.deleteDocument(source);
+    await database.deleteDocument(source, doc.collection.name);
   }
 
   Future<void> addDoc(Doc doc) async {
@@ -95,21 +97,32 @@ class FirestoreClientCollection<T extends Doc> {
     String id, {
     GetOptions options = const GetOptions(),
   }) async {
-    await collection.checkForUpdate(client);
-    final doc = Doc(client: client, collection: collection, id: id);
-    final snapshot = await doc.reference.get(options);
-    if (snapshot.exists) {
-      await doc.loadSnapshot(snapshot);
+    if (_needsUpdate(options)) {
+      await collection.checkForUpdate(client);
+    }
+    final local = await client.database.getDocument(collection.name, id);
+    if (options.source == Source.cache && local != null) {
+      return Doc.fromJson(client, collection, local.toJson());
+    }
+    if (options.source == Source.serverAndCache) {
+      final doc = Doc(client: client, collection: collection, id: id);
+      final snapshot = await doc.reference.get(options);
+      if (!snapshot.exists) return null;
       final local = await client.database.getDocument(collection.name, id);
       if (local == null) {
         await client._add(doc);
       } else {
         await client._update(doc);
       }
-      return doc;
-    } else {
-      return null;
+      return Doc.fromDocumentSnapshot(client, collection, snapshot);
     }
+    if (options.source == Source.server) {
+      final doc = Doc(client: client, collection: collection, id: id);
+      final snapshot = await doc.reference.get(options);
+      if (!snapshot.exists) return null;
+      return Doc.fromDocumentSnapshot(client, collection, snapshot);
+    }
+    return null;
   }
 
   Stream<Doc?> _watchDoc(
@@ -262,6 +275,30 @@ class FirestoreClientCollection<T extends Doc> {
         .where((e) => e.deleted != true)
         .toList();
   }
+
+  Future<void> sync([CollectionReference<Json>? reference]) async {
+    final ref = reference ?? collection.getReference(client);
+    final remote = await ref.get();
+
+    // Add missing items
+    for (final item in remote.docs) {
+      final local = await client.database.getDocument(collection.name, item.id);
+      if (local == null) {
+        await client.database.insertOrReplaceDocument(item.toJson());
+      }
+    }
+
+    // Check for missing remote items
+    final local = await client.database.getDocuments(collection.name);
+    for (final item in local) {
+      final remoteItem = remote.docs.firstWhereOrNull(
+        (e) => e.id == item.documentId,
+      );
+      if (remoteItem == null) {
+        await ref.doc(item.documentId).set(jsonToMap(item.toMap()));
+      }
+    }
+  }
 }
 
 class Firebase {
@@ -269,13 +306,6 @@ class Firebase {
     required this.firestore,
     required this.storage,
   });
-
-  factory Firebase.instance() {
-    return Firebase(
-      firestore: FirebaseFirestore.instance,
-      storage: FirebaseStorage.instance,
-    );
-  }
 
   final FirebaseFirestore firestore;
   final FirebaseStorage storage;

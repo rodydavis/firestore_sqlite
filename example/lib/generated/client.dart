@@ -10,7 +10,7 @@ export "collections/album_track.dart";
 export "collections/artist.dart";
 export "collections/song.dart";
 
-class Client extends FirestoreClient {
+class Client extends NativeClient {
   @override
   List<Collection> get collections => [
         albumCollection,

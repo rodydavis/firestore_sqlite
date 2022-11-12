@@ -8,6 +8,7 @@ import 'client.dart';
 
 const _classTest = r'''import 'package:firestore_sqlite/firestore_sqlite.dart';
 
+/// Test class generation
 final testCollection = Collection.fromJson(const {
   "name": "test",
   "created": "1970-01-01T00:00:00.000",
@@ -27,7 +28,8 @@ final testCollection = Collection.fromJson(const {
 
 /// Test class generation
 class Test extends Doc {
-  Test({required super.id}) : super(collection: testCollection);
+  Test({required super.id, required super.client})
+      : super(collection: testCollection);
 
   @override
   DateTime get created => this['created'] as DateTime;
@@ -81,16 +83,18 @@ void main() {
   test('client generator', () {
     final gen = ClientGenerator(
       collections: client.collections,
-      output: Directory('./example/lib/generated'),
+      output: Directory('./test/lib/generated'),
     );
 
     gen.render();
 
-    expect(client.collections.length, 1);
+    expect(client.collections.length, 4);
+
+    gen.output.deleteSync(recursive: true);
   });
 
   test('functions generator', () {
-    final outFile = File('./example/functions/src/index.ts');
+    final outFile = File('./test/functions/src/index.ts');
 
     final gen = FunctionsGenerator(
       graphql: true,
@@ -100,14 +104,14 @@ void main() {
     );
     gen.render();
 
-    expect(client.collections.length, 1);
+    expect(client.collections.length, 4);
     expect(outFile.existsSync(), true);
 
     outFile.deleteSync();
   });
 
   test('schema generator', () {
-    final outFile = File('./example/schema.json');
+    final outFile = File('./test/schema.json');
 
     final gen = SchemaGenerator(
       collections: client.collections,
@@ -115,7 +119,7 @@ void main() {
     );
     gen.render();
 
-    expect(client.collections.length, 5);
+    expect(client.collections.length, 4);
     expect(outFile.existsSync(), true);
 
     outFile.deleteSync();

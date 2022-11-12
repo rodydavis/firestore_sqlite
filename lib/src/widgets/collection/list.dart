@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firestore_sqlite/firestore_sqlite.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,7 +18,7 @@ class CollectionsEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final db = FirebaseFirestore.instance;
+    final db = admin.firebase.firestore;
     final schema = db.collection('schema');
     return StreamBuilder<List<Collection>>(
         stream: schema.snapshots().map((e) => e.docs
