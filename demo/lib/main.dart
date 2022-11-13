@@ -118,7 +118,8 @@ class _SchemaBuilderState extends State<SchemaBuilder> {
       ),
       body: collections.isEmpty
           ? const Center(child: Text('No Collections'))
-          : ListView.builder(
+          : ListView.separated(
+              separatorBuilder: (context, index) => const Divider(),
               itemCount: collections.length,
               itemBuilder: (context, index) {
                 final collection = collections[index];
