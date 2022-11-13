@@ -1,5 +1,7 @@
 # Firebase SQLite
 
+[![github pages](https://github.com/rodydavis/firestore_sqlite/actions/workflows/main.yml/badge.svg)](https://github.com/rodydavis/firestore_sqlite/actions/workflows/main.yml)
+
 Taking [Cloud Firestore ODM](https://pub.dev/packages/cloud_firestore_odm) to the next level.
 
 [![Live Stream](https://img.youtube.com/vi/54MLzCEmGnA/0.jpg)](https://www.youtube.com/watch?v=54MLzCEmGnA)
@@ -9,6 +11,8 @@ Taking [Cloud Firestore ODM](https://pub.dev/packages/cloud_firestore_odm) to th
 The Admin UI is a web interface for managing your database in firestore and is deployed as a separate firebase hosting site in the same project.
 
 ## Schemas
+
+Online editor available [here](https://rodydavis.github.io/firestore_sqlite/).
 
 The schemas are located under a top level doc in the firestore collection called `collections`.
 
