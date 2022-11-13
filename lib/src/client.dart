@@ -94,18 +94,21 @@ class FirestoreClientCollection<T extends Doc> {
     return client._update(doc);
   }
 
-  Future<List<Doc>> getDocuments([GetOptions? options]) {
+  Future<List<T>> getDocuments([GetOptions? options]) {
     return query
         .get(options)
         .then((snapshot) => snapshot.docs)
-        .then((docs) => collection.parseDocs(client, docs));
+        .then((docs) => collection.parseDocs(client, docs))
+        .then((docs) => docs.map((e) => fromDoc(e)).toList());
   }
 
-  Stream<List<Doc>> watchDocuments({bool includeMetadataChanges = false}) {
+  Stream<List<T>> watchDocuments({bool includeMetadataChanges = false}) {
     return query
         .snapshots(includeMetadataChanges: includeMetadataChanges)
         .map((snapshot) => snapshot.docs)
-        .asyncMap((docs) => collection.parseDocs(client, docs));
+        .asyncMap((docs) => collection
+            .parseDocs(client, docs)
+            .then((docs) => docs.map((e) => fromDoc(e)).toList()));
   }
 
   Future<Doc> getDocument(String id, [GetOptions? options]) async {
