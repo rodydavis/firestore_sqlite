@@ -255,7 +255,13 @@ class _EditCollectionState extends State<EditCollection> {
                         copyJson(data['fields'] ?? []) as List<dynamic>;
                     return Column(
                       children: [
-                        const ListTile(title: Text('Fields')),
+                        if (fields.isNotEmpty)
+                          ListTile(
+                            title: Text(
+                              'Fields',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          ),
                         for (var i = 0; i < fields.length; i++)
                           Card(
                             child: Builder(
