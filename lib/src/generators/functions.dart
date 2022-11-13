@@ -381,8 +381,6 @@ extension on Field {
       bool: () => 'Boolean',
       date: () => 'String',
       document: (target, triggerDelete) => 'String',
-      array: () => 'false',
-      map: () => 'false',
       blob: (_) => 'String',
       dynamic: () => 'String',
       num: () => 'Float',

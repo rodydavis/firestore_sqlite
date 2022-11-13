@@ -26,10 +26,6 @@ FieldType _$FieldTypeFromJson(Map<String, dynamic> json) {
       return DoubleField.fromJson(json);
     case 'bool':
       return BoolField.fromJson(json);
-    case 'map':
-      return MapField.fromJson(json);
-    case 'array':
-      return ListField.fromJson(json);
     case 'blob':
       return BlobField.fromJson(json);
     case 'option':
@@ -56,8 +52,6 @@ mixin _$FieldType {
     required TResult Function() num,
     required TResult Function() double,
     required TResult Function() bool,
-    required TResult Function() map,
-    required TResult Function() array,
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
@@ -72,8 +66,6 @@ mixin _$FieldType {
     TResult? Function()? num,
     TResult? Function()? double,
     TResult? Function()? bool,
-    TResult? Function()? map,
-    TResult? Function()? array,
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
@@ -88,8 +80,6 @@ mixin _$FieldType {
     TResult Function()? num,
     TResult Function()? double,
     TResult Function()? bool,
-    TResult Function()? map,
-    TResult Function()? array,
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
@@ -105,8 +95,6 @@ mixin _$FieldType {
     required TResult Function(NumField value) num,
     required TResult Function(DoubleField value) double,
     required TResult Function(BoolField value) bool,
-    required TResult Function(MapField value) map,
-    required TResult Function(ListField value) array,
     required TResult Function(BlobField value) blob,
     required TResult Function(OptionField value) option,
     required TResult Function(DateField value) date,
@@ -121,8 +109,6 @@ mixin _$FieldType {
     TResult? Function(NumField value)? num,
     TResult? Function(DoubleField value)? double,
     TResult? Function(BoolField value)? bool,
-    TResult? Function(MapField value)? map,
-    TResult? Function(ListField value)? array,
     TResult? Function(BlobField value)? blob,
     TResult? Function(OptionField value)? option,
     TResult? Function(DateField value)? date,
@@ -137,8 +123,6 @@ mixin _$FieldType {
     TResult Function(NumField value)? num,
     TResult Function(DoubleField value)? double,
     TResult Function(BoolField value)? bool,
-    TResult Function(MapField value)? map,
-    TResult Function(ListField value)? array,
     TResult Function(BlobField value)? blob,
     TResult Function(OptionField value)? option,
     TResult Function(DateField value)? date,
@@ -245,8 +229,6 @@ class _$StringField implements StringField {
     required TResult Function() num,
     required TResult Function() double,
     required TResult Function() bool,
-    required TResult Function() map,
-    required TResult Function() array,
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
@@ -264,8 +246,6 @@ class _$StringField implements StringField {
     TResult? Function()? num,
     TResult? Function()? double,
     TResult? Function()? bool,
-    TResult? Function()? map,
-    TResult? Function()? array,
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
@@ -283,8 +263,6 @@ class _$StringField implements StringField {
     TResult Function()? num,
     TResult Function()? double,
     TResult Function()? bool,
-    TResult Function()? map,
-    TResult Function()? array,
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
@@ -306,8 +284,6 @@ class _$StringField implements StringField {
     required TResult Function(NumField value) num,
     required TResult Function(DoubleField value) double,
     required TResult Function(BoolField value) bool,
-    required TResult Function(MapField value) map,
-    required TResult Function(ListField value) array,
     required TResult Function(BlobField value) blob,
     required TResult Function(OptionField value) option,
     required TResult Function(DateField value) date,
@@ -325,8 +301,6 @@ class _$StringField implements StringField {
     TResult? Function(NumField value)? num,
     TResult? Function(DoubleField value)? double,
     TResult? Function(BoolField value)? bool,
-    TResult? Function(MapField value)? map,
-    TResult? Function(ListField value)? array,
     TResult? Function(BlobField value)? blob,
     TResult? Function(OptionField value)? option,
     TResult? Function(DateField value)? date,
@@ -344,8 +318,6 @@ class _$StringField implements StringField {
     TResult Function(NumField value)? num,
     TResult Function(DoubleField value)? double,
     TResult Function(BoolField value)? bool,
-    TResult Function(MapField value)? map,
-    TResult Function(ListField value)? array,
     TResult Function(BlobField value)? blob,
     TResult Function(OptionField value)? option,
     TResult Function(DateField value)? date,
@@ -428,8 +400,6 @@ class _$IntField implements IntField {
     required TResult Function() num,
     required TResult Function() double,
     required TResult Function() bool,
-    required TResult Function() map,
-    required TResult Function() array,
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
@@ -447,8 +417,6 @@ class _$IntField implements IntField {
     TResult? Function()? num,
     TResult? Function()? double,
     TResult? Function()? bool,
-    TResult? Function()? map,
-    TResult? Function()? array,
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
@@ -466,8 +434,6 @@ class _$IntField implements IntField {
     TResult Function()? num,
     TResult Function()? double,
     TResult Function()? bool,
-    TResult Function()? map,
-    TResult Function()? array,
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
@@ -489,8 +455,6 @@ class _$IntField implements IntField {
     required TResult Function(NumField value) num,
     required TResult Function(DoubleField value) double,
     required TResult Function(BoolField value) bool,
-    required TResult Function(MapField value) map,
-    required TResult Function(ListField value) array,
     required TResult Function(BlobField value) blob,
     required TResult Function(OptionField value) option,
     required TResult Function(DateField value) date,
@@ -508,8 +472,6 @@ class _$IntField implements IntField {
     TResult? Function(NumField value)? num,
     TResult? Function(DoubleField value)? double,
     TResult? Function(BoolField value)? bool,
-    TResult? Function(MapField value)? map,
-    TResult? Function(ListField value)? array,
     TResult? Function(BlobField value)? blob,
     TResult? Function(OptionField value)? option,
     TResult? Function(DateField value)? date,
@@ -527,8 +489,6 @@ class _$IntField implements IntField {
     TResult Function(NumField value)? num,
     TResult Function(DoubleField value)? double,
     TResult Function(BoolField value)? bool,
-    TResult Function(MapField value)? map,
-    TResult Function(ListField value)? array,
     TResult Function(BlobField value)? blob,
     TResult Function(OptionField value)? option,
     TResult Function(DateField value)? date,
@@ -605,8 +565,6 @@ class _$NumField implements NumField {
     required TResult Function() num,
     required TResult Function() double,
     required TResult Function() bool,
-    required TResult Function() map,
-    required TResult Function() array,
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
@@ -624,8 +582,6 @@ class _$NumField implements NumField {
     TResult? Function()? num,
     TResult? Function()? double,
     TResult? Function()? bool,
-    TResult? Function()? map,
-    TResult? Function()? array,
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
@@ -643,8 +599,6 @@ class _$NumField implements NumField {
     TResult Function()? num,
     TResult Function()? double,
     TResult Function()? bool,
-    TResult Function()? map,
-    TResult Function()? array,
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
@@ -666,8 +620,6 @@ class _$NumField implements NumField {
     required TResult Function(NumField value) num,
     required TResult Function(DoubleField value) double,
     required TResult Function(BoolField value) bool,
-    required TResult Function(MapField value) map,
-    required TResult Function(ListField value) array,
     required TResult Function(BlobField value) blob,
     required TResult Function(OptionField value) option,
     required TResult Function(DateField value) date,
@@ -685,8 +637,6 @@ class _$NumField implements NumField {
     TResult? Function(NumField value)? num,
     TResult? Function(DoubleField value)? double,
     TResult? Function(BoolField value)? bool,
-    TResult? Function(MapField value)? map,
-    TResult? Function(ListField value)? array,
     TResult? Function(BlobField value)? blob,
     TResult? Function(OptionField value)? option,
     TResult? Function(DateField value)? date,
@@ -704,8 +654,6 @@ class _$NumField implements NumField {
     TResult Function(NumField value)? num,
     TResult Function(DoubleField value)? double,
     TResult Function(BoolField value)? bool,
-    TResult Function(MapField value)? map,
-    TResult Function(ListField value)? array,
     TResult Function(BlobField value)? blob,
     TResult Function(OptionField value)? option,
     TResult Function(DateField value)? date,
@@ -783,8 +731,6 @@ class _$DoubleField implements DoubleField {
     required TResult Function() num,
     required TResult Function() double,
     required TResult Function() bool,
-    required TResult Function() map,
-    required TResult Function() array,
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
@@ -802,8 +748,6 @@ class _$DoubleField implements DoubleField {
     TResult? Function()? num,
     TResult? Function()? double,
     TResult? Function()? bool,
-    TResult? Function()? map,
-    TResult? Function()? array,
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
@@ -821,8 +765,6 @@ class _$DoubleField implements DoubleField {
     TResult Function()? num,
     TResult Function()? double,
     TResult Function()? bool,
-    TResult Function()? map,
-    TResult Function()? array,
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
@@ -844,8 +786,6 @@ class _$DoubleField implements DoubleField {
     required TResult Function(NumField value) num,
     required TResult Function(DoubleField value) double,
     required TResult Function(BoolField value) bool,
-    required TResult Function(MapField value) map,
-    required TResult Function(ListField value) array,
     required TResult Function(BlobField value) blob,
     required TResult Function(OptionField value) option,
     required TResult Function(DateField value) date,
@@ -863,8 +803,6 @@ class _$DoubleField implements DoubleField {
     TResult? Function(NumField value)? num,
     TResult? Function(DoubleField value)? double,
     TResult? Function(BoolField value)? bool,
-    TResult? Function(MapField value)? map,
-    TResult? Function(ListField value)? array,
     TResult? Function(BlobField value)? blob,
     TResult? Function(OptionField value)? option,
     TResult? Function(DateField value)? date,
@@ -882,8 +820,6 @@ class _$DoubleField implements DoubleField {
     TResult Function(NumField value)? num,
     TResult Function(DoubleField value)? double,
     TResult Function(BoolField value)? bool,
-    TResult Function(MapField value)? map,
-    TResult Function(ListField value)? array,
     TResult Function(BlobField value)? blob,
     TResult Function(OptionField value)? option,
     TResult Function(DateField value)? date,
@@ -962,8 +898,6 @@ class _$BoolField implements BoolField {
     required TResult Function() num,
     required TResult Function() double,
     required TResult Function() bool,
-    required TResult Function() map,
-    required TResult Function() array,
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
@@ -981,8 +915,6 @@ class _$BoolField implements BoolField {
     TResult? Function()? num,
     TResult? Function()? double,
     TResult? Function()? bool,
-    TResult? Function()? map,
-    TResult? Function()? array,
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
@@ -1000,8 +932,6 @@ class _$BoolField implements BoolField {
     TResult Function()? num,
     TResult Function()? double,
     TResult Function()? bool,
-    TResult Function()? map,
-    TResult Function()? array,
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
@@ -1023,8 +953,6 @@ class _$BoolField implements BoolField {
     required TResult Function(NumField value) num,
     required TResult Function(DoubleField value) double,
     required TResult Function(BoolField value) bool,
-    required TResult Function(MapField value) map,
-    required TResult Function(ListField value) array,
     required TResult Function(BlobField value) blob,
     required TResult Function(OptionField value) option,
     required TResult Function(DateField value) date,
@@ -1042,8 +970,6 @@ class _$BoolField implements BoolField {
     TResult? Function(NumField value)? num,
     TResult? Function(DoubleField value)? double,
     TResult? Function(BoolField value)? bool,
-    TResult? Function(MapField value)? map,
-    TResult? Function(ListField value)? array,
     TResult? Function(BlobField value)? blob,
     TResult? Function(OptionField value)? option,
     TResult? Function(DateField value)? date,
@@ -1061,8 +987,6 @@ class _$BoolField implements BoolField {
     TResult Function(NumField value)? num,
     TResult Function(DoubleField value)? double,
     TResult Function(BoolField value)? bool,
-    TResult Function(MapField value)? map,
-    TResult Function(ListField value)? array,
     TResult Function(BlobField value)? blob,
     TResult Function(OptionField value)? option,
     TResult Function(DateField value)? date,
@@ -1088,361 +1012,6 @@ abstract class BoolField implements FieldType {
   const factory BoolField() = _$BoolField;
 
   factory BoolField.fromJson(Map<String, dynamic> json) = _$BoolField.fromJson;
-}
-
-/// @nodoc
-abstract class _$$MapFieldCopyWith<$Res> {
-  factory _$$MapFieldCopyWith(
-          _$MapField value, $Res Function(_$MapField) then) =
-      __$$MapFieldCopyWithImpl<$Res>;
-}
-
-/// @nodoc
-class __$$MapFieldCopyWithImpl<$Res>
-    extends _$FieldTypeCopyWithImpl<$Res, _$MapField>
-    implements _$$MapFieldCopyWith<$Res> {
-  __$$MapFieldCopyWithImpl(_$MapField _value, $Res Function(_$MapField) _then)
-      : super(_value, _then);
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$MapField implements MapField {
-  const _$MapField({final String? $type}) : $type = $type ?? 'map';
-
-  factory _$MapField.fromJson(Map<String, dynamic> json) =>
-      _$$MapFieldFromJson(json);
-
-  @JsonKey(name: 'runtimeType')
-  final String $type;
-
-  @override
-  String toString() {
-    return 'FieldType.map()';
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$MapField);
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => runtimeType.hashCode;
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(int? maxLength) string,
-    required TResult Function() int,
-    required TResult Function() num,
-    required TResult Function() double,
-    required TResult Function() bool,
-    required TResult Function() map,
-    required TResult Function() array,
-    required TResult Function(String bucket) blob,
-    required TResult Function(List<String> values) option,
-    required TResult Function() date,
-    required TResult Function(String collection, bool? triggerDelete) document,
-    required TResult Function() dynamic,
-  }) {
-    return map();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(int? maxLength)? string,
-    TResult? Function()? int,
-    TResult? Function()? num,
-    TResult? Function()? double,
-    TResult? Function()? bool,
-    TResult? Function()? map,
-    TResult? Function()? array,
-    TResult? Function(String bucket)? blob,
-    TResult? Function(List<String> values)? option,
-    TResult? Function()? date,
-    TResult? Function(String collection, bool? triggerDelete)? document,
-    TResult? Function()? dynamic,
-  }) {
-    return map?.call();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(int? maxLength)? string,
-    TResult Function()? int,
-    TResult Function()? num,
-    TResult Function()? double,
-    TResult Function()? bool,
-    TResult Function()? map,
-    TResult Function()? array,
-    TResult Function(String bucket)? blob,
-    TResult Function(List<String> values)? option,
-    TResult Function()? date,
-    TResult Function(String collection, bool? triggerDelete)? document,
-    TResult Function()? dynamic,
-    required TResult orElse(),
-  }) {
-    if (map != null) {
-      return map();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(StringField value) string,
-    required TResult Function(IntField value) int,
-    required TResult Function(NumField value) num,
-    required TResult Function(DoubleField value) double,
-    required TResult Function(BoolField value) bool,
-    required TResult Function(MapField value) map,
-    required TResult Function(ListField value) array,
-    required TResult Function(BlobField value) blob,
-    required TResult Function(OptionField value) option,
-    required TResult Function(DateField value) date,
-    required TResult Function(DocumentField value) document,
-    required TResult Function(DynamicField value) dynamic,
-  }) {
-    return map(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(StringField value)? string,
-    TResult? Function(IntField value)? int,
-    TResult? Function(NumField value)? num,
-    TResult? Function(DoubleField value)? double,
-    TResult? Function(BoolField value)? bool,
-    TResult? Function(MapField value)? map,
-    TResult? Function(ListField value)? array,
-    TResult? Function(BlobField value)? blob,
-    TResult? Function(OptionField value)? option,
-    TResult? Function(DateField value)? date,
-    TResult? Function(DocumentField value)? document,
-    TResult? Function(DynamicField value)? dynamic,
-  }) {
-    return map?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(StringField value)? string,
-    TResult Function(IntField value)? int,
-    TResult Function(NumField value)? num,
-    TResult Function(DoubleField value)? double,
-    TResult Function(BoolField value)? bool,
-    TResult Function(MapField value)? map,
-    TResult Function(ListField value)? array,
-    TResult Function(BlobField value)? blob,
-    TResult Function(OptionField value)? option,
-    TResult Function(DateField value)? date,
-    TResult Function(DocumentField value)? document,
-    TResult Function(DynamicField value)? dynamic,
-    required TResult orElse(),
-  }) {
-    if (map != null) {
-      return map(this);
-    }
-    return orElse();
-  }
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$MapFieldToJson(
-      this,
-    );
-  }
-}
-
-abstract class MapField implements FieldType {
-  const factory MapField() = _$MapField;
-
-  factory MapField.fromJson(Map<String, dynamic> json) = _$MapField.fromJson;
-}
-
-/// @nodoc
-abstract class _$$ListFieldCopyWith<$Res> {
-  factory _$$ListFieldCopyWith(
-          _$ListField value, $Res Function(_$ListField) then) =
-      __$$ListFieldCopyWithImpl<$Res>;
-}
-
-/// @nodoc
-class __$$ListFieldCopyWithImpl<$Res>
-    extends _$FieldTypeCopyWithImpl<$Res, _$ListField>
-    implements _$$ListFieldCopyWith<$Res> {
-  __$$ListFieldCopyWithImpl(
-      _$ListField _value, $Res Function(_$ListField) _then)
-      : super(_value, _then);
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$ListField implements ListField {
-  const _$ListField({final String? $type}) : $type = $type ?? 'array';
-
-  factory _$ListField.fromJson(Map<String, dynamic> json) =>
-      _$$ListFieldFromJson(json);
-
-  @JsonKey(name: 'runtimeType')
-  final String $type;
-
-  @override
-  String toString() {
-    return 'FieldType.array()';
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$ListField);
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => runtimeType.hashCode;
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(int? maxLength) string,
-    required TResult Function() int,
-    required TResult Function() num,
-    required TResult Function() double,
-    required TResult Function() bool,
-    required TResult Function() map,
-    required TResult Function() array,
-    required TResult Function(String bucket) blob,
-    required TResult Function(List<String> values) option,
-    required TResult Function() date,
-    required TResult Function(String collection, bool? triggerDelete) document,
-    required TResult Function() dynamic,
-  }) {
-    return array();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(int? maxLength)? string,
-    TResult? Function()? int,
-    TResult? Function()? num,
-    TResult? Function()? double,
-    TResult? Function()? bool,
-    TResult? Function()? map,
-    TResult? Function()? array,
-    TResult? Function(String bucket)? blob,
-    TResult? Function(List<String> values)? option,
-    TResult? Function()? date,
-    TResult? Function(String collection, bool? triggerDelete)? document,
-    TResult? Function()? dynamic,
-  }) {
-    return array?.call();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(int? maxLength)? string,
-    TResult Function()? int,
-    TResult Function()? num,
-    TResult Function()? double,
-    TResult Function()? bool,
-    TResult Function()? map,
-    TResult Function()? array,
-    TResult Function(String bucket)? blob,
-    TResult Function(List<String> values)? option,
-    TResult Function()? date,
-    TResult Function(String collection, bool? triggerDelete)? document,
-    TResult Function()? dynamic,
-    required TResult orElse(),
-  }) {
-    if (array != null) {
-      return array();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(StringField value) string,
-    required TResult Function(IntField value) int,
-    required TResult Function(NumField value) num,
-    required TResult Function(DoubleField value) double,
-    required TResult Function(BoolField value) bool,
-    required TResult Function(MapField value) map,
-    required TResult Function(ListField value) array,
-    required TResult Function(BlobField value) blob,
-    required TResult Function(OptionField value) option,
-    required TResult Function(DateField value) date,
-    required TResult Function(DocumentField value) document,
-    required TResult Function(DynamicField value) dynamic,
-  }) {
-    return array(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(StringField value)? string,
-    TResult? Function(IntField value)? int,
-    TResult? Function(NumField value)? num,
-    TResult? Function(DoubleField value)? double,
-    TResult? Function(BoolField value)? bool,
-    TResult? Function(MapField value)? map,
-    TResult? Function(ListField value)? array,
-    TResult? Function(BlobField value)? blob,
-    TResult? Function(OptionField value)? option,
-    TResult? Function(DateField value)? date,
-    TResult? Function(DocumentField value)? document,
-    TResult? Function(DynamicField value)? dynamic,
-  }) {
-    return array?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(StringField value)? string,
-    TResult Function(IntField value)? int,
-    TResult Function(NumField value)? num,
-    TResult Function(DoubleField value)? double,
-    TResult Function(BoolField value)? bool,
-    TResult Function(MapField value)? map,
-    TResult Function(ListField value)? array,
-    TResult Function(BlobField value)? blob,
-    TResult Function(OptionField value)? option,
-    TResult Function(DateField value)? date,
-    TResult Function(DocumentField value)? document,
-    TResult Function(DynamicField value)? dynamic,
-    required TResult orElse(),
-  }) {
-    if (array != null) {
-      return array(this);
-    }
-    return orElse();
-  }
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$ListFieldToJson(
-      this,
-    );
-  }
-}
-
-abstract class ListField implements FieldType {
-  const factory ListField() = _$ListField;
-
-  factory ListField.fromJson(Map<String, dynamic> json) = _$ListField.fromJson;
 }
 
 /// @nodoc
@@ -1522,8 +1091,6 @@ class _$BlobField implements BlobField {
     required TResult Function() num,
     required TResult Function() double,
     required TResult Function() bool,
-    required TResult Function() map,
-    required TResult Function() array,
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
@@ -1541,8 +1108,6 @@ class _$BlobField implements BlobField {
     TResult? Function()? num,
     TResult? Function()? double,
     TResult? Function()? bool,
-    TResult? Function()? map,
-    TResult? Function()? array,
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
@@ -1560,8 +1125,6 @@ class _$BlobField implements BlobField {
     TResult Function()? num,
     TResult Function()? double,
     TResult Function()? bool,
-    TResult Function()? map,
-    TResult Function()? array,
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
@@ -1583,8 +1146,6 @@ class _$BlobField implements BlobField {
     required TResult Function(NumField value) num,
     required TResult Function(DoubleField value) double,
     required TResult Function(BoolField value) bool,
-    required TResult Function(MapField value) map,
-    required TResult Function(ListField value) array,
     required TResult Function(BlobField value) blob,
     required TResult Function(OptionField value) option,
     required TResult Function(DateField value) date,
@@ -1602,8 +1163,6 @@ class _$BlobField implements BlobField {
     TResult? Function(NumField value)? num,
     TResult? Function(DoubleField value)? double,
     TResult? Function(BoolField value)? bool,
-    TResult? Function(MapField value)? map,
-    TResult? Function(ListField value)? array,
     TResult? Function(BlobField value)? blob,
     TResult? Function(OptionField value)? option,
     TResult? Function(DateField value)? date,
@@ -1621,8 +1180,6 @@ class _$BlobField implements BlobField {
     TResult Function(NumField value)? num,
     TResult Function(DoubleField value)? double,
     TResult Function(BoolField value)? bool,
-    TResult Function(MapField value)? map,
-    TResult Function(ListField value)? array,
     TResult Function(BlobField value)? blob,
     TResult Function(OptionField value)? option,
     TResult Function(DateField value)? date,
@@ -1738,8 +1295,6 @@ class _$OptionField implements OptionField {
     required TResult Function() num,
     required TResult Function() double,
     required TResult Function() bool,
-    required TResult Function() map,
-    required TResult Function() array,
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
@@ -1757,8 +1312,6 @@ class _$OptionField implements OptionField {
     TResult? Function()? num,
     TResult? Function()? double,
     TResult? Function()? bool,
-    TResult? Function()? map,
-    TResult? Function()? array,
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
@@ -1776,8 +1329,6 @@ class _$OptionField implements OptionField {
     TResult Function()? num,
     TResult Function()? double,
     TResult Function()? bool,
-    TResult Function()? map,
-    TResult Function()? array,
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
@@ -1799,8 +1350,6 @@ class _$OptionField implements OptionField {
     required TResult Function(NumField value) num,
     required TResult Function(DoubleField value) double,
     required TResult Function(BoolField value) bool,
-    required TResult Function(MapField value) map,
-    required TResult Function(ListField value) array,
     required TResult Function(BlobField value) blob,
     required TResult Function(OptionField value) option,
     required TResult Function(DateField value) date,
@@ -1818,8 +1367,6 @@ class _$OptionField implements OptionField {
     TResult? Function(NumField value)? num,
     TResult? Function(DoubleField value)? double,
     TResult? Function(BoolField value)? bool,
-    TResult? Function(MapField value)? map,
-    TResult? Function(ListField value)? array,
     TResult? Function(BlobField value)? blob,
     TResult? Function(OptionField value)? option,
     TResult? Function(DateField value)? date,
@@ -1837,8 +1384,6 @@ class _$OptionField implements OptionField {
     TResult Function(NumField value)? num,
     TResult Function(DoubleField value)? double,
     TResult Function(BoolField value)? bool,
-    TResult Function(MapField value)? map,
-    TResult Function(ListField value)? array,
     TResult Function(BlobField value)? blob,
     TResult Function(OptionField value)? option,
     TResult Function(DateField value)? date,
@@ -1922,8 +1467,6 @@ class _$DateField implements DateField {
     required TResult Function() num,
     required TResult Function() double,
     required TResult Function() bool,
-    required TResult Function() map,
-    required TResult Function() array,
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
@@ -1941,8 +1484,6 @@ class _$DateField implements DateField {
     TResult? Function()? num,
     TResult? Function()? double,
     TResult? Function()? bool,
-    TResult? Function()? map,
-    TResult? Function()? array,
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
@@ -1960,8 +1501,6 @@ class _$DateField implements DateField {
     TResult Function()? num,
     TResult Function()? double,
     TResult Function()? bool,
-    TResult Function()? map,
-    TResult Function()? array,
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
@@ -1983,8 +1522,6 @@ class _$DateField implements DateField {
     required TResult Function(NumField value) num,
     required TResult Function(DoubleField value) double,
     required TResult Function(BoolField value) bool,
-    required TResult Function(MapField value) map,
-    required TResult Function(ListField value) array,
     required TResult Function(BlobField value) blob,
     required TResult Function(OptionField value) option,
     required TResult Function(DateField value) date,
@@ -2002,8 +1539,6 @@ class _$DateField implements DateField {
     TResult? Function(NumField value)? num,
     TResult? Function(DoubleField value)? double,
     TResult? Function(BoolField value)? bool,
-    TResult? Function(MapField value)? map,
-    TResult? Function(ListField value)? array,
     TResult? Function(BlobField value)? blob,
     TResult? Function(OptionField value)? option,
     TResult? Function(DateField value)? date,
@@ -2021,8 +1556,6 @@ class _$DateField implements DateField {
     TResult Function(NumField value)? num,
     TResult Function(DoubleField value)? double,
     TResult Function(BoolField value)? bool,
-    TResult Function(MapField value)? map,
-    TResult Function(ListField value)? array,
     TResult Function(BlobField value)? blob,
     TResult Function(OptionField value)? option,
     TResult Function(DateField value)? date,
@@ -2138,8 +1671,6 @@ class _$DocumentField implements DocumentField {
     required TResult Function() num,
     required TResult Function() double,
     required TResult Function() bool,
-    required TResult Function() map,
-    required TResult Function() array,
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
@@ -2157,8 +1688,6 @@ class _$DocumentField implements DocumentField {
     TResult? Function()? num,
     TResult? Function()? double,
     TResult? Function()? bool,
-    TResult? Function()? map,
-    TResult? Function()? array,
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
@@ -2176,8 +1705,6 @@ class _$DocumentField implements DocumentField {
     TResult Function()? num,
     TResult Function()? double,
     TResult Function()? bool,
-    TResult Function()? map,
-    TResult Function()? array,
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
@@ -2199,8 +1726,6 @@ class _$DocumentField implements DocumentField {
     required TResult Function(NumField value) num,
     required TResult Function(DoubleField value) double,
     required TResult Function(BoolField value) bool,
-    required TResult Function(MapField value) map,
-    required TResult Function(ListField value) array,
     required TResult Function(BlobField value) blob,
     required TResult Function(OptionField value) option,
     required TResult Function(DateField value) date,
@@ -2218,8 +1743,6 @@ class _$DocumentField implements DocumentField {
     TResult? Function(NumField value)? num,
     TResult? Function(DoubleField value)? double,
     TResult? Function(BoolField value)? bool,
-    TResult? Function(MapField value)? map,
-    TResult? Function(ListField value)? array,
     TResult? Function(BlobField value)? blob,
     TResult? Function(OptionField value)? option,
     TResult? Function(DateField value)? date,
@@ -2237,8 +1760,6 @@ class _$DocumentField implements DocumentField {
     TResult Function(NumField value)? num,
     TResult Function(DoubleField value)? double,
     TResult Function(BoolField value)? bool,
-    TResult Function(MapField value)? map,
-    TResult Function(ListField value)? array,
     TResult Function(BlobField value)? blob,
     TResult Function(OptionField value)? option,
     TResult Function(DateField value)? date,
@@ -2324,8 +1845,6 @@ class _$DynamicField implements DynamicField {
     required TResult Function() num,
     required TResult Function() double,
     required TResult Function() bool,
-    required TResult Function() map,
-    required TResult Function() array,
     required TResult Function(String bucket) blob,
     required TResult Function(List<String> values) option,
     required TResult Function() date,
@@ -2343,8 +1862,6 @@ class _$DynamicField implements DynamicField {
     TResult? Function()? num,
     TResult? Function()? double,
     TResult? Function()? bool,
-    TResult? Function()? map,
-    TResult? Function()? array,
     TResult? Function(String bucket)? blob,
     TResult? Function(List<String> values)? option,
     TResult? Function()? date,
@@ -2362,8 +1879,6 @@ class _$DynamicField implements DynamicField {
     TResult Function()? num,
     TResult Function()? double,
     TResult Function()? bool,
-    TResult Function()? map,
-    TResult Function()? array,
     TResult Function(String bucket)? blob,
     TResult Function(List<String> values)? option,
     TResult Function()? date,
@@ -2385,8 +1900,6 @@ class _$DynamicField implements DynamicField {
     required TResult Function(NumField value) num,
     required TResult Function(DoubleField value) double,
     required TResult Function(BoolField value) bool,
-    required TResult Function(MapField value) map,
-    required TResult Function(ListField value) array,
     required TResult Function(BlobField value) blob,
     required TResult Function(OptionField value) option,
     required TResult Function(DateField value) date,
@@ -2404,8 +1917,6 @@ class _$DynamicField implements DynamicField {
     TResult? Function(NumField value)? num,
     TResult? Function(DoubleField value)? double,
     TResult? Function(BoolField value)? bool,
-    TResult? Function(MapField value)? map,
-    TResult? Function(ListField value)? array,
     TResult? Function(BlobField value)? blob,
     TResult? Function(OptionField value)? option,
     TResult? Function(DateField value)? date,
@@ -2423,8 +1934,6 @@ class _$DynamicField implements DynamicField {
     TResult Function(NumField value)? num,
     TResult Function(DoubleField value)? double,
     TResult Function(BoolField value)? bool,
-    TResult Function(MapField value)? map,
-    TResult Function(ListField value)? array,
     TResult Function(BlobField value)? blob,
     TResult Function(OptionField value)? option,
     TResult Function(DateField value)? date,

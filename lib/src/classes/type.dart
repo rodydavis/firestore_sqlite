@@ -12,8 +12,8 @@ class FieldType with _$FieldType {
   const factory FieldType.num() = NumField;
   const factory FieldType.double() = DoubleField;
   const factory FieldType.bool() = BoolField;
-  const factory FieldType.map() = MapField;
-  const factory FieldType.array() = ListField;
+  // const factory FieldType.map() = MapField;
+  // const factory FieldType.array() = ListField;
   const factory FieldType.blob(String bucket) = BlobField;
   const factory FieldType.option(List<String> values) = OptionField;
   const factory FieldType.date() = DateField;
@@ -31,8 +31,6 @@ extension FieldTypeUtils on FieldType {
         num: () => 'num',
         double: () => 'double',
         bool: () => 'bool',
-        map: () => 'map',
-        array: () => 'array',
         blob: (_) => 'blob',
         option: (_) => 'option',
         date: () => 'date',
@@ -47,8 +45,6 @@ final List<String> fieldTypes = [
   'num',
   'double',
   'bool',
-  'map',
-  'array',
   'blob',
   'option',
   'date',
@@ -68,10 +64,6 @@ FieldType parseFieldType(String type) {
       return const FieldType.double();
     case 'bool':
       return const FieldType.bool();
-    case 'map':
-      return const FieldType.map();
-    case 'array':
-      return const FieldType.array();
     case 'blob':
       return const FieldType.blob('');
     case 'option':

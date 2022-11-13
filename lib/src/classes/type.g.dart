@@ -55,24 +55,6 @@ Map<String, dynamic> _$$BoolFieldToJson(_$BoolField instance) =>
       'runtimeType': instance.$type,
     };
 
-_$MapField _$$MapFieldFromJson(Map<String, dynamic> json) => _$MapField(
-      $type: json['runtimeType'] as String?,
-    );
-
-Map<String, dynamic> _$$MapFieldToJson(_$MapField instance) =>
-    <String, dynamic>{
-      'runtimeType': instance.$type,
-    };
-
-_$ListField _$$ListFieldFromJson(Map<String, dynamic> json) => _$ListField(
-      $type: json['runtimeType'] as String?,
-    );
-
-Map<String, dynamic> _$$ListFieldToJson(_$ListField instance) =>
-    <String, dynamic>{
-      'runtimeType': instance.$type,
-    };
-
 _$BlobField _$$BlobFieldFromJson(Map<String, dynamic> json) => _$BlobField(
       json['bucket'] as String,
       $type: json['runtimeType'] as String?,

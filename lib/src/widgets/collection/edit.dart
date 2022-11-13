@@ -151,20 +151,6 @@ class _EditCollectionState extends State<EditCollection> {
                             type: const FieldType.bool(),
                           ),
                         );
-                      } else if (value is List) {
-                        fields.add(
-                          Field(
-                            name: name,
-                            type: const FieldType.array(),
-                          ),
-                        );
-                      } else if (value is Map) {
-                        fields.add(
-                          Field(
-                            name: name,
-                            type: const FieldType.map(),
-                          ),
-                        );
                       }
                     }
                     if (mounted) {

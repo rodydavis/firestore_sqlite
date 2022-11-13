@@ -25,11 +25,10 @@ Types:
 - number (int,double,float,decimal,number)
 - bool (truthy or falsy)
 - date (stored as a timestamp)
-- array (type|object)
-- map (json)
 - option (enum field)
 - file (object reference to blob)
 - document (foreign key to another collection)
+- dynamic (map or array)
 
 For file types thumbnails can be auto generated using a Firebase function and also triggers to remove the document on deletion in cloud storage.
 

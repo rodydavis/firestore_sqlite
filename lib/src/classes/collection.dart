@@ -101,16 +101,6 @@ extension CollectionX on Collection {
               result.addError(field.name, 'invalid type');
             }
           },
-          map: () {
-            if (!required && value != null && value is! Map) {
-              result.addError(field.name, 'invalid type');
-            }
-          },
-          array: () {
-            if (!required && value != null && value is! List) {
-              result.addError(field.name, 'invalid type');
-            }
-          },
           blob: (bucket) {
             if (!required && value != null && value is! String) {
               result.addError(field.name, 'invalid type');
