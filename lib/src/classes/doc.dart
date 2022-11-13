@@ -91,7 +91,7 @@ class Doc {
   final FirestoreClient client;
 
   /// Firestore collection reference
-  late final reference =
+  late final ref =
       client.firebase.firestore.collection(collection.name).doc(id);
 
   Object? operator [](String key) {
@@ -147,7 +147,7 @@ class Doc {
       meta[field.name] = value;
     }
     meta['collection'] = collection.name;
-    meta['id'] = reference.id;
+    meta['id'] = ref.id;
     return meta;
   }
 
@@ -160,14 +160,14 @@ class Doc {
       await _batch!.commit();
       endBatch();
     } else {
-      await (ref ?? reference).set(toJson());
+      await (ref ?? this.ref).set(toJson());
     }
   }
 
   Future<void> update(Json data) async {
     if (_batch != null) {
       _data.addAll(data);
-      _batch!.set(reference, data);
+      _batch!.set(ref, data);
     } else {
       final newData = {..._data};
       newData.addAll(data);
@@ -189,7 +189,7 @@ class Doc {
   }
 
   void subscribe({bool includeMetadataChanges = false}) {
-    _subscription = reference
+    _subscription = ref
         .snapshots(includeMetadataChanges: includeMetadataChanges)
         .listen(loadSnapshot);
   }
@@ -199,7 +199,7 @@ class Doc {
   }
 
   Future<DocumentSnapshot<Json>> reload([GetOptions? options]) async {
-    final snapshot = await reference.get(options);
+    final snapshot = await ref.get(options);
     await loadSnapshot(snapshot);
     return snapshot;
   }

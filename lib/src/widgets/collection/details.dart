@@ -159,7 +159,7 @@ class CollectionDetails extends StatelessWidget {
                                       ScaffoldMessenger.of(context);
                                   final db = admin.firebase.firestore;
                                   await db.runTransaction((transaction) async {
-                                    transaction.delete(doc.reference);
+                                    transaction.delete(doc.ref);
                                   });
                                   messenger.showSnackBar(
                                     const SnackBar(

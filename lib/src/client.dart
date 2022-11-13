@@ -147,7 +147,7 @@ class FirestoreClientCollection<T extends Doc> {
     }
     if (options.source == Source.serverAndCache) {
       final doc = Doc(client: client, collection: collection, id: id);
-      final snapshot = await doc.reference.get(options);
+      final snapshot = await doc.ref.get(options);
       if (!snapshot.exists) return null;
       final local = await client.database.getDocument(collection.name, id);
       if (local == null) {
@@ -159,7 +159,7 @@ class FirestoreClientCollection<T extends Doc> {
     }
     if (options.source == Source.server) {
       final doc = Doc(client: client, collection: collection, id: id);
-      final snapshot = await doc.reference.get(options);
+      final snapshot = await doc.ref.get(options);
       if (!snapshot.exists) return null;
       return Doc.fromDocumentSnapshot(client, collection, snapshot);
     }
@@ -178,7 +178,7 @@ class FirestoreClientCollection<T extends Doc> {
     if (_needsUpdate(options)) {
       await collection.checkForUpdate(client);
       final doc = Doc(client: client, collection: collection, id: id);
-      final stream = doc.reference.snapshots();
+      final stream = doc.ref.snapshots();
       await for (final snapshot in stream) {
         if (snapshot.exists) {
           yield Doc.fromDocumentSnapshot(client, collection, snapshot);
