@@ -22,10 +22,8 @@ class CollectionDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<Doc>>(
-      stream: FirestoreClientCollection(
-        admin,
-        collection,
-      ).watchDocuments(admin),
+      stream: FirestoreClientCollection(admin, collection, (doc) => doc)
+          .watchDocuments(),
       builder: (context, snapshot) {
         return Scaffold(
           appBar: AppBar(

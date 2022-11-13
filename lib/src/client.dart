@@ -72,9 +72,10 @@ abstract class FirestoreClient {
 enum BundleState { running, success, error }
 
 class FirestoreClientCollection<T extends Doc> {
-  FirestoreClientCollection(this.client, this.collection);
+  FirestoreClientCollection(this.client, this.collection, this.fromDoc);
   final FirestoreClient client;
   final Collection collection;
+  final T Function(Doc doc) fromDoc;
   late CollectionReference<Json> collectionRef =
       client.firebase.firestore.collection(collection.name);
   late Query<Json> query = collectionRef;
@@ -84,45 +85,41 @@ class FirestoreClientCollection<T extends Doc> {
   }
 
   Future<void> addDoc(Doc doc) async {
-    await add(client, doc);
+    await add(doc);
     return client._add(doc);
   }
 
   Future<void> updateDoc(Doc doc) async {
-    await set(client, doc);
+    await set(doc);
     return client._update(doc);
   }
 
-  Future<List<Doc>> getDocuments(FirestoreClient client,
-      [GetOptions? options]) {
+  Future<List<Doc>> getDocuments([GetOptions? options]) {
     return query
         .get(options)
         .then((snapshot) => snapshot.docs)
         .then((docs) => collection.parseDocs(client, docs));
   }
 
-  Stream<List<Doc>> watchDocuments(FirestoreClient client,
-      {bool includeMetadataChanges = false}) {
+  Stream<List<Doc>> watchDocuments({bool includeMetadataChanges = false}) {
     return query
         .snapshots(includeMetadataChanges: includeMetadataChanges)
         .map((snapshot) => snapshot.docs)
         .asyncMap((docs) => collection.parseDocs(client, docs));
   }
 
-  Future<Doc> getDocument(FirestoreClient client, String id,
-      [GetOptions? options]) async {
+  Future<Doc> getDocument(String id, [GetOptions? options]) async {
     final reference = collectionRef.doc(id);
     final snapshot = await reference.get(options);
     return Doc.fromSnapshot(client, collection, snapshot);
   }
 
-  Future<String> add(FirestoreClient client, Doc base) async {
+  Future<String> add(Doc base) async {
     final doc = await collectionRef.add(base.toJson());
     return doc.id;
   }
 
-  Future<void> set(FirestoreClient client, Doc base,
-      [SetOptions? options]) async {
+  Future<void> set(Doc base, [SetOptions? options]) async {
     final ref = collectionRef.doc(base.id);
     await ref.set(base.toJson(), options);
   }
@@ -133,7 +130,7 @@ class FirestoreClientCollection<T extends Doc> {
     return source == Source.server || source == Source.serverAndCache;
   }
 
-  Future<Doc?> _getDoc(
+  Future<T?> _getDoc(
     Collection collection,
     String id, {
     GetOptions options = const GetOptions(),
@@ -143,7 +140,7 @@ class FirestoreClientCollection<T extends Doc> {
     }
     final local = await client.database.getDocument(collection.name, id);
     if (options.source == Source.cache && local != null) {
-      return Doc.fromJson(client, collection, local.toJson());
+      return fromDoc(Doc.fromJson(client, collection, local.toJson()));
     }
     if (options.source == Source.serverAndCache) {
       final doc = Doc(client: client, collection: collection, id: id);
@@ -155,25 +152,25 @@ class FirestoreClientCollection<T extends Doc> {
       } else {
         await client._update(doc);
       }
-      return Doc.fromDocumentSnapshot(client, collection, snapshot);
+      return fromDoc(Doc.fromDocumentSnapshot(client, collection, snapshot));
     }
     if (options.source == Source.server) {
       final doc = Doc(client: client, collection: collection, id: id);
       final snapshot = await doc.ref.get(options);
       if (!snapshot.exists) return null;
-      return Doc.fromDocumentSnapshot(client, collection, snapshot);
+      return fromDoc(Doc.fromDocumentSnapshot(client, collection, snapshot));
     }
     return null;
   }
 
-  Stream<Doc?> _watchDoc(
+  Stream<T?> _watchDoc(
     Collection collection,
     String id, {
     GetOptions options = const GetOptions(),
   }) async* {
     final local = await client.database.getDocument(collection.name, id);
     yield local != null
-        ? Doc.fromJson(client, collection, local.toMap())
+        ? fromDoc(Doc.fromJson(client, collection, local.toMap()))
         : null;
     if (_needsUpdate(options)) {
       await collection.checkForUpdate(client);
@@ -181,18 +178,20 @@ class FirestoreClientCollection<T extends Doc> {
       final stream = doc.ref.snapshots();
       await for (final snapshot in stream) {
         if (snapshot.exists) {
-          yield Doc.fromDocumentSnapshot(client, collection, snapshot);
+          yield fromDoc(Doc.fromDocumentSnapshot(client, collection, snapshot));
         } else {
           yield null;
         }
       }
     } else {
       yield* client.database.watchDocument(collection.name, id).map((e) =>
-          e != null ? Doc.fromJson(client, collection, e.toMap()) : null);
+          e != null
+              ? fromDoc(Doc.fromJson(client, collection, e.toMap()))
+              : null);
     }
   }
 
-  Future<List<Doc>> _getDocs(
+  Future<List<T>> _getDocs(
     Collection collection,
     bool deleted, {
     GetOptions options = const GetOptions(),
@@ -201,7 +200,7 @@ class FirestoreClientCollection<T extends Doc> {
       await collection.checkForUpdate(client);
       final snapshot = await query.get(options);
       final docs = snapshot.docs
-          .map((e) => Doc.fromDocumentSnapshot(client, collection, e))
+          .map((e) => fromDoc(Doc.fromDocumentSnapshot(client, collection, e)))
           .toList();
       for (final doc in docs) {
         final local =
@@ -216,20 +215,20 @@ class FirestoreClientCollection<T extends Doc> {
     } else {
       final nodes = await client.database.getDocuments(collection.name);
       return nodes
-          .map((e) => Doc.fromJson(client, collection, e.toMap()))
+          .map((e) => fromDoc(Doc.fromJson(client, collection, e.toMap())))
           .where((e) => deleted ? e.deleted == true : true)
           .toList();
     }
   }
 
-  Stream<List<Doc>> _watchDocs(
+  Stream<List<T>> _watchDocs(
     Collection collection,
     bool deleted, {
     GetOptions options = const GetOptions(),
   }) async* {
     final docs = await client.database.getDocuments(collection.name).then((e) =>
         e
-            .map((e) => Doc.fromJson(client, collection, e.toMap()))
+            .map((e) => fromDoc(Doc.fromJson(client, collection, e.toMap())))
             .where((e) => deleted ? e.deleted == true : true)
             .toList());
     yield docs;
@@ -239,7 +238,8 @@ class FirestoreClientCollection<T extends Doc> {
       final stream = query.snapshots();
       await for (final snapshot in stream) {
         final docs = snapshot.docs
-            .map((e) => Doc.fromDocumentSnapshot(client, collection, e))
+            .map(
+                (e) => fromDoc(Doc.fromDocumentSnapshot(client, collection, e)))
             .toList();
         yield docs;
 
@@ -256,30 +256,30 @@ class FirestoreClientCollection<T extends Doc> {
     }
 
     yield* client.database.watchDocuments(collection.name).map((e) => e
-        .map((e) => Doc.fromJson(client, collection, e.toMap()))
+        .map((e) => fromDoc(Doc.fromJson(client, collection, e.toMap())))
         .where((e) => deleted ? e.deleted == true : true)
         .toList());
   }
 
-  Future<List<Doc>> get({
+  Future<List<T>> get({
     bool deleted = false,
     GetOptions options = const GetOptions(),
   }) =>
       _getDocs(collection, deleted, options: options);
 
-  Stream<List<Doc>> watch({
+  Stream<List<T>> watch({
     bool deleted = false,
     GetOptions options = const GetOptions(),
   }) =>
       _watchDocs(collection, deleted, options: options);
 
-  Future<Doc?> getSingle(
+  Future<T?> getSingle(
     String id, {
     GetOptions options = const GetOptions(),
   }) =>
       _getDoc(collection, id, options: options);
 
-  Stream<Doc?> watchSingle(
+  Stream<T?> watchSingle(
     String id, {
     GetOptions options = const GetOptions(),
   }) =>
@@ -289,7 +289,7 @@ class FirestoreClientCollection<T extends Doc> {
     await collection.checkForUpdate(client);
     final local = await client.database.getDocuments(collection.name);
     final newestItems = local
-        .map((e) => Doc.fromJson(client, collection, e.toMap()))
+        .map((e) => fromDoc(Doc.fromJson(client, collection, e.toMap())))
         .map((e) => e.updated)
         .toList();
     final newest = newestItems.isEmpty
@@ -300,18 +300,19 @@ class FirestoreClientCollection<T extends Doc> {
         .get()
         .then((snap) => snap.docs)
         .then((docs) => docs
-            .map((e) => Doc.fromDocumentSnapshot(client, collection, e))
+            .map(
+                (e) => fromDoc(Doc.fromDocumentSnapshot(client, collection, e)))
             .toList());
     for (final node in latest) {
       await client.database.insertOrReplaceDocument(node.toJson());
     }
   }
 
-  Future<List<Doc>> search(String query) async {
+  Future<List<T>> search(String query) async {
     final results = await client.database.searchAllDocuments(query);
     return results
         .where((e) => e.collection == collection.name)
-        .map((e) => Doc.fromJson(client, collection, e.toMap()))
+        .map((e) => fromDoc(Doc.fromJson(client, collection, e.toMap())))
         .where((e) => e.deleted != true)
         .toList();
   }
@@ -348,11 +349,11 @@ class FirestoreClientCollection<T extends Doc> {
     }
   }
 
-  Future<Doc?> getNewestItem() async {
+  Future<T?> getNewestItem() async {
     final local = await client.database.getDocuments(collection.name);
     if (local.isNotEmpty) {
       final newestItem = local
-          .map((e) => Doc.fromJson(client, collection, e.toMap()))
+          .map((e) => fromDoc(Doc.fromJson(client, collection, e.toMap())))
           .reduce((a, b) => a.updated.isAfter(b.updated) ? a : b);
       return newestItem;
     }

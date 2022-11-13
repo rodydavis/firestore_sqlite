@@ -25,7 +25,7 @@ class Client extends NativeClient {
    ];
    {{#collections}}
    /// {{description}}
-   late final {{#camel_case}}{{name}}{{/camel_case}} = FirestoreClientCollection(this, {{#camel_case}}{{name}}{{/camel_case}}Collection);
+   late final {{#camel_case}}{{name}}{{/camel_case}} = FirestoreClientCollection(this, {{#camel_case}}{{name}}{{/camel_case}}Collection, {{#pascal_case}}{{name}}{{/pascal_case}}.fromDoc);
    {{/collections}}
 }
 

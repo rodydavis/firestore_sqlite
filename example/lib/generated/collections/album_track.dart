@@ -71,6 +71,12 @@ class AlbumTrack extends Doc {
   AlbumTrack({required super.id, required super.client})
       : super(collection: albumTrackCollection);
 
+  factory AlbumTrack.fromDoc(Doc doc) {
+    final base = AlbumTrack(id: doc.id, client: doc.client);
+    base.setJson(doc.toJson());
+    return base;
+  }
+
   @override
   DateTime get created => this['created'] as DateTime;
 

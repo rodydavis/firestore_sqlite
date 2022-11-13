@@ -55,6 +55,12 @@ class Artist extends Doc {
   Artist({required super.id, required super.client})
       : super(collection: artistCollection);
 
+  factory Artist.fromDoc(Doc doc) {
+    final base = Artist(id: doc.id, client: doc.client);
+    base.setJson(doc.toJson());
+    return base;
+  }
+
   @override
   DateTime get created => this['created'] as DateTime;
 

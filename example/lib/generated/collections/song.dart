@@ -55,6 +55,12 @@ class Song extends Doc {
   Song({required super.id, required super.client})
       : super(collection: songCollection);
 
+  factory Song.fromDoc(Doc doc) {
+    final base = Song(id: doc.id, client: doc.client);
+    base.setJson(doc.toJson());
+    return base;
+  }
+
   @override
   DateTime get created => this['created'] as DateTime;
 

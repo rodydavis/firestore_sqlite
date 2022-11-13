@@ -27,6 +27,12 @@ class {{#pascal_case}}{{name}}{{/pascal_case}} extends Doc {
   {{#pascal_case}}{{name}}{{/pascal_case}}({required super.id, required super.client})
     : super(collection: {{#camel_case}}{{name}}{{/camel_case}}Collection);
 
+  factory {{#pascal_case}}{{name}}{{/pascal_case}}.fromDoc(Doc doc) {
+    final base = {{#pascal_case}}{{name}}{{/pascal_case}}(id: doc.id, client: doc.client);
+    base.setJson(doc.toJson());
+    return base;
+  }
+
   @override
   DateTime get created => this['created'] as DateTime;
 

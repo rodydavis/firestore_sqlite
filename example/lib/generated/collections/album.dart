@@ -76,6 +76,12 @@ class Album extends Doc {
   Album({required super.id, required super.client})
       : super(collection: albumCollection);
 
+  factory Album.fromDoc(Doc doc) {
+    final base = Album(id: doc.id, client: doc.client);
+    base.setJson(doc.toJson());
+    return base;
+  }
+
   @override
   DateTime get created => this['created'] as DateTime;
 

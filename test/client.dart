@@ -33,7 +33,8 @@ class TestClient extends FirestoreClient {
   @override
   Database get database => testDatabase;
 
-  late final test = FirestoreClientCollection(this, testCollection);
+  late final test =
+      FirestoreClientCollection(this, testCollection, (doc) => doc);
 }
 
 class LocalClient extends TestClient {

@@ -20,14 +20,18 @@ class Client extends NativeClient {
       ];
 
   /// Showcase of music
-  late final album = FirestoreClientCollection(this, albumCollection);
+  late final album =
+      FirestoreClientCollection(this, albumCollection, Album.fromDoc);
 
   /// Songs on an album
-  late final albumTrack = FirestoreClientCollection(this, albumTrackCollection);
+  late final albumTrack =
+      FirestoreClientCollection(this, albumTrackCollection, AlbumTrack.fromDoc);
 
   /// People that like to make music
-  late final artist = FirestoreClientCollection(this, artistCollection);
+  late final artist =
+      FirestoreClientCollection(this, artistCollection, Artist.fromDoc);
 
   /// Expression of art in music form
-  late final song = FirestoreClientCollection(this, songCollection);
+  late final song =
+      FirestoreClientCollection(this, songCollection, Song.fromDoc);
 }
