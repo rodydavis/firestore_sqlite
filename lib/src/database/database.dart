@@ -46,7 +46,11 @@ class Database extends _$Database {
   Future<void> insertOrReplaceDocument(Map<String, Object?> data) async {
     final id = data['id'] as String?;
     if (id == null || id.isEmpty) {
-      throw ArgumentError('Node missing id: $data');
+      throw ArgumentError('Document missing id: $data');
+    }
+    final collection = data['collection'] as String?;
+    if (collection == null || collection.isEmpty) {
+      throw ArgumentError('Document missing collection: $data');
     }
     final body = jsonToString(data);
     final current = await getDocumentById(id).getSingleOrNull();

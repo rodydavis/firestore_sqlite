@@ -19,9 +19,9 @@ class Doc {
 
   factory Doc.modify(
     Collection collection,
-    FirestoreClient client,
+    FirestoreClient client, [
     String? id,
-  ) {
+  ]) {
     final ref = client.firebase.firestore.collection(collection.name);
     final docId = id ?? ref.doc().id;
     return Doc(
@@ -146,6 +146,9 @@ class Doc {
       final value = field.getValue(this);
       meta[field.name] = value;
     }
+    final now = DateTime.now();
+    meta['created'] ??= now;
+    meta['updated'] = now;
     meta['collection'] = collection.name;
     meta['id'] = ref.id;
     return meta;

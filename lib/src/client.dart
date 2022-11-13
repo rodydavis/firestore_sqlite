@@ -80,8 +80,15 @@ class FirestoreClientCollection<T extends Doc> {
       client.firebase.firestore.collection(collection.name);
   late Query<Json> query = collectionRef;
 
-  void setFilter(String key, Object value) {
-    query = collectionRef.where(key, isEqualTo: value);
+  void setFilter(Map<String, dynamic> filter) {
+    resetFilter();
+    for (final entry in filter.entries) {
+      query = query.where(entry.key, isEqualTo: entry.value);
+    }
+  }
+
+  void resetFilter() {
+    query = collectionRef;
   }
 
   Future<void> addDoc(Doc doc) async {
