@@ -40,65 +40,20 @@ class CollectionsEditor extends StatelessWidget {
               centerTitle: false,
               automaticallyImplyLeading: automaticallyImplyLeading,
               actions: [
-                IconButton(
-                  tooltip: 'Copy Schemas to Clipboard',
-                  icon: const Icon(Icons.file_copy),
-                  onPressed: snapshot.data == null
-                      ? null
-                      : () async {
-                          final messenger = ScaffoldMessenger.of(context);
-                          final jsonString = prettyPrintJson(snapshot.data!);
-                          await Clipboard.setData(
-                              ClipboardData(text: jsonString));
-                          messenger.showSnackBar(
-                            const SnackBar(
-                              content: Text('Copied to Clipboard'),
-                            ),
-                          );
-                        },
-                ),
-                IconButton(
-                  tooltip: 'Read Schemas from Clipboard',
-                  icon: const Icon(Icons.paste),
-                  onPressed: () async {
-                    final messenger = ScaffoldMessenger.of(context);
-                    final jsonString = await Clipboard.getData('text/plain');
-                    if (jsonString?.text == null) {
-                      messenger.showSnackBar(
-                        const SnackBar(
-                          content: Text('No text found in Clipboard'),
-                        ),
-                      );
-                      return;
+                CopySchemas(collections: snapshot.data ?? []),
+                ReadSchemas(onRead: (collections) async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  await db.runTransaction((transaction) async {
+                    for (final collection in collections) {
+                      await collection.save(admin);
                     }
-                    try {
-                      final data = jsonDecode(jsonString!.text!);
-                      if (data is! List) {
-                        throw const FormatException('Expected List');
-                      }
-                      final collections = data
-                          .map((e) => Collection.fromJson(e))
-                          .whereType<Collection>()
-                          .toList();
-                      await db.runTransaction((transaction) async {
-                        for (final collection in collections) {
-                          await collection.save(admin);
-                        }
-                      });
-                      messenger.showSnackBar(
-                        const SnackBar(
-                          content: Text('Schemas saved'),
-                        ),
-                      );
-                    } catch (e) {
-                      messenger.showSnackBar(
-                        SnackBar(
-                          content: Text('Error parsing schemas: $e'),
-                        ),
-                      );
-                    }
-                  },
-                ),
+                  });
+                  messenger.showSnackBar(
+                    const SnackBar(
+                      content: Text('Schemas saved'),
+                    ),
+                  );
+                }),
               ],
             ),
             body: Builder(
@@ -159,5 +114,74 @@ class CollectionsEditor extends StatelessWidget {
     if (value != null) {
       await value.save(admin);
     }
+  }
+}
+
+class CopySchemas extends StatelessWidget {
+  const CopySchemas({super.key, required this.collections});
+
+  final List<Collection> collections;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      tooltip: 'Copy Schemas to Clipboard',
+      icon: const Icon(Icons.file_copy),
+      onPressed: collections.isEmpty
+          ? null
+          : () async {
+              final messenger = ScaffoldMessenger.of(context);
+              final jsonString = prettyPrintJson(collections);
+              await Clipboard.setData(ClipboardData(text: jsonString));
+              messenger.showSnackBar(
+                const SnackBar(
+                  content: Text('Copied to Clipboard'),
+                ),
+              );
+            },
+    );
+  }
+}
+
+class ReadSchemas extends StatelessWidget {
+  const ReadSchemas({super.key, required this.onRead});
+
+  final ValueChanged<List<Collection>> onRead;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      tooltip: 'Read Schemas from Clipboard',
+      icon: const Icon(Icons.paste),
+      onPressed: () async {
+        final messenger = ScaffoldMessenger.of(context);
+        final jsonString = await Clipboard.getData('text/plain');
+        if (jsonString?.text == null) {
+          messenger.showSnackBar(
+            const SnackBar(
+              content: Text('No text found in Clipboard'),
+            ),
+          );
+          return;
+        }
+        try {
+          final data = jsonDecode(jsonString!.text!);
+          if (data is! List) {
+            throw const FormatException('Expected List');
+          }
+          final collections = data
+              .map((e) => Collection.fromJson(e))
+              .whereType<Collection>()
+              .toList();
+          onRead(collections);
+        } catch (e) {
+          messenger.showSnackBar(
+            SnackBar(
+              content: Text('Error parsing schemas: $e'),
+            ),
+          );
+        }
+      },
+    );
   }
 }
