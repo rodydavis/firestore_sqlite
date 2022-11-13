@@ -129,6 +129,17 @@ class _SchemaBuilderState extends State<SchemaBuilder> {
                       ? null
                       : Text(collection.description!),
                   onTap: () => edit(context, index),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () {
+                      if (mounted) {
+                        setState(() {
+                          collections.removeAt(index);
+                          save();
+                        });
+                      }
+                    },
+                  ),
                 );
               },
             ),
