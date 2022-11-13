@@ -25,6 +25,7 @@ class _EditCollectionState extends State<EditCollection> {
   late Collection? collection = widget.collection;
   late final data = copyJson(collection ?? {}) as Map<String, Object?>;
   final formKey = GlobalKey<FormState>();
+  final controller = ScrollController();
   bool edited = false;
 
   @override
@@ -193,6 +194,7 @@ class _EditCollectionState extends State<EditCollection> {
             }
           },
           child: SingleChildScrollView(
+            controller: controller,
             child: Column(
               children: [
                 textField(
@@ -239,13 +241,16 @@ class _EditCollectionState extends State<EditCollection> {
                                     name: '',
                                     type: FieldType.string(),
                                   ).toJson();
-                                  data['fields'] = [newField, ...fields];
+                                  data['fields'] = [...fields, newField];
                                   edited = true;
                                 });
                               }
                               await Future<void>.delayed(
                                   const Duration(milliseconds: 100));
                               formKey.currentState!.validate();
+                              controller.jumpTo(
+                                controller.position.maxScrollExtent,
+                              );
                             },
                             icon: const Icon(Icons.add),
                           ),
