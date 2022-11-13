@@ -239,8 +239,7 @@ class _EditCollectionState extends State<EditCollection> {
                                     name: '',
                                     type: FieldType.string(),
                                   ).toJson();
-                                  final newFields = [...fields, newField];
-                                  data['fields'] = newFields;
+                                  data['fields'] = [newField, ...fields];
                                   edited = true;
                                 });
                               }
