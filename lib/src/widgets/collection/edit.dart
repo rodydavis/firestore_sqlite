@@ -432,7 +432,10 @@ class _EditCollectionState extends State<EditCollection> {
                                           onPressed: () {
                                             if (mounted) {
                                               setState(() {
-                                                raw.removeAt(i);
+                                                final fields =
+                                                    data['fields'] as List;
+                                                fields.removeAt(i);
+                                                data['fields'] = fields;
                                                 edited = true;
                                               });
                                             }
