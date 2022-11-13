@@ -103,14 +103,16 @@ class _SchemaBuilderState extends State<SchemaBuilder> {
           IconButton(
             tooltip: 'Clear',
             icon: const Icon(Icons.clear),
-            onPressed: () {
-              if (mounted) {
-                setState(() {
-                  collections.clear();
-                  save();
-                });
-              }
-            },
+            onPressed: collections.isEmpty
+                ? null
+                : () {
+                    if (mounted) {
+                      setState(() {
+                        collections.clear();
+                        save();
+                      });
+                    }
+                  },
           ),
         ],
       ),
