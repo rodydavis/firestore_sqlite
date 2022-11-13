@@ -76,6 +76,25 @@ class _EditCollectionState extends State<EditCollection> {
     }
   }
 
+  void addField() async {
+    if (mounted) {
+      setState(() {
+        final fields = data['fields'] as List<dynamic>? ?? [];
+        final newField = const Field(
+          name: '',
+          type: FieldType.string(),
+        ).toJson();
+        data['fields'] = [...fields, newField];
+        edited = true;
+      });
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    formKey.currentState!.validate();
+    controller.jumpTo(
+      controller.position.maxScrollExtent,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -183,6 +202,11 @@ class _EditCollectionState extends State<EditCollection> {
             ),
           ],
         ),
+        floatingActionButton: FloatingActionButton(
+          tooltip: 'Add Field',
+          onPressed: addField,
+          child: const Icon(Icons.add),
+        ),
         body: Form(
           key: formKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -231,30 +255,7 @@ class _EditCollectionState extends State<EditCollection> {
                         copyJson(data['fields'] ?? []) as List<dynamic>;
                     return Column(
                       children: [
-                        ListTile(
-                          title: const Text('Fields'),
-                          leading: IconButton(
-                            onPressed: () async {
-                              if (mounted) {
-                                setState(() {
-                                  final newField = const Field(
-                                    name: '',
-                                    type: FieldType.string(),
-                                  ).toJson();
-                                  data['fields'] = [...fields, newField];
-                                  edited = true;
-                                });
-                              }
-                              await Future<void>.delayed(
-                                  const Duration(milliseconds: 100));
-                              formKey.currentState!.validate();
-                              controller.jumpTo(
-                                controller.position.maxScrollExtent,
-                              );
-                            },
-                            icon: const Icon(Icons.add),
-                          ),
-                        ),
+                        const ListTile(title: Text('Fields')),
                         for (var i = 0; i < fields.length; i++)
                           Card(
                             child: Builder(
