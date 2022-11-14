@@ -24836,7 +24836,7 @@ A.at5(s,f,d)
 d=self.document.body
 d.toString
 A.M(d,l,["flt-renderer",$.aj().gOf()+" (auto-selected)"])
-A.M(d,l,["flt-build-mode","debug"])
+A.M(d,l,["flt-build-mode","release"])
 A.cI(d,k,"fixed")
 A.cI(d,"top",j)
 A.cI(d,"right",j)
