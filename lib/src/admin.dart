@@ -8,15 +8,15 @@ import 'database/database.dart';
 
 class AdminClient extends FirestoreClient {
   @override
-  Firebase get firebase => Firebase(
-        firestore: FirebaseFirestore.instance,
-        storage: FirebaseStorage.instance,
-      );
+  Firebase firebase = Firebase(
+    firestore: FirebaseFirestore.instance,
+    storage: FirebaseStorage.instance,
+  );
 
   @override
-  Database get database => Database.defaults(
-        logStatements: kDebugMode,
-      );
+  Database database = Database.defaults(
+    logStatements: kDebugMode,
+  );
 
   @override
   List<Collection> get collections => [];
