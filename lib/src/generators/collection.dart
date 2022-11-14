@@ -28,8 +28,18 @@ class {{#pascal_case}}{{name}}{{/pascal_case}} extends Doc {
     : super(collection: {{#camel_case}}{{name}}{{/camel_case}}Collection);
 
   factory {{#pascal_case}}{{name}}{{/pascal_case}}.fromDoc(Doc doc) {
-    final base = {{#pascal_case}}{{name}}{{/pascal_case}}(id: doc.id, client: doc.client);
-    base.setJson(doc.toJson());
+    return {{#pascal_case}}{{name}}{{/pascal_case}}.fromJson(
+      doc.client,
+      {...doc.toJson(), "id": doc.id},
+    );
+  }
+
+  factory {{#pascal_case}}{{name}}{{/pascal_case}}.fromJson(
+    FirestoreClient client,
+    Map<String, dynamic> data,
+  ) {
+    final base = {{#pascal_case}}{{name}}{{/pascal_case}}(id: data['id'], client: client);
+    base.setJson(data);
     return base;
   }
 
