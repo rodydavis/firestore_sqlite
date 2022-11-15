@@ -147,8 +147,8 @@ class Doc {
       meta[field.name] = value;
     }
     final now = DateTime.now();
-    meta['created'] ??= now;
-    meta['updated'] = now;
+    meta['created'] ??= now.toIso8601String();
+    meta['updated'] = now.toIso8601String();
     meta['collection'] = collection.name;
     meta['id'] = ref.id;
     return meta;
@@ -207,7 +207,13 @@ class Doc {
     return snapshot;
   }
 
-  Future<void> delete() => update({'deleted': true});
+  Future<void> delete({bool soft = true}) async {
+    if (soft) {
+      await update({'deleted': true});
+    } else {
+      await ref.delete();
+    }
+  }
 
   void startBatch() {
     _batch = client.firebase.firestore.batch();

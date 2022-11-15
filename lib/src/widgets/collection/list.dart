@@ -13,12 +13,14 @@ class CollectionsEditor extends StatelessWidget {
   const CollectionsEditor({
     super.key,
     this.automaticallyImplyLeading = false,
+    required this.client,
   });
+  final FirestoreClient client;
   final bool automaticallyImplyLeading;
 
   @override
   Widget build(BuildContext context) {
-    final db = admin.firebase.firestore;
+    final db = client.firebase.firestore;
     final schema = db.collection('schema');
     return StreamBuilder<List<Collection>>(
         stream: schema.snapshots().map((e) => e.docs
@@ -45,7 +47,7 @@ class CollectionsEditor extends StatelessWidget {
                   final messenger = ScaffoldMessenger.of(context);
                   await db.runTransaction((transaction) async {
                     for (final collection in collections) {
-                      await collection.save(admin);
+                      await collection.save(client);
                     }
                   });
                   messenger.showSnackBar(
@@ -54,6 +56,24 @@ class CollectionsEditor extends StatelessWidget {
                     ),
                   );
                 }),
+                IconButton(
+                  icon: const Icon(Icons.save),
+                  onPressed: () {
+                    final messenger = ScaffoldMessenger.of(context);
+                    db.runTransaction((transaction) async {
+                      final collections = snapshot.data ?? [] as List<Collection>;
+                      for (final collection in collections) {
+                        await collection.save(client);
+                      }
+                    }).then((_) {
+                      messenger.showSnackBar(
+                        const SnackBar(
+                          content: Text('Schemas saved'),
+                        ),
+                      );
+                    });
+                  },
+                ),
               ],
             ),
             body: Builder(
@@ -80,6 +100,7 @@ class CollectionsEditor extends StatelessWidget {
                         builder: (context) => CollectionDetails(
                           collection: collection,
                           collections: collections,
+                          client: client,
                         ),
                       )),
                     );
@@ -112,7 +133,7 @@ class CollectionsEditor extends StatelessWidget {
       fullscreenDialog: true,
     ));
     if (value != null) {
-      await value.save(admin);
+      await value.save(client);
     }
   }
 }

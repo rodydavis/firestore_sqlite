@@ -44,10 +44,10 @@ class {{#pascal_case}}{{name}}{{/pascal_case}} extends Doc {
   }
 
   @override
-  DateTime get created => this['created'] as DateTime;
+  DateTime get created => DateTime.parse(this['created'].toString());
 
   @override
-  DateTime get updated => this['updated'] as DateTime;
+  DateTime get updated => DateTime.parse(this['updated'].toString());
 
   @override
   bool? get deleted => this['deleted'] as bool?;

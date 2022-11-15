@@ -373,6 +373,7 @@ class FirestoreClientCollection<T extends Doc> {
         : newestItems.reduce((a, b) => a.isAfter(b) ? a : b);
     final latest = await collectionRef
         .where('updated', isGreaterThan: newest.toIso8601String())
+        // .where('deleted', isNotEqualTo: true)
         .get()
         .then((snap) => snap.docs)
         .then((docs) => docs

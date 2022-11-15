@@ -14,15 +14,16 @@ class CollectionDetails extends StatelessWidget {
     super.key,
     required this.collection,
     required this.collections,
+    required this.client,
   });
-
+  final FirestoreClient client;
   final Collection collection;
   final List<Collection> collections;
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<Doc>>(
-      stream: FirestoreClientCollection(admin, collection, (doc) => doc)
+      stream: FirestoreClientCollection(client, collection, (doc) => doc)
           .watchDocuments(),
       builder: (context, snapshot) {
         return Scaffold(
@@ -43,7 +44,7 @@ class CollectionDetails extends StatelessWidget {
                     fullscreenDialog: true,
                   ));
                   if (value != null) {
-                    await value.save(admin);
+                    await value.save(client);
                   }
                 },
               ),
@@ -83,11 +84,11 @@ class CollectionDetails extends StatelessWidget {
                     if (data is! List) {
                       throw const FormatException('Expected List');
                     }
-                    final db = admin.firebase.firestore;
+                    final db = client.firebase.firestore;
                     await db.runTransaction((transaction) async {
                       for (final item in data) {
                         transaction.set(
-                          admin.firebase.firestore
+                          client.firebase.firestore
                               .collection(collection.name)
                               .doc(item['id']),
                           item,
@@ -139,6 +140,7 @@ class CollectionDetails extends StatelessWidget {
                                 collection: collection,
                                 id: doc.id,
                                 doc: doc,
+                                client: client,
                               ),
                             ),
                           ),
@@ -155,7 +157,7 @@ class CollectionDetails extends StatelessWidget {
                                 onPressed: () async {
                                   final messenger =
                                       ScaffoldMessenger.of(context);
-                                  final db = admin.firebase.firestore;
+                                  final db = client.firebase.firestore;
                                   await db.runTransaction((transaction) async {
                                     transaction.delete(doc.ref);
                                   });
@@ -180,6 +182,7 @@ class CollectionDetails extends StatelessWidget {
               MaterialPageRoute(
                 builder: (context) => CollectionForm(
                   collection: collection,
+                  client: client,
                 ),
               ),
             ),

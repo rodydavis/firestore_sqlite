@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../client.dart';
 import 'collection/list.dart';
 
 class AdminConsole extends StatefulWidget {
-  const AdminConsole({super.key});
+  const AdminConsole({super.key, required this.client});
+  final FirestoreClient client;
 
   @override
   State<AdminConsole> createState() => _AdminConsoleState();
@@ -47,8 +49,11 @@ class _AdminConsoleState extends State<AdminConsole> {
         Expanded(
           child: IndexedStack(
             index: index,
-            children: const [
-              CollectionsEditor(automaticallyImplyLeading: false),
+            children: [
+              CollectionsEditor(
+                automaticallyImplyLeading: false,
+                client: widget.client,
+              ),
             ],
           ),
         ),

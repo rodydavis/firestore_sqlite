@@ -13,7 +13,6 @@ class EditCollection extends StatefulWidget {
     this.collection,
     required this.collections,
   });
-
   final Collection? collection;
   final List<Collection> collections;
 

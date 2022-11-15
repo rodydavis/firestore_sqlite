@@ -12,7 +12,9 @@ class CollectionForm extends StatefulWidget {
     required this.collection,
     this.id,
     this.doc,
+    required this.client,
   });
+  final FirestoreClient client;
 
   final Collection collection;
   final String? id;
@@ -24,7 +26,7 @@ class CollectionForm extends StatefulWidget {
 
 class _CollectionFormState extends State<CollectionForm> {
   late final doc =
-      widget.doc ?? Doc.modify(widget.collection, admin, widget.id);
+      widget.doc ?? Doc.modify(widget.collection, widget.client, widget.id);
   final formKey = GlobalKey<FormState>();
   bool edited = false;
   final data = <String, Object?>{};

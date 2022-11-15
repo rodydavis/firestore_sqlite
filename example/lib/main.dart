@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (_) => const Example(),
-        if (kDebugMode) '/admin': (_) => const AdminConsole(),
+        if (kDebugMode) '/admin': (_) => AdminConsole(client: client),
       },
     );
   }

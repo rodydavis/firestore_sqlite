@@ -21,5 +21,3 @@ class AdminClient extends FirestoreClient {
   @override
   List<Collection> get collections => [];
 }
-
-final admin = AdminClient();
