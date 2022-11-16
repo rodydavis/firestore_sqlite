@@ -13,22 +13,20 @@ abstract class FirestoreClient {
   List<Collection> get collections;
 
   Future<String> _add(Doc doc) async {
-    final source = doc.id;
     try {
       // Insert node into documents
-      debugPrint('Inserting node into documents: $source');
+      debugPrint('Inserting ${doc.id} into ${doc.collection.name}');
       await database.insertOrReplaceDocument(doc.toJson());
     } catch (e) {
       debugPrint('Error adding node: $e');
     }
-    return source;
+    return doc.id;
   }
 
   Future<void> _update(Doc doc) async {
-    final source = doc.id;
     try {
       // Insert node into documents
-      debugPrint('Updating node into documents: $source');
+      debugPrint('Updating ${doc.id} in ${doc.collection.name}');
       await database.insertOrReplaceDocument(doc.toJson());
     } catch (e) {
       debugPrint('Error updating node: $e');

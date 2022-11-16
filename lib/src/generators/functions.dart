@@ -36,19 +36,25 @@ async function handelCollection(
   request: functions.https.Request,
   response: functions.Response<any>,
   collection: string,
-  ) {
+) {
   const method = request.method;
   if (method === "GET") {
     const id = request.query.id;
     if (id && typeof id === "string") {
       const doc = await db.collection(collection).doc(id).get();
-      const result = doc.data();
-      functions.logger.info(`get ${collection} -> ${result !== undefined}`, { structuredData: true });
-      response.send(result);
+      if (doc.exists) {
+        const result = doc.data();
+        functions.logger.info(`get ${collection} -> ${result !== undefined}`, { structuredData: true });
+        response.set("Content-Type", "application/json");
+        response.send(result);
+      } else {
+        response.status(404).send("Not found");
+      }
     } else {
       const docs = await db.collection(collection).get();
       const results = docs.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }));
       functions.logger.info(`get ${collection} -> ${results.length}`, { structuredData: true });
+      response.set("Content-Type", "application/json");
       response.send(results);
     }
   } else if (method === "POST") {
@@ -57,6 +63,7 @@ async function handelCollection(
       const doc = await db.collection(collection).add(data);
       const result = { ...data, id: doc.id };
       functions.logger.info(`post ${collection} -> ${result !== undefined}`, { structuredData: true });
+      response.set("Content-Type", "application/json");
       response.send(result);
     } else {
       response.status(400).send("Bad Request");
@@ -68,6 +75,7 @@ async function handelCollection(
       await db.collection(collection).doc(id).set(data);
       const result = { ...data, id };
       functions.logger.info(`put ${collection} -> ${result !== undefined}`, { structuredData: true });
+      response.set("Content-Type", "application/json");
       response.send(result);
     } else {
       response.status(400).send("Bad Request");
@@ -110,15 +118,33 @@ export const collection{{#pascal_case}}{{collection}}{{/pascal_case}}Trigger = f
     await batch.commit();
    });
 {{/all_triggers}}
-export const uploadBundle = functions.https.onRequest(async (req, res) => {
+export const uploadBundle = functions.runWith({
+  memory: '2GB',
+  timeoutSeconds: 540,
+}).https.onRequest(async (req, res) => {
   const bundle = db.bundle("collections-bundle");
-  const schema = await db.collection("schema").get();
-  bundle.add('schema', schema);
-  {{#bundles}}
-  const {{name}} = await db.collection("{{name}}").get();
-  bundle.add('{{name}}', {{name}});
-  {{/bundles}}
+  const promises: Promise<any>[] = [];
+  const collections = [
+    {{#bundles}}
+    '{{name}}',
+    {{/bundles}}
+  ];
+  for (const collection of collections) {
+    promises.push(new Promise(async (resolve, reject) => {
+      try {
+        const snapshot = await db.collection(collection).get();
+        bundle.add(collection, snapshot);
+        functions.logger.info(`Added ${collection} to bundle: ${snapshot.size} documents`);
+        resolve(snapshot);
+      } catch (error) {
+        functions.logger.error(`Error adding ${collection} to bundle`, error);
+        reject(error);
+      }
+    }));
+  }
+  await Promise.all(promises);
   const buffer = bundle.build();
+  functions.logger.info(`Bundle size: ${buffer.length}`);
   await storage.bucket().file("collections-bundle").save(buffer);
   res.send(buffer);
 });
@@ -345,11 +371,16 @@ class FunctionsGenerator extends GeneratorBase {
       // Replace tags with content
       final output = content.replaceAllMapped(
         RegExp('$startKey.*$endKey', dotAll: true),
-        (match) => result,
+        (match) => '$startKey\n$result\n$endKey',
       );
       outFile.writeAsStringSync(output);
     } else {
-      outFile.writeAsStringSync('$prefix$result');
+      final sb = StringBuffer();
+      sb.writeln(prefix);
+      sb.writeln(startKey);
+      sb.writeln(result);
+      sb.writeln(endKey);
+      outFile.writeAsStringSync(sb.toString());
     }
     return result;
   }
